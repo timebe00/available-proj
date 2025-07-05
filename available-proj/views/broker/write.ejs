@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>신규 작업 작성</title>
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet" />
+    <style>
+        body,
+        html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 700px;
+            max-width: 95vw;
+            box-sizing: border-box;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        input[type="text"],
+        input[type="datetime-local"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        input[type="number"] {
+            display: none;
+        }
+
+        #priceFormatted {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        .deliverable-group label {
+            margin-bottom: 5px;
+        }
+
+        .deliverable-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .deliverable-controls input[type="text"] {
+            width: 60%;
+        }
+
+        .deliverable-controls select {
+            width: 40%;
+        }
+
+        .date-group {
+            display: flex;
+            gap: 20px;
+        }
+
+        .date-group>div {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        input[type="checkbox"] {
+            width: auto;
+            transform: scale(1.2);
+            cursor: pointer;
+            margin: 0;
+        }
+
+        #editor {
+            height: 200px;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .file-links {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .file-link-item {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .file-link-item input[type="text"] {
+            flex: 1;
+            padding: 8px;
+            font-size: 14px;
+        }
+
+        .file-link-item button {
+            padding: 6px 12px;
+            background-color: #dc3545;
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .file-link-item button:hover {
+            background-color: #a71d2a;
+        }
+
+        button {
+            width: 120px;
+            padding: 10px;
+            font-size: 16px;
+            background-color: #007bff;
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-top: 10px;
+            align-self: center;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #addFileLinkBtn {
+            width: auto;
+            background-color: #28a745;
+            margin-top: 5px;
+        }
+
+        #addFileLinkBtn:hover {
+            background-color: #1e7e34;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>신규 작업 작성</h1>
+        <form id="newTaskForm">
+            <div>
+                <label for="taskName">작업명</label>
+                <input type="text" id="taskName" name="taskName" required />
+            </div>
+            <div class="date-group">
+                <div>
+                    <label for="requiredEndDate">종료 요구일</label>
+                    <input type="datetime-local" id="requiredEndDate" name="requiredEndDate" required />
+                </div>
+                <div>
+                    <label for="minEndDate">최소 종료일</label>
+                    <input type="datetime-local" id="minEndDate" name="minEndDate" required />
+                </div>
+            </div>
+            <div>
+                <label>관련 파일 업로드 링크</label>
+                <div class="file-links" id="fileLinksContainer">
+                    <div class="file-link-item">
+                        <input type="text" name="fileLinks[]" placeholder="파일 업로드 URL 입력" />
+                        <button type="button" class="removeLinkBtn" title="삭제">×</button>
+                    </div>
+                </div>
+                <button type="button" id="addFileLinkBtn">링크 추가</button>
+            </div>
+            <!-- <div class="checkbox-group">
+                <label for="materialDelivery">자료전달 여부</label>
+                <input type="checkbox" id="materialDelivery" name="materialDelivery" />
+            </div> -->
+            <div class="deliverable-group">
+                <label for="deliverable">산출물</label>
+                <div class="deliverable-controls">
+                    <input type="text" id="deliverable" name="deliverable" placeholder="산출물 입력" />
+                    <select id="deliverableType" name="deliverableType">
+                        <option value="">선택하세요</option>
+                        <option value="pdf">PDF</option>
+                        <option value="img">이미지</option>
+                        <option value="zip">ZIP</option>
+                        <option value="doc">문서</option>
+                    </select>
+                </div>
+            </div>
+            <div>
+                <label for="priceFormatted">단가</label>
+                <input type="text" id="priceFormatted" placeholder="금액 입력" autocomplete="off" />
+                <input type="number" id="price" name="price" min="0" step="1000" />
+            </div>
+            <div>
+                <label for="editor">작업 내용</label>
+                <div id="editor"></div>
+                <input type="hidden" id="taskContent" name="taskContent" />
+            </div>
+            <div>
+                <label for="note">비고</label>
+                <textarea id="note" name="note" placeholder="특이사항이나 메모"></textarea>
+            </div>
+            <button type="submit">작성 완료</button>
+        </form>
+    </div>
+
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <script>
+        const quill = new Quill('#editor', {
+            theme: 'snow',
+            placeholder: '작업 내용을 입력하세요...',
+            modules: {
+                toolbar: [
+                    [{ header: [1, 2, false] }],
+                    ['bold', 'italic', 'underline'],
+                    ['link', 'image'],
+                    [{ list: 'ordered' }, { list: 'bullet' }],
+                    ['clean']
+                ]
+            }
+        });
+
+        const priceInput = document.getElementById('price');
+        const priceFormatted = document.getElementById('priceFormatted');
+
+        priceFormatted.addEventListener('input', (e) => {
+            let value = e.target.value;
+            value = value.replace(/[^0-9]/g, '');
+            if (value === '') {
+                priceInput.value = '';
+                priceFormatted.value = '';
+                return;
+            }
+            const withComma = Number(value).toLocaleString('ko-KR');
+            priceFormatted.value = withComma;
+            priceInput.value = value;
+        });
+
+        document.getElementById('newTaskForm').addEventListener('submit', (e) => {
+            document.getElementById('taskContent').value = quill.root.innerHTML;
+        });
+
+        // 파일 링크 추가 및 삭제 기능
+        const fileLinksContainer = document.getElementById('fileLinksContainer');
+        const addFileLinkBtn = document.getElementById('addFileLinkBtn');
+
+        addFileLinkBtn.addEventListener('click', () => {
+            const div = document.createElement('div');
+            div.className = 'file-link-item';
+            div.innerHTML = `
+        <input type="text" name="fileLinks[]" placeholder="파일 업로드 URL 입력" />
+        <button type="button" class="removeLinkBtn" title="삭제">×</button>
+      `;
+            fileLinksContainer.appendChild(div);
+        });
+
+        fileLinksContainer.addEventListener('click', (e) => {
+            if (e.target.classList.contains('removeLinkBtn')) {
+                const parent = e.target.parentElement;
+                if (fileLinksContainer.children.length > 1) {
+                    parent.remove();
+                } else {
+                    // 최소 1개는 남게
+                    parent.querySelector('input').value = '';
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>
