@@ -1,0 +1,22 @@
+{
+    "apps": [
+        {
+            "name": "Main",
+            "cwd": "./available-proj",
+            "script": "./bin/www",
+            "watch": true,
+            "ignore_watch": [
+                "node_modules",
+                "views",
+                "public",
+                "assets"
+            ],
+            "time": true,
+            "instances": 1,
+            "exec_mode": "cluster",
+            "env": {
+                "ServiceType": "local"
+            }
+        }
+    ]
+}
