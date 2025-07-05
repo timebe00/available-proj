@@ -4,19 +4,19 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-var indexRouter = require('./api/routes/index');
-
 var app = express();
-
 setApp = () => {
-
   return new Promise(
     async (resolve, reject) => {
       try {
-
         global._base = __dirname;
         global._ServiceType = process.env.ServiceType || 'production';
         global._props = require(__dirname + '/config/' + _ServiceType + '/property.js');
+
+
+        global._mybatisMapper = require('mybatis-mapper');
+
+        var indexRouter = require('./api/routes/index');
 
         // view engine setup
         app.set('views', path.join(__dirname, 'views'));

@@ -7,7 +7,7 @@ let exportObj = {};
 /**
  * readOnly : false - transation
  */
-exportObj.getConnectoin = function (dataObj) {
+exportObj.getConnection = function (dataObj) {
     return new Promise(
         async (resolve, reject) => {
             try {
