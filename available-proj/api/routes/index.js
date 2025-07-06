@@ -116,4 +116,30 @@ router.post('/5521ed612b874a198fc98c71fbcee437/order/modifyOrder', async functio
 
 });
 
+//  발주처 리스트
+router.get('/e6e7b89523ac41e0ba406fbd05ed9de6/work', async function (req, res, next) {
+  try {
+    req.params.sortData = "work"
+    let result = await indexService.getOrders(req);
+
+    res.render('work/list', { data: result });
+  } catch (error) {
+    console.log("error", error)
+    next(error);
+  }
+
+});
+
+router.get('/e6e7b89523ac41e0ba406fbd05ed9de6/work/view', async function (req, res, next) {
+  try {
+    let result = await indexService.getOrder(req);
+
+    res.render('work/view', { data: result });
+  } catch (error) {
+    console.log("error", error)
+    next(error);
+  }
+
+});
+
 module.exports = router;

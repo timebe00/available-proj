@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>작업 내용 확인</title>
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet" />
+
+    <script src="/common/vander/jquery.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 40px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            max-width: 800px;
+            width: 100%;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .row label {
+            font-weight: bold;
+            width: 160px;
+        }
+
+        .row .value {
+            flex: 1;
+        }
+
+        .multiline {
+            white-space: pre-wrap;
+        }
+
+        .file-links a {
+            display: block;
+            margin-bottom: 5px;
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .file-links a:hover {
+            text-decoration: underline;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 30px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 6px 12px;
+            background-color: #e0f7fa;
+            color: #006064;
+            border: 1px solid #00acc1;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .btn {
+            padding: 6px 12px;
+            background-color: #28a745;
+            border: none;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-blue {
+            background-color: #007bff;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .revision-phase {
+            margin-bottom: 30px;
+        }
+
+        .revision-title {
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        .centered-button {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .editor-container {
+            display: none;
+            margin-top: 10px;
+        }
+
+        #editor {
+            height: 200px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: white;
+        }
+
+        .quill-container {
+            margin-bottom: 10px;
+        }
+
+        .top-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            padding-top: 60px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.9);
+        }
+
+        .modal-content {
+            margin: auto;
+            display: block;
+            max-width: 90%;
+            max-height: 80vh;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 30px;
+            right: 50px;
+            color: #fff;
+            font-size: 36px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .modal-close:hover {
+            color: #bbb;
+        }
+    </style>
+</head>
+
+<% let orderFixs={}; for(let orderFixIdx in data.orderFixs) {
+    orderFixs[orderFixIdx]=data.orderFixs[orderFixIdx].content; } %>
+
+    <body>
+        <% let status=data.order.status; let statusTxt="" ; if(status=="02" ){ statusTxt="수정요청" ; } else if(status=="03"
+            ){ statusTxt="작업완료" ; } else if(status=="04" ){ statusTxt="납품완료" ; } else if(status=="05" ){
+            statusTxt="수정완료" ; } else if(status=="06" ){ statusTxt="완료 후 수정요청" ; } else {statusTxt="작업요청" ;}%>
+            <div class=" container">
+                <h1>작업 내용 확인</h1>
+
+                <div class="row">
+                    <label>현재 상태</label>
+                    <div class="value"><span class="status">
+                            <%=statusTxt%>
+                        </span></div>
+                </div>
+
+                <div class="row"><label>요청일</label>
+                    <div class="value">
+                        <%=data.order.reg_date%>
+                    </div>
+                </div>
+                <div class="row"><label>작업명</label>
+                    <div class="value">
+                        <%=data.order.title%>
+                    </div>
+                </div>
+                <div class="row">
+                    <label>Best</label>
+                    <div class="value">
+                        <%=data.order.b_time%>
+                    </div>
+                    <label>At Least</label>
+                    <div class="value">
+                        <%=data.order.e_time%>
+                    </div>
+                </div>
+                <div class="row"><label>자료전달 여부</label>
+                    <div class="value">
+                        <%=data.order.send_yn=="Y" ? "예" : "아니요" %>
+                    </div>
+                </div>
+                <div class="row"><label>산출물</label>
+                    <div class="value">
+                        <%=data.order.output%>
+                    </div>
+                </div>
+                <div class="row"><label>단가</label>
+                    <div class="value">
+                        <%=data.order.show_price%>원
+                    </div>
+                </div>
+                <div class="row"><label>비고</label>
+                    <div class="value">
+                        <%=data.order.note%>
+                    </div>
+                </div>
+
+                <div class="section-title">
+                    <span>작업 내용</span>
+                </div>
+                <div class="multiline">
+                    <%-data.order.content.replace( /\\"/g, '"' )%>
+                </div>
+
+                <div class="section-title">
+                    <span>수정 사항</span>
+                    <!-- <button id="toggleEditorBtn" class="btn">+ 수정 사항 쓰기</button> -->
+                </div>
+
+                <div id="revisionsContainer">
+                    <%for(let fixIdx in data.orderFixs){ let fix=data.orderFixs[fixIdx];%>
+                        <div class="revision-phase">
+                            <div class="revision-title" data-order_fix_idx="<%=fix.order_fix_idx%>">수정 사항
+                                <%=Number(fixIdx) + 1%>차
+                            </div>
+                            <div class="revision-content">
+                                <%-fix.content.replace( /\\"/g, '"' )%>
+                            </div>
+                        </div>
+                        <%}%>
+                </div>
+
+                <div class="editor-container" id="editorWrapper" style="display: none;">
+                    <div id="editor" class="quill-container"></div>
+                    <button id="submitRevisionPhase" class="btn btn-blue">차수 추가</button>
+                </div>
+            </div>
+
+            <!-- 이미지 모달 -->
+            <div id="imageModal" class="modal">
+                <span class="modal-close" id="modalClose">&times;</span>
+                <img class="modal-content" id="modalImage">
+            </div>
+
+    </body>
+
+</html>
+
+<script>
+    const revisionsContainer = document.getElementById('revisionsContainer');
+    const editorWrapper = document.getElementById('editorWrapper');
+    let revisionPhaseCount = 1;
+
+    // 이미지 클릭 시 확대 표시
+    document.addEventListener('click', function (e) {
+        if (e.target.tagName === 'IMG' && (e.target.closest('.multiline') || e.target.closest('.revision-content'))) {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            modal.style.display = 'block';
+            modalImg.src = e.target.src;
+        }
+    });
+
+    document.getElementById('modalClose').addEventListener('click', function () {
+        document.getElementById('imageModal').style.display = 'none';
+    });
+</script>

@@ -32,6 +32,17 @@
                 END
             ),
         </if>
+        <if test="sortData == 'work'">
+            (
+                CASE
+                    WHEN A.status = '01' THEN 0
+                    WHEN A.status = '02' THEN 0
+                    WHEN A.status = '06' THEN 0
+                    WHEN A.status = '04' THEN 2
+                    ELSE 1
+                END
+            ),
+        </if>
         order_idx DESC
     </select>
 
