@@ -70,10 +70,10 @@ exports.setOrder = (req) => {
             }
 
             connection = await connectionManager.getConnection({ readOnly: false });
-            let insertOrder = await indexModule.insertOrder(connection, orderParams); // await 추가 필요 가능성 있음
+            let insertOrder = await indexModule.insertOrder(connection, orderParams);
             let order_idx = insertOrder.insertId;
 
-            await indexModule.insertPrice(connection, { order_idx: order_idx, price: price }); // await 추가 필요 가능성 있음
+            await indexModule.insertPrice(connection, { order_idx: order_idx, price: price });
 
             result.order_id = order_idx;
 
@@ -85,6 +85,50 @@ exports.setOrder = (req) => {
                 connection.rollback();
             }
             console.log("setOrder : ", error);
+            reject(error); // <- 여기 수정
+        }
+    });
+};
+
+exports.changeStatus = (req) => {
+    return new Promise(async (resolve, reject) => {
+        let result = {};
+        let connection;
+        try {
+            let status = req.body.status;
+            let order_idx = req.body.order_idx;
+
+            if (!status) {
+                throw ({ code: "99", message: "status 없음" });
+            } else if (!order_idx) {
+                throw ({ code: "99", message: "order_idx 없음" });
+            }
+
+            connection = await connectionManager.getConnection({ readOnly: false });
+
+            await indexModule.updateOrder(connection, { order_idx: order_idx, status: status });
+
+            // connection.rollback();
+            connection.commit();
+            resolve(result);
+        } catch (error) {
+            if (connection) {
+                connection.rollback();
+            }
+            console.log("setOrder : ", error);
+            reject(error); // <- 여기 수정
+        }
+    });
+};
+
+exports.getOrder = (req) => {
+    return new Promise(async (resolve, reject) => {
+        let result = {};
+        let connection;
+        try {
+
+
+        } catch (error) {
             reject(error); // <- 여기 수정
         }
     });

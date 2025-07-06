@@ -60,3 +60,17 @@ exports.insertPrice = (connection, sqlParamObj) => {
     )
 }
 
+exports.updateOrder = (connection, sqlParamObj) => {
+    return new Promise(
+        async (resolve, reject) => {
+            try {
+                var sql = _mybatisMapper.getStatement('available', 'available.updateOrder', sqlParamObj);
+                console.log(sql);
+                let [result] = await connection.raw(sql);
+                resolve(result);
+            } catch (error) {
+                reject(error);
+            }
+        }
+    )
+}

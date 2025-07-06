@@ -7,21 +7,18 @@
             A.title,
             A.b_time,
             A.e_time,
-            A.content,
-            A.link,
             A.send_yn,
             A.output,
-            A.note,
-            A.com_yn,
-            A.com_date,
+            A.status,
             A.import,
-            A.reg_date,
+            date_format(A.reg_date, '%Y-%m-%d') AS 'reg_date',
             B.order_price,
             B.show_price
         FROM tb_order A
         inner join tb_price B on A.order_idx = B.order_idx
         WHERE 
             A.delete_yn = 'N'
+        ORDER BY A.reg_date DESC
     </select>
 
     <select id="available.getOutputs">
@@ -43,7 +40,7 @@
                 e_time, 
             </if>
             content, link, send_yn, `output`
-            , note, com_yn, com_date, import
+            , note, status, import
             , delete_yn, reg_date, upd_date
             )
         VALUES(
@@ -55,7 +52,7 @@
                 #{e_time}, 
             </if>
              #{content}, NULL, 'N',#{output}, #{note}
-            , 'N', current_timestamp(), #{import}, 'N', current_timestamp(), current_timestamp());
+            '01', 'N', #{import}, 'N', current_timestamp(), current_timestamp());
     </insert>
 
     <insert id="available.insertPrice">
@@ -65,4 +62,38 @@
             , show_price)
         VALUES(#{order_idx}, #{price}, #{price});
     </insert>
+
+    <update id="available.updateOrder">
+            UPDATE available.tb_order
+            SET
+                upd_date=current_timestamp()
+                <if test="title != null and title != ''">
+                    , title = #{}
+                </if>
+                <if test="b_time != null and b_time != ''">
+                    , b_time = #{b_time}
+                </if>
+                <if test="e_time != null and e_time != ''">
+                    , e_time = #{e_time}
+                </if>
+                <if test="content != null and content != ''">
+                    , content = #{content}
+                </if>
+                <if test="output != null and output != ''">
+                    , output = #{output}
+                </if>
+                <if test="note != null and note != ''">
+                    , note = #{note}
+                </if>
+                <if test="status != null and status != ''">
+                    , status = #{status}
+                </if>
+                <if test="import != null and import != ''">
+                    , import = #{import}
+                </if>
+                <if test="delete_yn != null and delete_yn != ''">
+                    , delete_yn = #{delete_yn}
+                </if>
+            WHERE order_idx = #{order_idx};
+    </update>
 </mapper>
