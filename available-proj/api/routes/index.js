@@ -19,6 +19,7 @@ router.get('/', function (req, res, next) {
 //  발주처 리스트
 router.get('/5521ed612b874a198fc98c71fbcee437/order', async function (req, res, next) {
   try {
+    req.params.sortData = "order"
     let result = await indexService.getOrders(req);
 
     res.render('order/list', { data: result });

@@ -8,8 +8,10 @@ exports.getOrders = (req) => {
         let result = {};
         let connection;
         try {
+            let sortData = req.params.sortData;
+
             connection = await connectionManager.getConnection({ readOnly: true });
-            let orders = await indexModule.getOrders(connection, {}); // await 추가 필요 가능성 있음
+            let orders = await indexModule.getOrders(connection, { sortData: sortData }); // await 추가 필요 가능성 있음
 
             result.orders = orders;
 

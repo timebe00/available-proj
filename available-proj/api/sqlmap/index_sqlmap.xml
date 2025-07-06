@@ -21,7 +21,18 @@
             <if test="order_idx != null and order_idx != ''">
                 AND A.order_idx = #{order_idx}
             </if>
-        ORDER BY A.reg_date DESC
+        ORDER BY 
+        <if test="sortData == 'order'">
+            (
+                CASE
+                    WHEN A.status = '03' THEN 0
+                    WHEN A.status = '05' THEN 0
+                    WHEN A.status = '04' THEN 2
+                    ELSE 1
+                END
+            ),
+        </if>
+        order_idx DESC
     </select>
 
     <select id="available.getOrderOne">
