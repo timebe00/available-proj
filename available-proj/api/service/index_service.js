@@ -59,7 +59,6 @@ exports.setOrder = (req) => {
             if (!title) {
                 throw ({ code: "99", message: "title 없음" });
             }
-            console.log("content : ", content)
 
             let orderParams = {
                 title: title,
@@ -175,3 +174,50 @@ exports.setOrderFix = (req) => {
         }
     });
 };
+
+exports.modifyOrder = (req) => {
+    return new Promise(async (resolve, reject) => {
+        let result = {};
+        let connection;
+        try {
+            let order_idx = req.body.order_idx;
+            let title = req.body.title;
+            let b_time = req.body.b_time || null;
+            let e_time = req.body.e_time || null;
+            let output = req.body.output;
+            let price = req.body.price || 0;
+            let content = req.body.content;
+            let note = req.body.note;
+            let importData = 0;
+
+            if (!title) {
+                throw ({ code: "99", message: "title 없음" });
+            }
+
+            let orderParams = {
+                order_idx: order_idx,
+                title: title,
+                b_time: b_time,
+                b_time_set: true,
+                e_time: e_time,
+                e_time_set: true,
+                output: output,
+                content: content,
+                note: note,
+                import: importData,
+            }
+
+            connection = await connectionManager.getConnection({ readOnly: false });
+            await indexModule.updateOrder(connection, orderParams);
+            await indexModule.updatePrice(connection, { order_idx: order_idx, order_price: price });
+
+            connection.commit();
+            resolve(result);
+        } catch (error) {
+            if (connection) {
+                connection.rollback();
+            }
+            reject(error); // <- 여기 수정
+        }
+    });
+}

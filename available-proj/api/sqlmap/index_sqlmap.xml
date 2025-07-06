@@ -47,7 +47,7 @@
             A.import,
             A.content,
             date_format(A.reg_date, '%Y-%m-%d') AS 'reg_date',
-            
+            A.note,
             B.order_price,
             B.show_price
         FROM tb_order A
@@ -103,13 +103,23 @@
             SET
                 upd_date=current_timestamp()
                 <if test="title != null and title != ''">
-                    , title = #{}
+                    , title = #{title}
                 </if>
-                <if test="b_time != null and b_time != ''">
-                    , b_time = #{b_time}
+                <if test="b_time_set == true and b_time != ''">
+                    <if test="b_time == null">
+                        , b_time = ${b_time}
+                    </if>
+                    <if test="b_time != null">
+                        , b_time = #{b_time}
+                    </if>
                 </if>
-                <if test="e_time != null and e_time != ''">
-                    , e_time = #{e_time}
+                <if test="e_time_set == true and e_time != ''">
+                    <if test="b_time == null">
+                        , e_time = ${e_time}
+                    </if>
+                    <if test="b_time != null">
+                        , e_time = #{e_time}
+                    </if>
                 </if>
                 <if test="content != null and content != ''">
                     , content = #{content}
@@ -151,4 +161,17 @@
         )
         VALUES(#{order_idx}, #{content}, current_timestamp(), current_timestamp());
     </select>
+
+    <update id="available.updatePrice">
+        UPDATE tb_price
+        SET 
+            order_idx=#{order_idx}
+            <if test="order_price != null and order_price != ''">
+                , order_price=#{order_price}
+            </if>
+            <if test="show_price != null and show_price != ''">
+                , show_price=#{show_price}
+            </if>
+        WHERE order_idx=#{order_idx};
+    </update>
 </mapper>
