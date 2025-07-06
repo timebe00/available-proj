@@ -30,6 +30,10 @@ setApp = () => {
 
         app.use('/', indexRouter);
 
+        app.get('/.well-known/appspecific/com.chrome.devtools.json', (req, res) => {
+          res.json({ status: 'not-supported' }); // 또는 빈 객체
+        });
+
         // catch 404 and forward to error handler
         app.use(function (req, res, next) {
           next(createError(404));
