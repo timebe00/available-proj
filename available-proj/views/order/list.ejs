@@ -93,7 +93,12 @@
 </head>
 
 <body>
-    <h1>작업 항목 확인</h1>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h1>작업 항목 확인</h1>
+        <a href="/5521ed612b874a198fc98c71fbcee437/order/write"
+            style="padding: 10px 16px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px;">작성하기</a>
+    </div>
+
     <table>
         <thead>
             <tr>
@@ -105,7 +110,9 @@
             </tr>
         </thead>
         <tbody id="taskTableBody">
-            <tr class="important">
+            <% console.log("data : ", data)
+            %>
+            <tr class=" important">
                 <td>2025-07-01</td>
                 <td class="task-name"><a href="detail.html">메인페이지 디자인</a></td>
                 <td class="deliverable"><a href="detail.html">design_main_v1.png</a></td>
@@ -117,40 +124,40 @@
                     </select>
                 </td>
                 <td>200,000</td>
-            </tr>
-            <tr>
-                <td>2025-07-02</td>
-                <td class="task-name"><a href="detail.html">게시판 기능</a></td>
-                <td class="deliverable"><a href="detail.html">board_module.zip</a></td>
-                <td>
-                    <select class="status">
-                        <option>완료</option>
-                        <option selected>진행 중</option>
-                        <option>대기</option>
-                    </select>
-                </td>
-                <td>300,000</td>
-            </tr>
-            <tr class="important">
-                <td>2025-07-03</td>
-                <td class="task-name"><a href="detail.html">모바일 반응형 적용</a></td>
-                <td class="deliverable"><a href="detail.html">responsive_patch.pdf</a></td>
-                <td>
-                    <select class="status">
-                        <option>완료</option>
-                        <option>진행 중</option>
-                        <option selected>대기</option>
-                    </select>
-                </td>
-                <td>150,000</td>
-            </tr>
+                </tr>
+                <tr>
+                    <td>2025-07-02</td>
+                    <td class="task-name"><a href="detail.html">게시판 기능</a></td>
+                    <td class="deliverable"><a href="detail.html">board_module.zip</a></td>
+                    <td>
+                        <select class="status">
+                            <option>완료</option>
+                            <option selected>진행 중</option>
+                            <option>완료 후 수정 요청</option>
+                        </select>
+                    </td>
+                    <td>300,000</td>
+                </tr>
+                <tr class="important">
+                    <td>2025-07-03</td>
+                    <td class="task-name"><a href="detail.html">모바일 반응형 적용</a></td>
+                    <td class="deliverable"><a href="detail.html">responsive_patch.pdf</a></td>
+                    <td>
+                        <select class="status">
+                            <option>완료</option>
+                            <option>진행 중</option>
+                            <option selected>대기</option>
+                        </select>
+                    </td>
+                    <td>150,000</td>
+                </tr>
         </tbody>
     </table>
-    <div class="pagination">
+    <!-- <div class="pagination">
         <button class="active">1</button>
         <button>2</button>
         <button>3</button>
-    </div>
+    </div> -->
 </body>
 
 </html>

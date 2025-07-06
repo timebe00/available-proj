@@ -23,8 +23,8 @@ setApp = () => {
         app.set('view engine', 'ejs');
 
         app.use(logger('dev'));
-        app.use(express.json());
-        app.use(express.urlencoded({ extended: false }));
+        app.use(express.json({ limit: '200mb' }));
+        app.use(express.urlencoded({ limit: '200mb', extended: true }));
         app.use(cookieParser());
         app.use(express.static(path.join(__dirname, 'public')));
 
@@ -37,9 +37,9 @@ setApp = () => {
 
         // error handler
         app.use(function (err, req, res, next) {
-          console.error(err);
+          console.error("err : ", err);
           let errorStatus = err.status || 500;
-          let errorMessage = err.message;
+          let errorMessage = err.message || "";
 
           // set locals, only providing error in development
           res.locals.message = errorMessage;
@@ -47,7 +47,7 @@ setApp = () => {
 
           // render the error page
           res.status(errorStatus);
-          res.json({ result_code: '99', result_message: '에러', status: errorStatus, error_message: errorMessage });
+          res.json({ result_code: '99', result_message: '에러', status: errorStatus || "", error_message: errorMessage || "" });
         });
 
         resolve(app);

@@ -3,21 +3,66 @@
 <mapper namespace="available">
     <select id="available.getOrders">
         SELECT
-            order_idx,
-            title,
-            b_time,
-            e_time,
-            content,
-            link,
-            send_yn,
-            output,
-            note,
-            com_yn,
-            com_date,
-            import,
-            reg_date
-        FROM tb_order
+            A.order_idx,
+            A.title,
+            A.b_time,
+            A.e_time,
+            A.content,
+            A.link,
+            A.send_yn,
+            A.output,
+            A.note,
+            A.com_yn,
+            A.com_date,
+            A.import,
+            A.reg_date,
+            B.order_price,
+            B.show_price
+        FROM tb_order A
+        inner join tb_price B on A.order_idx = B.order_idx
         WHERE 
-            delete_yn = 'N'
+            A.delete_yn = 'N'
     </select>
+
+    <select id="available.getOutputs">
+        select
+            output_idx,
+            name,
+            price
+        from tb_output
+        order by name
+    </select>
+
+    <insert id="available.insertOrder">
+        INSERT INTO tb_order(
+            title,
+            <if test="b_time != null and b_time != ''">
+                b_time, 
+            </if>
+            <if test="e_time != null and e_time != ''">
+                e_time, 
+            </if>
+            content, link, send_yn, `output`
+            , note, com_yn, com_date, import
+            , delete_yn, reg_date, upd_date
+            )
+        VALUES(
+            #{title},
+            <if test="b_time != null and b_time != ''">
+                #{b_time}, 
+            </if>
+            <if test="e_time != null and e_time != ''">
+                #{e_time}, 
+            </if>
+             #{content}, NULL, 'N',#{output}, #{note}
+            , 'N', current_timestamp(), #{import}, 'N', current_timestamp(), current_timestamp());
+    </insert>
+
+    <insert id="available.insertPrice">
+        INSERT INTO available.tb_price(
+            order_idx
+            , order_price
+            , show_price)
+        VALUES(#{order_idx}, #{price}, #{price});
+    </insert>
 </mapper>

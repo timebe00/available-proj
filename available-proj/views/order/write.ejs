@@ -205,29 +205,18 @@
             <div class="date-group">
                 <div>
                     <label for="b_time">Best</label>
-                    <input type="datetime-local" id="b_time" name="b_time" required />
+                    <input type="datetime-local" step="300" id="b_time" name="b_time" />
                 </div>
                 <div>
                     <label for="e_time">At Least</label>
-                    <input type="datetime-local" id="e_time" name="e_time" required />
+                    <input type="datetime-local" id="e_time" name="e_time" />
                 </div>
             </div>
-
-            <!-- <div>
-                <label>관련 파일 업로드 링크</label>
-                <div class="file-links" id="fileLinksContainer">
-                    <div class="file-link-item">
-                        <input type="text" name="link" placeholder="파일 업로드 URL 입력" />
-                        <button type="button" class="removeLinkBtn" title="삭제">×</button>
-                    </div>
-                </div>
-                <button type="button" id="addFileLinkBtn">링크 추가</button>
-            </div> -->
 
             <div class="deliverable-group">
                 <label for="output">산출물</label>
                 <div class="deliverable-controls">
-                    <input type="text" id="output" name="output" placeholder="산출물 입력" />
+                    <input type="text" id="output" name="output" style="display: none;" placeholder="산출물 입력" />
                     <select id="output_type" name="output_type">
                         <option value="">입력하기</option>
                         <% for(let outputIdx in data.outputs){ let output=data.outputs[outputIdx]; %>
@@ -292,30 +281,6 @@
             priceInput.value = value;
         });
 
-        // const fileLinksContainer = document.getElementById('fileLinksContainer');
-        //     const addFileLinkBtn = document.getElementById('addFileLinkBtn');
-
-        //     addFileLinkBtn.addEventListener('click', () => {
-        //         const div = document.createElement('div');
-        //         div.className = 'file-link-item';
-        //         div.innerHTML = `
-        //     <input type="text" name="fileLinks[]" placeholder="파일 업로드 URL 입력" />
-        //     <button type="button" class="removeLinkBtn" title="삭제">×</button>
-        //   `;
-        //         fileLinksContainer.appendChild(div);
-        //     });
-
-        // fileLinksContainer.addEventListener('click', (e) => {
-        //     if (e.target.classList.contains('removeLinkBtn')) {
-        //         const parent = e.target.parentElement;
-        //         if (fileLinksContainer.children.length > 1) {
-        //             parent.remove();
-        //         } else {
-        //             parent.querySelector('input').value = '';
-        //         }
-        //     }
-        // });
-
         window.addEventListener("load", function () {
             document.getElementById("output_type").addEventListener("change", function () {
                 if (!this.value) {
@@ -329,14 +294,20 @@
 
                 document.getElementById("output").value = this.options[selectedIndex].text;
                 priceFormatted.value = Number(this.value).toLocaleString('ko-KR');
-                priceInput.value = value;
+            })
+
+            document.getElementById("b_time").addEventListener("click", function () {
+                this.showPicker();
+            })
+
+            document.getElementById("e_time").addEventListener("click", function () {
+                this.showPicker();
             })
 
             document.getElementById('submitBtn').addEventListener('click', () => {
                 let title = document.getElementById("title").value;
-                let b_time = document.getElementById("b_time").value;
-                let e_time = document.getElementById("e_time").value;
-                let link = document.querySelector("input[name='link']").value;
+                let b_time = document.getElementById("b_time").value || null;
+                let e_time = document.getElementById("e_time").value || null;
                 let output = document.getElementById("output").value;
                 let price = document.getElementById("priceFormatted").value;
                 let content = quill.root.innerHTML;
@@ -351,12 +322,17 @@
                     title: title
                     , b_time: b_time
                     , e_time: e_time
-                    , link: link
                     , output: output
                     , price: price
                     , content: content
                     , note: note
                 }
+
+                senderAxios.callAxios("/order/setOrder", "post", params)
+                    .then(function (data) {
+                        alert("저장되었습니다.")
+                        location.href = "/5521ed612b874a198fc98c71fbcee437/order"
+                    })
 
             });
         });
