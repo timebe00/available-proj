@@ -78,4 +78,17 @@ router.get('/5521ed612b874a198fc98c71fbcee437/order/view', async function (req, 
 
 });
 
+//  5521ed612b874a198fc98c71fbcee437/order/getOrderFix
+router.post('/5521ed612b874a198fc98c71fbcee437/order/setOrderFix', async function (req, res, next) {
+  try {
+    let result = await indexService.setOrderFix(req);
+
+    res.json({ data: result });
+  } catch (error) {
+    console.log("error", error)
+    next(error);
+  }
+
+});
+
 module.exports = router;

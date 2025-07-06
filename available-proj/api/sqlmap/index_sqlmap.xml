@@ -5,8 +5,8 @@
         SELECT
             A.order_idx,
             A.title,
-            A.b_time,
-            A.e_time,
+            date_format(A.b_time, '%Y-%m-%d %H:%i') AS 'b_time',
+            date_format(A.e_time, '%Y-%m-%d %H:%i') AS 'e_time',
             A.send_yn,
             A.output,
             A.status,
@@ -18,7 +18,31 @@
         inner join tb_price B on A.order_idx = B.order_idx
         WHERE 
             A.delete_yn = 'N'
+            <if test="order_idx != null and order_idx != ''">
+                AND A.order_idx = #{order_idx}
+            </if>
         ORDER BY A.reg_date DESC
+    </select>
+
+    <select id="available.getOrderOne">
+        SELECT
+            A.order_idx,
+            A.title,
+            date_format(A.b_time, '%Y-%m-%d %H:%i') AS 'b_time',
+            date_format(A.e_time, '%Y-%m-%d %H:%i') AS 'e_time',
+            A.send_yn,
+            A.output,
+            A.status,
+            A.import,
+            A.content,
+            date_format(A.reg_date, '%Y-%m-%d') AS 'reg_date',
+            
+            B.order_price,
+            B.show_price
+        FROM tb_order A
+        inner join tb_price B on A.order_idx = B.order_idx
+        WHERE 
+            A.delete_yn = 'N' AND A.order_idx = #{order_idx}
     </select>
 
     <select id="available.getOutputs">
@@ -96,4 +120,24 @@
                 </if>
             WHERE order_idx = #{order_idx};
     </update>
+
+    <select id="available.selectOrderFix">
+        select
+            order_fix_idx
+            , order_idx
+            , content
+        from tb_order_fix
+        where order_idx = #{order_idx}
+        order by reg_date
+    </select>
+
+    <select id="available.insertOrderFix">
+        INSERT INTO available.tb_order_fix(
+            order_idx
+            , content
+            , reg_date
+            , upd_date
+        )
+        VALUES(#{order_idx}, #{content}, current_timestamp(), current_timestamp());
+    </select>
 </mapper>

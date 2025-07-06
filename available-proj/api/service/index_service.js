@@ -126,9 +126,49 @@ exports.getOrder = (req) => {
         let result = {};
         let connection;
         try {
+            let order_idx = req.query.order_idx;
 
+            connection = await connectionManager.getConnection({ readOnly: true });
 
+            let [order] = await indexModule.getOrderOne(connection, { order_idx: order_idx });
+            let orderFixs = await indexModule.selectOrderFix(connection, { order_idx: order_idx });
+
+            result = {
+                order: order,
+                orderFixs: orderFixs
+            }
+
+            resolve(result);
         } catch (error) {
+            reject(error); // <- 여기 수정
+        }
+    });
+};
+
+exports.setOrderFix = (req) => {
+    return new Promise(async (resolve, reject) => {
+        let result = {};
+        let connection;
+        try {
+            let order_idx = req.body.order_idx;
+            let content = req.body.content
+            connection = await connectionManager.getConnection({ readOnly: false });
+
+            let params = {
+                order_idx: order_idx,
+                content: content,
+            }
+
+            let insertOrderFix = await indexModule.insertOrderFix(connection, params);
+
+            result.order_fix_idx = insertOrderFix.insertId;
+
+            connection.commit();
+            resolve(result);
+        } catch (error) {
+            if (connection) {
+                connection.rollback();
+            }
             reject(error); // <- 여기 수정
         }
     });
