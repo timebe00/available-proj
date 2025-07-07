@@ -55,7 +55,7 @@ router.post('/5521ed612b874a198fc98c71fbcee437/order/setOrder', async function (
 
 });
 
-router.post('/5521ed612b874a198fc98c71fbcee437/order/changeStatus', async function (req, res, next) {
+router.post('/order/changeStatus', async function (req, res, next) {
   try {
     let result = await indexService.changeStatus(req);
 
