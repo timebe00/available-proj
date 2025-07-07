@@ -55,7 +55,7 @@ router.post('/5521ed612b874a198fc98c71fbcee437/order/setOrder', async function (
 
 });
 
-router.post('/order/changeStatus', async function (req, res, next) {
+router.post('/5521ed612b874a198fc98c71fbcee437/order/changeStatus', async function (req, res, next) {
   try {
     let result = await indexService.changeStatus(req);
 
@@ -135,6 +135,18 @@ router.get('/e6e7b89523ac41e0ba406fbd05ed9de6/work/view', async function (req, r
     let result = await indexService.getOrder(req);
 
     res.render('work/view', { data: result });
+  } catch (error) {
+    console.log("error", error)
+    next(error);
+  }
+
+});
+
+router.post('/e6e7b89523ac41e0ba406fbd05ed9de6/work/changeStatus', async function (req, res, next) {
+  try {
+    let result = await indexService.changeStatus(req);
+
+    res.json({ data: result });
   } catch (error) {
     console.log("error", error)
     next(error);
