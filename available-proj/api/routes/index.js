@@ -45,6 +45,7 @@ router.get('/5521ed612b874a198fc98c71fbcee437/order/write', async function (req,
 
 router.post('/5521ed612b874a198fc98c71fbcee437/order/setOrder', async function (req, res, next) {
   try {
+    req.body.sortData = "order"
     let result = await indexService.setOrder(req);
 
     res.json({ data: result });
@@ -106,6 +107,7 @@ router.get('/5521ed612b874a198fc98c71fbcee437/order/modify', async function (req
 
 router.post('/5521ed612b874a198fc98c71fbcee437/order/modifyOrder', async function (req, res, next) {
   try {
+    req.body.sortData = "order";
     let result = await indexService.modifyOrder(req);
 
     res.json({ data: result });
@@ -161,7 +163,7 @@ router.post('/e6e7b89523ac41e0ba406fbd05ed9de6/work/changeStatus', async functio
 //  발주처 리스트
 router.get('/dd684590eb0244c0871d6c7abf734b61/broker', async function (req, res, next) {
   try {
-    req.params.sortData = "order"
+    req.params.sortData = "broker"
     let result = await indexService.getOrders(req);
 
     res.render('broker/list', { data: result });
@@ -187,6 +189,8 @@ router.get('/dd684590eb0244c0871d6c7abf734b61/broker/write', async function (req
 
 router.post('/dd684590eb0244c0871d6c7abf734b61/broker/setOrder', async function (req, res, next) {
   try {
+    req.body.sortData = "broker";
+
     let result = await indexService.setOrder(req);
 
     res.json({ data: result });
@@ -248,6 +252,7 @@ router.get('/dd684590eb0244c0871d6c7abf734b61/broker/modify', async function (re
 
 router.post('/dd684590eb0244c0871d6c7abf734b61/broker/modifyOrder', async function (req, res, next) {
   try {
+    req.body.sortData = "broker";
     let result = await indexService.modifyOrder(req);
 
     res.json({ data: result });

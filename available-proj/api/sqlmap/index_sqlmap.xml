@@ -22,7 +22,7 @@
                 AND A.order_idx = #{order_idx}
             </if>
         ORDER BY 
-        <if test="sortData == 'order'">
+        <if test="sortData == 'order' or sortData == 'broker'">
             (
                 CASE
                     WHEN A.status = '03' THEN 0
@@ -106,7 +106,7 @@
             order_idx
             , order_price
             , show_price)
-        VALUES(#{order_idx}, #{price}, #{price});
+        VALUES(#{order_idx}, #{order_price}, #{show_price});
     </insert>
 
     <update id="available.updateOrder">

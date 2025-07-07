@@ -121,30 +121,29 @@
                     <td>
                         <%=order.reg_date%>
                     </td>
-                    <%console.log(order)%>
-                        <td class="task-name"
-                            onclick="location.href='/5521ed612b874a198fc98c71fbcee437/order/view?order_idx=<%=order.order_idx%>'">
-                            <%=order.title%>
-                                <%if(order.import> 0){%>
-                                    <span style="color: red; font-size: 20px;">*</span>
-                                    <%}%>
-                        </td>
-                        <td class="deliverable">
-                            <%=order.output || "미정" %>
-                        </td>
-                        <td>
-                            <select class="status">
-                                <option value="01" <%=order.status=="01" ? "selected" : "" %> >작업요청</option>
-                                <option value="02" <%=order.status=="02" ? "selected" : "" %> >수정요청</option>
-                                <option value="03" <%=order.status=="03" ? "selected" : "" %> >작업완료</option>
-                                <option value="04" <%=order.status=="04" ? "selected" : "" %> >납품완료</option>
-                                <option value="05" <%=order.status=="05" ? "selected" : "" %> >수정완료</option>
-                                <option value="06" <%=order.status=="06" ? "selected" : "" %> >완료후 수정 요청</option>
-                            </select>
-                        </td>
-                        <td>
-                            <%=order.order_price || "미정" %>
-                        </td>
+                    <td class="task-name"
+                        onclick="location.href='/5521ed612b874a198fc98c71fbcee437/order/view?order_idx=<%=order.order_idx%>'">
+                        <%=order.title%>
+                            <%if(order.import> 0){%>
+                                <span style="color: red; font-size: 20px;">*</span>
+                                <%}%>
+                    </td>
+                    <td class="deliverable">
+                        <%=order.output || "미정" %>
+                    </td>
+                    <td>
+                        <select class="status">
+                            <option value="01" <%=order.status=="01" ? "selected" : "" %> >작업요청</option>
+                            <option value="02" <%=order.status=="02" ? "selected" : "" %> >수정요청</option>
+                            <option value="03" <%=order.status=="03" ? "selected" : "" %> >작업완료</option>
+                            <option value="04" <%=order.status=="04" ? "selected" : "" %> >납품완료</option>
+                            <option value="05" <%=order.status=="05" ? "selected" : "" %> >수정완료</option>
+                            <option value="06" <%=order.status=="06" ? "selected" : "" %> >완료후 수정 요청</option>
+                        </select>
+                    </td>
+                    <td>
+                        <%=order.order_price || "미정" %>
+                    </td>
                 </tr>
                 <%}%>
         </tbody>

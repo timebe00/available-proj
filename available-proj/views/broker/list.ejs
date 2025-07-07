@@ -111,7 +111,8 @@
                 <th class="task-name">작업명</th>
                 <th class="deliverable">산출물</th>
                 <th>완료 여부</th>
-                <th>단가</th>
+                <th>주문자 단가</th>
+                <th>작업자 단가</th>
             </tr>
         </thead>
         <tbody id="taskTableBody">
@@ -121,30 +122,32 @@
                     <td>
                         <%=order.reg_date%>
                     </td>
-                    <%console.log(order)%>
-                        <td class="task-name"
-                            onclick="location.href='/dd684590eb0244c0871d6c7abf734b61/broker/view?order_idx=<%=order.order_idx%>'">
-                            <%=order.title%>
-                                <%if(order.import> 0){%>
-                                    <span style="color: red; font-size: 20px;">*</span>
-                                    <%}%>
-                        </td>
-                        <td class="deliverable">
-                            <%=order.output || "미정" %>
-                        </td>
-                        <td>
-                            <select class="status">
-                                <option value="01" <%=order.status=="01" ? "selected" : "" %> >작업요청</option>
-                                <option value="02" <%=order.status=="02" ? "selected" : "" %> >수정요청</option>
-                                <option value="03" <%=order.status=="03" ? "selected" : "" %> >작업완료</option>
-                                <option value="04" <%=order.status=="04" ? "selected" : "" %> >납품완료</option>
-                                <option value="05" <%=order.status=="05" ? "selected" : "" %> >수정완료</option>
-                                <option value="06" <%=order.status=="06" ? "selected" : "" %> >완료후 수정 요청</option>
-                            </select>
-                        </td>
-                        <td>
-                            <%=order.order_price || "미정" %>
-                        </td>
+                    <td class="task-name"
+                        onclick="location.href='/dd684590eb0244c0871d6c7abf734b61/broker/view?order_idx=<%=order.order_idx%>'">
+                        <%=order.title%>
+                            <%if(order.import> 0){%>
+                                <span style="color: red; font-size: 20px;">*</span>
+                                <%}%>
+                    </td>
+                    <td class="deliverable">
+                        <%=order.output || "미정" %>
+                    </td>
+                    <td>
+                        <select class="status">
+                            <option value="01" <%=order.status=="01" ? "selected" : "" %> >작업요청</option>
+                            <option value="02" <%=order.status=="02" ? "selected" : "" %> >수정요청</option>
+                            <option value="03" <%=order.status=="03" ? "selected" : "" %> >작업완료</option>
+                            <option value="04" <%=order.status=="04" ? "selected" : "" %> >납품완료</option>
+                            <option value="05" <%=order.status=="05" ? "selected" : "" %> >수정완료</option>
+                            <option value="06" <%=order.status=="06" ? "selected" : "" %> >완료후 수정 요청</option>
+                        </select>
+                    </td>
+                    <td>
+                        <%=order.order_price || '' %>
+                    </td>
+                    <td>
+                        <%=order.show_price || '' %>
+                    </td>
                 </tr>
                 <%}%>
         </tbody>

@@ -47,6 +47,7 @@ exports.setOrder = (req) => {
         let result = {};
         let connection;
         try {
+            let sortData = req.body.sortData || "order"
             let title = req.body.title;
             let b_time = req.body.b_time;
             let e_time = req.body.e_time;
@@ -54,27 +55,42 @@ exports.setOrder = (req) => {
             let price = req.body.price;
             let content = req.body.content;
             let note = req.body.note;
-            let importData = 0;
+            let importData = req.body.importData;
+            let order_price = req.body.order_price;
+            let show_price = req.body.show_price;
+
 
             if (!title) {
                 throw ({ code: "99", message: "title 없음" });
             }
 
-            let orderParams = {
-                title: title,
-                b_time: b_time,
-                e_time: e_time,
-                output: output,
-                content: content,
-                note: note,
-                import: importData,
+            if (sortData != "broker") {
+                order_price = price;
+                show_price = price;
             }
+
+            let orderParams = {
+                title: title
+                , b_time: b_time
+                , e_time: e_time
+                , output: output
+                , content: content
+                , note: note
+                , import: importData
+            }
+
 
             connection = await connectionManager.getConnection({ readOnly: false });
             let insertOrder = await indexModule.insertOrder(connection, orderParams);
             let order_idx = insertOrder.insertId;
 
-            await indexModule.insertPrice(connection, { order_idx: order_idx, price: price });
+            let priceParams = {
+                order_idx: order_idx
+                , order_price: order_price
+                , show_price: show_price
+            }
+
+            await indexModule.insertPrice(connection, priceParams);
 
             result.order_id = order_idx;
 
@@ -180,6 +196,7 @@ exports.modifyOrder = (req) => {
         let result = {};
         let connection;
         try {
+            let sortData = req.body.sortData;
             let order_idx = req.body.order_idx;
             let title = req.body.title;
             let b_time = req.body.b_time || null;
@@ -190,8 +207,15 @@ exports.modifyOrder = (req) => {
             let note = req.body.note;
             let importData = req.body.importData;
 
+            let order_price = req.body.order_price || null;
+            let show_price = req.body.show_price || null;
+
             if (!title) {
                 throw ({ code: "99", message: "title 없음" });
+            }
+
+            if (sortData != "broker") {
+                order_price = price;
             }
 
             let orderParams = {
@@ -207,9 +231,15 @@ exports.modifyOrder = (req) => {
                 import: importData,
             }
 
+            let pricePraams = {
+                order_idx: order_idx
+                , order_price: order_price
+                , show_price: show_price
+            }
+
             connection = await connectionManager.getConnection({ readOnly: false });
             await indexModule.updateOrder(connection, orderParams);
-            await indexModule.updatePrice(connection, { order_idx: order_idx, order_price: price });
+            await indexModule.updatePrice(connection, pricePraams);
 
             connection.commit();
             resolve(result);

@@ -219,86 +219,85 @@
     Date(modify.e_time).toISOString().slice(0, 16);} content=modify.content.replace( /\\"/g, '"' );} %>
 
     <body>
-        <%console.log(data)%>
-            <div class="container">
-                <h1>신규 작업 작성</h1>
-                <div class="form-section">
-                    <div>
-                        <label for="title">작업명</label>
-                        <input type="text" id="title" name="title" value="<%=modify.title%>" />
-                    </div>
-
-                    <div class="date-group">
-                        <div>
-                            <label for="b_time">Best</label>
-                            <input type="datetime-local" step="300" id="b_time" name="b_time" value="<%=b_time%>" />
-                        </div>
-                        <div>
-                            <label for="e_time">At Least</label>
-                            <input type="datetime-local" id="e_time" name="e_time" value="<%=e_time%>" />
-                        </div>
-                    </div>
-
-                    <div class="deliverable-group">
-                        <label for="output">산출물</label>
-                        <div class="deliverable-controls">
-                            <input type="text" id="output" name="output" style="display: none;" placeholder="산출물 입력" />
-                            <select id="output_type" name="output_type">
-                                <option value="">입력하기</option>
-                                <% for(let outputIdx in data.outputs){ let output=data.outputs[outputIdx]; %>
-                                    <option value="<%=output.price%>" <%=modify.output==output.name ? 'selected' : '' %>
-                                        >
-                                        <%=output.name%>
-                                    </option>
-                                    <% } %>
-                            </select>
-                            <div class="checkbox-group">
-                                <label for="isImportant">중요여부</label>
-                                <input type="checkbox" id="isImportant" name="isImportant" <%=modify.important
-                                    ? "checked" : "" %> />
-                            </div>
-
-                        </div>
-                    </div>
-
-                    <div>
-                        <label for="priceFormatted">단가</label>
-                        <input type="text" id="priceFormatted" placeholder="금액 입력" autocomplete="off"
-                            value="<%=modify.order_price%>" />
-                        <input type="number" id="price" name="price" min="0" step="1000" />
-                    </div>
-
-                    <div>
-                        <label for="editor">작업 내용</label>
-                        <div id="editor">
-                            <%-content%>
-                        </div>
-                        <input type="hidden" id="taskContent" name="taskContent" />
-                    </div>
-
-                    <div>
-                        <label for="note">비고</label>
-                        <textarea id="note" name="note" placeholder="특이사항이나 메모"><%=modify.note%></textarea>
-                    </div>
-
-                    <div class="button-group">
-                        <%if(modify.order_idx) {%>
-                            <button type="button" id="modifyBtn">수정 완료</button>
-                            <button type="button" id="goMenuBtn"
-                                onclick="location.href='/5521ed612b874a198fc98c71fbcee437/order/view?order_idx=<%=modify.order_idx%>'">
-                                보기로 이동
-                            </button>
-                            <%} else {%>
-                                <button type="button" id="submitBtn">작성 완료</button>
-                                <button type="button" id="goMenuBtn"
-                                    onclick="location.href='/5521ed612b874a198fc98c71fbcee437/order'">
-                                    메뉴로 이동
-                                </button>
-                                <%}%>
-                    </div>
-
+        <div class="container">
+            <h1>신규 작업 작성</h1>
+            <div class="form-section">
+                <div>
+                    <label for="title">작업명</label>
+                    <input type="text" id="title" name="title" value="<%=modify.title%>" />
                 </div>
+
+                <div class="date-group">
+                    <div>
+                        <label for="b_time">Best</label>
+                        <input type="datetime-local" step="300" id="b_time" name="b_time" value="<%=b_time%>" />
+                    </div>
+                    <div>
+                        <label for="e_time">At Least</label>
+                        <input type="datetime-local" id="e_time" name="e_time" value="<%=e_time%>" />
+                    </div>
+                </div>
+
+                <div class="deliverable-group">
+                    <label for="output">산출물</label>
+                    <div class="deliverable-controls">
+                        <input type="text" id="output" name="output" style="display: none;" placeholder="산출물 입력" />
+                        <select id="output_type" name="output_type">
+                            <option value="">입력하기</option>
+                            <% for(let outputIdx in data.outputs){ let output=data.outputs[outputIdx]; %>
+                                <option value="<%=output.price%>" <%=modify.output==output.name ? 'selected' : '' %>
+                                    >
+                                    <%=output.name%>
+                                </option>
+                                <% } %>
+                        </select>
+                        <div class="checkbox-group">
+                            <label for="isImportant">중요여부</label>
+                            <input type="checkbox" id="isImportant" name="isImportant" <%=modify.import> 0 ?
+                            "checked" : "" %> />
+                        </div>
+
+                    </div>
+                </div>
+
+                <div>
+                    <label for="priceFormatted">단가</label>
+                    <input type="text" id="priceFormatted" placeholder="금액 입력" autocomplete="off"
+                        value="<%=modify.order_price%>" />
+                    <input type="number" id="price" name="price" min="0" step="1000" />
+                </div>
+
+                <div>
+                    <label for="editor">작업 내용</label>
+                    <div id="editor">
+                        <%-content%>
+                    </div>
+                    <input type="hidden" id="taskContent" name="taskContent" />
+                </div>
+
+                <div>
+                    <label for="note">비고</label>
+                    <textarea id="note" name="note" placeholder="특이사항이나 메모"><%=modify.note%></textarea>
+                </div>
+
+                <div class="button-group">
+                    <%if(modify.order_idx) {%>
+                        <button type="button" id="modifyBtn">수정 완료</button>
+                        <button type="button" id="goMenuBtn"
+                            onclick="location.href='/5521ed612b874a198fc98c71fbcee437/order/view?order_idx=<%=modify.order_idx%>'">
+                            보기로 이동
+                        </button>
+                        <%} else {%>
+                            <button type="button" id="submitBtn">작성 완료</button>
+                            <button type="button" id="goMenuBtn"
+                                onclick="location.href='/5521ed612b874a198fc98c71fbcee437/order'">
+                                메뉴로 이동
+                            </button>
+                            <%}%>
+                </div>
+
             </div>
+        </div>
 
     </body>
 
@@ -358,7 +357,7 @@
             this.showPicker();
         })
 
-        document.getElementById('submitBtn').addEventListener('click', () => {
+        $("#submitBtn").on('click', () => {
             let title = document.getElementById("title").value;
             let b_time = document.getElementById("b_time").value || null;
             let e_time = document.getElementById("e_time").value || null;
@@ -366,6 +365,11 @@
             let price = document.getElementById("priceFormatted").value;
             let content = quill.root.innerHTML;
             let note = document.getElementById("note").value;
+            let importData = 0;
+
+            if ($('#isImportant').is(':checked')) {
+                importData = 1;
+            }
 
             if (!title) {
                 alert("작업명 입력해주세요.");
@@ -380,6 +384,7 @@
                 , price: price
                 , content: content
                 , note: note
+                , importData: importData
             }
 
             senderAxios.callAxios("/5521ed612b874a198fc98c71fbcee437/order/setOrder", "post", params)
