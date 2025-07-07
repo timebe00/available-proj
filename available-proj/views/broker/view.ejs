@@ -2,9 +2,16 @@
 <html lang="ko">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>작업 내용 확인</title>
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet" />
+
+    <script src="/common/vander/jquery.js"></script>
+
+    <script src="/common/vander/axios.js"></script>
+    <script src="/common/js/senderAxios.js"></script>
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -67,6 +74,9 @@
             margin-bottom: 10px;
             border-bottom: 1px solid #ccc;
             padding-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .status {
@@ -78,67 +88,291 @@
             border-radius: 4px;
             font-weight: bold;
         }
+
+        .btn {
+            padding: 6px 12px;
+            background-color: #28a745;
+            border: none;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-blue {
+            background-color: #007bff;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .revision-phase {
+            margin-bottom: 30px;
+        }
+
+        .revision-title {
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        .centered-button {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .editor-container {
+            display: none;
+            margin-top: 10px;
+        }
+
+        #editor {
+            height: 200px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: white;
+        }
+
+        .quill-container {
+            margin-bottom: 10px;
+        }
+
+        .top-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            padding-top: 60px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.9);
+        }
+
+        .modal-content {
+            margin: auto;
+            display: block;
+            max-width: 90%;
+            max-height: 80vh;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 30px;
+            right: 50px;
+            color: #fff;
+            font-size: 36px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .modal-close:hover {
+            color: #bbb;
+        }
+
+        .btn-gray {
+            background-color: #6c757d;
+        }
+
+        .btn-gray:hover {
+            background-color: #5a6268;
+        }
     </style>
 </head>
 
-<body>
-    <div class="container">
-        <h1>작업 내용 확인</h1>
+<% let orderFixs={}; for(let orderFixIdx in data.orderFixs) {
+    orderFixs[orderFixIdx]=data.orderFixs[orderFixIdx].content; } %>
 
-        <div class="row" style="margin-top: 20px;">
-            <label>현재 상태</label>
-            <div class="value"><span class="status">진행 중</span></div>
-        </div>
+    <body>
+        <% let status=data.order.status; let statusTxt="" ; if(status=="02" ){ statusTxt="수정요청" ; } else if(status=="03"
+            ){ statusTxt="작업완료" ; } else if(status=="04" ){ statusTxt="납품완료" ; } else if(status=="05" ){
+            statusTxt="수정완료" ; } else if(status=="06" ){ statusTxt="완료 후 수정요청" ; } else {statusTxt="작업요청" ;}%>
+            <div class=" container">
+                <h1>작업 내용 확인</h1>
+                <div class="top-actions">
+                    <a href="/5521ed612b874a198fc98c71fbcee437/order/modify?order_idx=<%=data.order.order_idx%>"
+                        class="btn btn-blue">
+                        수정하기
+                    </a>
+                    <a href="/5521ed612b874a198fc98c71fbcee437/order" class="btn" style="margin-left: 10px;">
+                        메뉴로 이동
+                    </a>
+                </div>
 
-        <div class="row"><label>요청일</label>
-            <div class="value">2025-07-05</div>
-        </div>
-        <div class="row"><label>작업명</label>
-            <div class="value">메인페이지 UI 구성</div>
-        </div>
-        <div class="row"><label>종료 요구일</label>
-            <div class="value">2025-07-10 18:00</div>
-            <!-- </div>
-    <div class="row"> -->
-            <label>최소 종료일</label>
-            <div class="value">2025-07-08 12:00</div>
-        </div>
+                <div class="row">
+                    <label>현재 상태</label>
+                    <div class="value"><span class="status">
+                            <%=statusTxt%>
+                        </span></div>
+                </div>
 
-        <div class="row">
-            <label>관련 파일 업로드 링크</label>
-            <div class="value file-links">
-                <a href="#">https://example.com/file1</a>
-                <a href="#">https://example.com/file2</a>
+                <div class="row"><label>요청일</label>
+                    <div class="value">
+                        <%=data.order.reg_date%>
+                    </div>
+                </div>
+                <div class="row"><label>작업명</label>
+                    <div class="value">
+                        <%=data.order.title%>
+                    </div>
+                </div>
+                <div class="row">
+                    <label>Best</label>
+                    <div class="value">
+                        <%=data.order.b_time%>
+                    </div>
+                    <label>At Least</label>
+                    <div class="value">
+                        <%=data.order.e_time%>
+                    </div>
+                </div>
+                <div class="row"><label>자료전달 여부</label>
+                    <div class="value">
+                        <%=data.order.send_yn=="Y" ? "예" : "아니요" %>
+                    </div>
+                </div>
+                <div class="row"><label>산출물</label>
+                    <div class="value">
+                        <%=data.order.output%>
+                    </div>
+                </div>
+                <div class="row"><label>단가</label>
+                    <div class="value">
+                        <%=data.order.order_price%>원
+                    </div>
+                </div>
+                <div class="row"><label>비고</label>
+                    <div class="value">
+                        <%=data.order.note%>
+                    </div>
+                </div>
+
+                <div class="section-title">
+                    <span>작업 내용</span>
+                </div>
+                <div class="multiline">
+                    <%-data.order.content.replace( /\\"/g, '"' )%>
+                </div>
+
+                <div class="section-title">
+                    <span>수정 사항</span>
+                    <button id="toggleEditorBtn" class="btn">+ 수정 사항 쓰기</button>
+                </div>
+
+                <div id="revisionsContainer">
+                    <%for(let fixIdx in data.orderFixs){ let fix=data.orderFixs[fixIdx];%>
+                        <div class="revision-phase">
+                            <div class="revision-title" data-order_fix_idx="<%=fix.order_fix_idx%>">수정 사항
+                                <%=Number(fixIdx) + 1%>차
+                            </div>
+                            <div class="revision-content">
+                                <%-fix.content.replace( /\\"/g, '"' )%>
+                            </div>
+                        </div>
+                        <%}%>
+                </div>
+
+                <div class="editor-container" id="editorWrapper" style="display: none;">
+                    <div id="editor" class="quill-container"></div>
+                    <button id="submitRevisionPhase" class="btn btn-blue">차수 추가</button>
+                </div>
             </div>
-        </div>
 
-        <div class="row"><label>자료전달 여부</label>
-            <div class="value">예</div>
-        </div>
-        <div class="row"><label>산출물</label>
-            <div class="value">main_ui_v2.png (PNG)</div>
-        </div>
-        <div class="row"><label>단가</label>
-            <div class="value">250,000원</div>
-        </div>
-        <div class="row"><label>비고</label>
-            <div class="value">-</div>
-        </div>
+            <!-- 이미지 모달 -->
+            <div id="imageModal" class="modal">
+                <span class="modal-close" id="modalClose">&times;</span>
+                <img class="modal-content" id="modalImage">
+            </div>
 
-        <div class="section-title">작업 내용</div>
-        <div class="multiline">
-            - 메인 UI 레이아웃 구성 완료
-            - 반응형 스타일 적용
-            - 버튼 인터랙션 구현
-        </div>
-
-        <div class="section-title">수정 사항 (2건)</div>
-        <ul>
-            <li>버튼 색상 변경 요청</li>
-            <li>폰트 사이즈 확대</li>
-        </ul>
-    </div>
-
-</body>
+    </body>
 
 </html>
+<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/quill-image-resize-module@3.0.0/image-resize.min.js"></script>
+
+<script>
+    const revisionsContainer = document.getElementById('revisionsContainer');
+    const toggleBtn = document.getElementById('toggleEditorBtn');
+    const editorWrapper = document.getElementById('editorWrapper');
+    const submitBtn = document.getElementById('submitRevisionPhase');
+    let revisionPhaseCount = 1;
+
+    const quill = new Quill('#editor', {
+        theme: 'snow',
+        placeholder: '수정 내용을 입력하세요...',
+        modules: {
+            toolbar: [
+                [{ header: [1, 2, false] }],
+                ['bold', 'italic', 'underline'],
+                ['link', 'image'],
+                [{ list: 'ordered' }, { list: 'bullet' }],
+                ['clean']
+            ],
+            imageResize: {
+                modules: ['Resize', 'DisplaySize']
+            }
+        }
+    });
+
+    function renderRevisionPhase(phase, html, order_fix_idx) {
+        const section = document.createElement('div');
+        section.className = 'revision-phase';
+
+        const title = document.createElement('div');
+        title.className = 'revision-title';
+        title.textContent = `수정 사항 ${phase}차`;
+        $(title).data("order_fix_idx", order_fix_idx);
+
+        const content = document.createElement('div');
+        content.className = 'revision-content';
+        content.innerHTML = html;
+
+        section.appendChild(title);
+        section.appendChild(content);
+        revisionsContainer.appendChild(section);
+    }
+
+    toggleBtn.addEventListener('click', () => {
+        editorWrapper.style.display = editorWrapper.style.display === 'none' ? 'block' : 'none';
+    });
+
+    submitBtn.addEventListener('click', () => {
+        const content = quill.root.innerHTML.trim();
+        if (!content || content === '<p><br></p>') return;
+
+        let params = {
+            order_idx: "<%=data.order.order_idx%>",
+            content: content
+        }
+
+        senderAxios.callAxios("/5521ed612b874a198fc98c71fbcee437/order/setOrderFix", "post", params)
+            .then((data) => {
+                let phase = $(".revision-title").length + 1;
+
+                renderRevisionPhase(phase, content, data.data.data.order_fix_idx);
+
+                editorWrapper.style.display = 'none';
+            })
+    });
+
+    // 이미지 클릭 시 확대 표시
+    document.addEventListener('click', function (e) {
+        if (e.target.tagName === 'IMG' && (e.target.closest('.multiline') || e.target.closest('.revision-content'))) {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            modal.style.display = 'block';
+            modalImg.src = e.target.src;
+        }
+    });
+
+    document.getElementById('modalClose').addEventListener('click', function () {
+        document.getElementById('imageModal').style.display = 'none';
+    });
+</script>
