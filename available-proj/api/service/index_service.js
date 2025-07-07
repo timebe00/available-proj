@@ -188,7 +188,7 @@ exports.modifyOrder = (req) => {
             let price = req.body.price || 0;
             let content = req.body.content;
             let note = req.body.note;
-            let importData = 0;
+            let importData = req.body.importData;
 
             if (!title) {
                 throw ({ code: "99", message: "title 없음" });
