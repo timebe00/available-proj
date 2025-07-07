@@ -15,7 +15,7 @@ router.get('/', function (req, res, next) {
     next(error);
   }
 });
-
+/////////////////////////////   order S    ///////////////////////////// 
 //  발주처 리스트
 router.get('/5521ed612b874a198fc98c71fbcee437/order', async function (req, res, next) {
   try {
@@ -115,7 +115,9 @@ router.post('/5521ed612b874a198fc98c71fbcee437/order/modifyOrder', async functio
   }
 
 });
+/////////////////////////////   order E    ///////////////////////////// 
 
+/////////////////////////////   worker S    ///////////////////////////// 
 //  발주처 리스트
 router.get('/e6e7b89523ac41e0ba406fbd05ed9de6/work', async function (req, res, next) {
   try {
@@ -153,5 +155,107 @@ router.post('/e6e7b89523ac41e0ba406fbd05ed9de6/work/changeStatus', async functio
   }
 
 });
+/////////////////////////////   worker E    ///////////////////////////// 
 
+/////////////////////////////   broker S    ///////////////////////////// 
+//  발주처 리스트
+router.get('/dd684590eb0244c0871d6c7abf734b61/broker', async function (req, res, next) {
+  try {
+    req.params.sortData = "order"
+    let result = await indexService.getOrders(req);
+
+    res.render('broker/list', { data: result });
+  } catch (error) {
+    console.log("error", error)
+    next(error);
+  }
+
+});
+
+//  발주처 작성 페이지
+router.get('/dd684590eb0244c0871d6c7abf734b61/broker/write', async function (req, res, next) {
+  try {
+    let result = await indexService.getOutputs(req);
+
+    res.render('broker/write', { data: result });
+  } catch (error) {
+    console.log("error", error)
+    next(error);
+  }
+
+});
+
+router.post('/dd684590eb0244c0871d6c7abf734b61/broker/setOrder', async function (req, res, next) {
+  try {
+    let result = await indexService.setOrder(req);
+
+    res.json({ data: result });
+  } catch (error) {
+    console.log("error", error)
+    next(error);
+  }
+
+});
+
+router.post('/dd684590eb0244c0871d6c7abf734b61/broker/changeStatus', async function (req, res, next) {
+  try {
+    let result = await indexService.changeStatus(req);
+
+    res.json({ data: result });
+  } catch (error) {
+    console.log("error", error)
+    next(error);
+  }
+
+});
+
+router.get('/dd684590eb0244c0871d6c7abf734b61/broker/view', async function (req, res, next) {
+  try {
+    let result = await indexService.getOrder(req);
+
+    res.render('broker/view', { data: result });
+  } catch (error) {
+    console.log("error", error)
+    next(error);
+  }
+
+});
+
+router.post('/dd684590eb0244c0871d6c7abf734b61/broker/setOrderFix', async function (req, res, next) {
+  try {
+    let result = await indexService.setOrderFix(req);
+
+    res.json({ data: result });
+  } catch (error) {
+    console.log("error", error)
+    next(error);
+  }
+
+});
+
+router.get('/dd684590eb0244c0871d6c7abf734b61/broker/modify', async function (req, res, next) {
+  try {
+    let result = await indexService.getOutputs(req);
+    result.modify = await indexService.getOrder(req);
+
+    res.render('broker/write', { data: result });
+  } catch (error) {
+    console.log("error", error)
+    next(error);
+  }
+
+});
+
+router.post('/dd684590eb0244c0871d6c7abf734b61/broker/modifyOrder', async function (req, res, next) {
+  try {
+    let result = await indexService.modifyOrder(req);
+
+    res.json({ data: result });
+  } catch (error) {
+    console.log("error", error)
+    next(error);
+  }
+
+});
+/////////////////////////////   broker E    ///////////////////////////// 
 module.exports = router;
