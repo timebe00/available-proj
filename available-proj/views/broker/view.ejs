@@ -1,10 +1,7 @@
-<!DOCTYPE html>
-<html lang="ko">
-
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>작업 내용 확인</title>
+    <title>작업 내용 확인123</title>
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet" />
 
     <script src="/common/vander/jquery.js"></script>
@@ -159,8 +156,8 @@
         .modal-content {
             margin: auto;
             display: block;
-            max-width: 90%;
-            max-height: 80vh;
+            max-width: 870px;
+            margin-bottom: 100px;
         }
 
         .modal-close {
@@ -188,196 +185,178 @@
 </head>
 
 <% let orderFixs={}; for(let orderFixIdx in data.orderFixs) {
-    orderFixs[orderFixIdx]=data.orderFixs[orderFixIdx].content; } %>
+    orderFixs[orderFixIdx]=data.orderFixs[orderFixIdx].content; } let status=data.order.status; let statusTxt="" ;
+    if(status=="02" ){ statusTxt="수정요청" ; } else if(status=="03" ){ statusTxt="작업완료" ; } else if(status=="04" ){
+    statusTxt="납품완료" ; } else if(status=="05" ){ statusTxt="수정완료" ; } else if(status=="06" ){ statusTxt="완료 후 수정요청" ; }
+    else {statusTxt="작업요청" ;}%>
+    <div class=" container">
+        <h1>작업 내용 확인</h1>
+        <div class="top-actions">
+            <a href="/dd684590eb0244c0871d6c7abf734b61/broker/modify?order_idx=<%=data.order.order_idx%>"
+                class="btn btn-blue">
+                수정하기
+            </a>
+        </div>
 
-    <body>
-        <% let status=data.order.status; let statusTxt="" ; if(status=="02" ){ statusTxt="수정요청" ; } else if(status=="03"
-            ){ statusTxt="작업완료" ; } else if(status=="04" ){ statusTxt="납품완료" ; } else if(status=="05" ){
-            statusTxt="수정완료" ; } else if(status=="06" ){ statusTxt="완료 후 수정요청" ; } else {statusTxt="작업요청" ;}%>
-            <div class=" container">
-                <h1>작업 내용 확인</h1>
-                <div class="top-actions">
-                    <a href="/dd684590eb0244c0871d6c7abf734b61/broker/modify?order_idx=<%=data.order.order_idx%>"
-                        class="btn btn-blue">
-                        수정하기
-                    </a>
-                    <a href="/dd684590eb0244c0871d6c7abf734b61/broker" class="btn" style="margin-left: 10px;">
-                        메뉴로 이동
-                    </a>
-                </div>
+        <div class="row">
+            <label>현재 상태</label>
+            <div class="value"><span class="status">
+                    <%=statusTxt%>
+                </span></div>
+        </div>
 
-                <div class="row">
-                    <label>현재 상태</label>
-                    <div class="value"><span class="status">
-                            <%=statusTxt%>
-                        </span></div>
-                </div>
-
-                <div class="row"><label>요청일</label>
-                    <div class="value">
-                        <%=data.order.reg_date%>
-                    </div>
-                </div>
-                <div class="row"><label>작업명</label>
-                    <div class="value">
-                        <%=data.order.title%>
-                    </div>
-                </div>
-                <div class="row">
-                    <label>Best</label>
-                    <div class="value">
-                        <%=data.order.b_time%>
-                    </div>
-                    <label>At Least</label>
-                    <div class="value">
-                        <%=data.order.e_time%>
-                    </div>
-                </div>
-                <div class="row"><label>자료전달 여부</label>
-                    <div class="value">
-                        <%=data.order.send_yn=="Y" ? "예" : "아니요" %>
-                    </div>
-                </div>
-                <div class="row"><label>산출물</label>
-                    <div class="value">
-                        <%=data.order.output%>
-                    </div>
-                </div>
-                <div class="row"><label>주문자 단가</label>
-                    <div class="value">
-                        <%=data.order.order_price%>원
-                    </div>
-                </div>
-                <div class="row"><label>작업자 단가</label>
-                    <div class="value">
-                        <%=data.order.show_price%>원
-                    </div>
-                </div>
-                <div class="row"><label>비고</label>
-                    <div class="value">
-                        <%=data.order.note%>
-                    </div>
-                </div>
-
-                <div class="section-title">
-                    <span>작업 내용</span>
-                </div>
-                <div class="multiline">
-                    <%-data.order.content.replace( /\\"/g, '"' )%>
-                </div>
-
-                <div class="section-title">
-                    <span>수정 사항</span>
-                    <button id="toggleEditorBtn" class="btn">+ 수정 사항 쓰기</button>
-                </div>
-
-                <div id="revisionsContainer">
-                    <%for(let fixIdx in data.orderFixs){ let fix=data.orderFixs[fixIdx];%>
-                        <div class="revision-phase">
-                            <div class="revision-title" data-order_fix_idx="<%=fix.order_fix_idx%>">수정 사항
-                                <%=Number(fixIdx) + 1%>차
-                            </div>
-                            <div class="revision-content">
-                                <%-fix.content.replace( /\\"/g, '"' )%>
-                            </div>
-                        </div>
-                        <%}%>
-                </div>
-
-                <div class="editor-container" id="editorWrapper" style="display: none;">
-                    <div id="editor" class="quill-container"></div>
-                    <button id="submitRevisionPhase" class="btn btn-blue">차수 추가</button>
-                </div>
+        <div class="row"><label>요청일</label>
+            <div class="value">
+                <%=data.order.reg_date%>
             </div>
-
-            <!-- 이미지 모달 -->
-            <div id="imageModal" class="modal">
-                <span class="modal-close" id="modalClose">&times;</span>
-                <img class="modal-content" id="modalImage">
+        </div>
+        <div class="row"><label>작업명</label>
+            <div class="value">
+                <%=data.order.title%>
             </div>
+        </div>
+        <div class="row">
+            <label>Best</label>
+            <div class="value">
+                <%=data.order.b_time%>
+            </div>
+            <label>At Least</label>
+            <div class="value">
+                <%=data.order.e_time%>
+            </div>
+        </div>
+        <div class="row"><label>자료전달 여부</label>
+            <div class="value">
+                <%=data.order.send_yn=="Y" ? "예" : "아니요" %>
+            </div>
+        </div>
+        <div class="row"><label>산출물</label>
+            <div class="value">
+                <%=data.order.output%>
+            </div>
+        </div>
+        <div class="row"><label>주문자 단가</label>
+            <div class="value">
+                <%=data.order.order_price%>원
+            </div>
+        </div>
+        <div class="row"><label>작업자 단가</label>
+            <div class="value">
+                <%=data.order.show_price%>원
+            </div>
+        </div>
+        <div class="row"><label>비고</label>
+            <div class="value">
+                <%=data.order.note%>
+            </div>
+        </div>
 
-    </body>
+        <div class="section-title">
+            <span>작업 내용</span>
+        </div>
+        <div class="multiline">
+            <%-data.order.content.replace( /\\"/g, '"' )%>
+        </div>
 
-</html>
-<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/quill-image-resize-module@3.0.0/image-resize.min.js"></script>
+        <div class="section-title">
+            <span>수정 사항</span>
+            <button id="toggleEditorBtn" class="btn">+ 수정 사항 쓰기</button>
+        </div>
 
-<script>
-    const revisionsContainer = document.getElementById('revisionsContainer');
-    const toggleBtn = document.getElementById('toggleEditorBtn');
-    const editorWrapper = document.getElementById('editorWrapper');
-    const submitBtn = document.getElementById('submitRevisionPhase');
-    let revisionPhaseCount = 1;
+        <div class="editor-container" id="editorWrapper" style="display: none;">
+            <div id="editor" class="quill-container"></div>
+            <button id="submitRevisionPhase" class="btn btn-blue">차수 추가</button>
+            <hr />
+        </div>
 
-    const quill = new Quill('#editor', {
-        theme: 'snow',
-        placeholder: '수정 내용을 입력하세요...',
-        modules: {
-            toolbar: [
-                [{ header: [1, 2, false] }],
-                ['bold', 'italic', 'underline'],
-                ['link', 'image'],
-                [{ list: 'ordered' }, { list: 'bullet' }],
-                ['clean']
-            ],
-            imageResize: {
-                modules: ['Resize', 'DisplaySize']
+        <div id="revisionsContainer">
+            <%for(let fixIdx in data.orderFixs){ let fix=data.orderFixs[fixIdx];%>
+                <div class="revision-phase">
+                    <div class="revision-title" data-order_fix_idx="<%=fix.order_fix_idx%>">수정 사항
+                        <%= data.orderFixs.length - Number(fixIdx)%>차
+                    </div>
+                    <div class="revision-content">
+                        <%-fix.content.replace( /\\"/g, '"' )%>
+                    </div>
+                </div>
+                <%}%>
+        </div>
+    </div>
+
+    <!-- 이미지 모달 -->
+    <div id="imageModal" class="modal">
+        <span class="modal-close" id="modalClose">&times;</span>
+        <img class="modal-content" id="modalImage">
+    </div>
+
+    <script>
+        quill = new Quill('#editor', {
+            theme: 'snow',
+            placeholder: '수정 내용을 입력하세요...',
+            modules: {
+                toolbar: [
+                    [{ header: [1, 2, false] }],
+                    ['bold', 'italic', 'underline'],
+                    ['link', 'image'],
+                    [{ list: 'ordered' }, { list: 'bullet' }],
+                    ['clean']
+                ],
+                imageResize: {
+                    modules: ['Resize', 'DisplaySize']
+                }
             }
-        }
-    });
+        });
 
-    function renderRevisionPhase(phase, html, order_fix_idx) {
-        const section = document.createElement('div');
-        section.className = 'revision-phase';
+        function renderRevisionPhase(phase, html, order_fix_idx) {
+            const section = document.createElement('div');
+            $(section).addClass("revision-phase");
 
-        const title = document.createElement('div');
-        title.className = 'revision-title';
-        title.textContent = `수정 사항 ${phase}차`;
-        $(title).data("order_fix_idx", order_fix_idx);
+            const title = document.createElement('div');
+            title.className = 'revision-title';
+            title.textContent = `수정 사항 ${phase}차`;
+            $(title).data("order_fix_idx", order_fix_idx);
 
-        const content = document.createElement('div');
-        content.className = 'revision-content';
-        content.innerHTML = html;
+            const content = document.createElement('div');
+            content.className = 'revision-content';
+            content.innerHTML = html;
 
-        section.appendChild(title);
-        section.appendChild(content);
-        revisionsContainer.appendChild(section);
-    }
-
-    toggleBtn.addEventListener('click', () => {
-        editorWrapper.style.display = editorWrapper.style.display === 'none' ? 'block' : 'none';
-    });
-
-    submitBtn.addEventListener('click', () => {
-        const content = quill.root.innerHTML.trim();
-        if (!content || content === '<p><br></p>') return;
-
-        let params = {
-            order_idx: "<%=data.order.order_idx%>",
-            content: content
+            $(section).append(title);
+            $(section).append(content);
+            $("#revisionsContainer").prepend(section);
         }
 
-        senderAxios.callAxios("/dd684590eb0244c0871d6c7abf734b61/broker/setOrderFix", "post", params)
-            .then((data) => {
-                let phase = $(".revision-title").length + 1;
+        $("#toggleEditorBtn").on('click', () => {
+            $("#editorWrapper").toggle();
+        });
 
-                renderRevisionPhase(phase, content, data.data.data.order_fix_idx);
+        $("#submitRevisionPhase").on('click', () => {
+            const content = quill.root.innerHTML.trim();
+            if (!content || content === '<p><br></p>') return;
 
-                editorWrapper.style.display = 'none';
-            })
-    });
+            let params = {
+                order_idx: "<%=data.order.order_idx%>",
+                content: content
+            }
 
-    // 이미지 클릭 시 확대 표시
-    document.addEventListener('click', function (e) {
-        if (e.target.tagName === 'IMG' && (e.target.closest('.multiline') || e.target.closest('.revision-content'))) {
-            const modal = document.getElementById('imageModal');
-            const modalImg = document.getElementById('modalImage');
-            modal.style.display = 'block';
-            modalImg.src = e.target.src;
-        }
-    });
+            senderAxios.callAxios("/dd684590eb0244c0871d6c7abf734b61/broker/setOrderFix", "post", params)
+                .then((data) => {
+                    let phase = $(".revision-title").length + 1;
 
-    document.getElementById('modalClose').addEventListener('click', function () {
-        document.getElementById('imageModal').style.display = 'none';
-    });
-</script>
+                    renderRevisionPhase(phase, content, data.data.data.order_fix_idx);
+                    quill.setText('');
+                    $("#editorWrapper").hide();
+                })
+        });
+
+        // 이미지 클릭 시 확대 표시
+        $(document).on('click', function (e) {
+            if (e.target.tagName === 'IMG' && (e.target.closest('.multiline') || e.target.closest('.revision-content'))) {
+                $("#imageModal").show();
+                $("#modalImage").attr("src", e.target.src);
+            }
+        });
+
+        $('#modalClose').on('click', function () {
+            $('#imageModal').hide();
+        });
+    </script>

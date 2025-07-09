@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>작업 항목 확인</title>
 
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/quill-image-resize-module@3.0.0/image-resize.min.js"></script>
+
     <script src="/common/vander/jquery.js"></script>
 
     <script src="/common/vander/axios.js"></script>
@@ -94,6 +97,25 @@
         a:hover {
             text-decoration: underline;
         }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 12px;
+            right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+        }
     </style>
 </head>
 
@@ -122,13 +144,14 @@
                     <td>
                         <%=order.reg_date%>
                     </td>
-                    <td class="task-name"
-                        onclick="location.href='/dd684590eb0244c0871d6c7abf734b61/broker/view?order_idx=<%=order.order_idx%>'">
-                        <%=order.title%>
-                            <%if(order.import> 0){%>
-                                <span style="color: red; font-size: 20px;">*</span>
-                                <%}%>
+                    <td class="task-name">
+                        <a href="#" class="open-view-modal" data-order-idx="<%=order.order_idx%>">
+                            <%=order.title%>
+                                <% if(order.import> 0){ %><span style="color: red; font-size: 20px;">*</span>
+                                    <% } %>
+                        </a>
                     </td>
+
                     <td class="deliverable">
                         <%=order.output || "미정" %>
                     </td>
@@ -157,6 +180,14 @@
         <button>2</button>
         <button>3</button>
     </div> -->
+
+    <!-- 작업 보기 모달 -->
+    <div id="viewModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeViewModal()">&times;</span>
+            <div id="viewModalBody">불러오는 중...</div>
+        </div>
+    </div>
 </body>
 
 </html>
@@ -174,5 +205,27 @@
 
             senderAxios.callAxios("/dd684590eb0244c0871d6c7abf734b61/broker/changeStatus", "post", params);
         })
+
+        $('.open-view-modal').on('click', function (e) {
+            e.preventDefault();
+            const orderIdx = $(this).data('order-idx');
+
+            $('#viewModal').show();
+
+            $('#viewModalBody').load(`/dd684590eb0244c0871d6c7abf734b61/broker/view?order_idx=${orderIdx}`);
+        });
+
+        $('#viewModal').on('click', function (e) {
+            if (e.target.id === 'viewModal') {
+                closeViewModal();
+            }
+        });
     })
+
+    function closeViewModal() {
+        document.getElementById('viewModal').style.display = 'none';
+        document.getElementById('viewModalBody').innerHTML = '불러오는 중...';
+    }
+
+    let quill;
 </script>
