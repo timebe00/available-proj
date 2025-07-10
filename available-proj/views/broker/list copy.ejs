@@ -100,7 +100,7 @@
 <body>
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <h1>작업 항목 확인</h1>
-        <a href="/5521ed612b874a198fc98c71fbcee437/order/write"
+        <a href="/dd684590eb0244c0871d6c7abf734b61/broker/write"
             style="padding: 10px 16px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px;">작성하기</a>
     </div>
 
@@ -111,7 +111,8 @@
                 <th class="task-name">작업명</th>
                 <th class="deliverable">산출물</th>
                 <th>완료 여부</th>
-                <th>단가</th>
+                <th>주문자 단가</th>
+                <th>작업자 단가</th>
             </tr>
         </thead>
         <tbody id="taskTableBody">
@@ -122,7 +123,7 @@
                         <%=order.reg_date%>
                     </td>
                     <td class="task-name"
-                        onclick="location.href='/5521ed612b874a198fc98c71fbcee437/order/view?order_idx=<%=order.order_idx%>'">
+                        onclick="location.href='/dd684590eb0244c0871d6c7abf734b61/broker/view?order_idx=<%=order.order_idx%>'">
                         <%=order.title%>
                             <%if(order.import> 0){%>
                                 <span style="color: red; font-size: 20px;">*</span>
@@ -132,8 +133,7 @@
                         <%=order.output || "미정" %>
                     </td>
                     <td>
-                        <select class="status"
-                            style='<%=(order.status=="03" || order.status=="05") ? "background-color:#ff4040; color: white;" : "" %>''  >
+                        <select class="status">
                             <option value="01" <%=order.status=="01" ? "selected" : "" %> >작업요청</option>
                             <option value="02" <%=order.status=="02" ? "selected" : "" %> >수정요청</option>
                             <option value="03" <%=order.status=="03" ? "selected" : "" %> >작업완료</option>
@@ -143,7 +143,10 @@
                         </select>
                     </td>
                     <td>
-                        <%=order.order_price || "미정" %>
+                        <%=order.order_price || '' %>
+                    </td>
+                    <td>
+                        <%=order.show_price || '' %>
                     </td>
                 </tr>
                 <%}%>
@@ -169,7 +172,7 @@
                 order_idx: order_idx
             }
 
-            senderAxios.callAxios("/5521ed612b874a198fc98c71fbcee437/order/changeStatus", "post", params);
+            senderAxios.callAxios("/dd684590eb0244c0871d6c7abf734b61/broker/changeStatus", "post", params);
         })
     })
 </script>

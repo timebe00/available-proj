@@ -11,7 +11,7 @@ exports.getOrders = (req) => {
             let sortData = req.params.sortData;
 
             connection = await connectionManager.getConnection({ readOnly: true });
-            let orders = await indexModule.getOrders(connection, { sortData: sortData }); // await 추가 필요 가능성 있음
+            let orders = await indexModule.selectOrderList(connection, { sortData: sortData });
 
             result.orders = orders;
 
@@ -29,7 +29,7 @@ exports.getOutputs = (req) => {
         let connection;
         try {
             connection = await connectionManager.getConnection({ readOnly: true });
-            let outputs = await indexModule.getOutputs(connection, {}); // await 추가 필요 가능성 있음
+            let outputs = await indexModule.selectOutput(connection, {});
 
             result.outputs = outputs;
 
@@ -55,9 +55,9 @@ exports.setOrder = (req) => {
             let price = req.body.price;
             let content = req.body.content;
             let note = req.body.note;
-            let importData = req.body.importData;
-            let order_price = req.body.order_price;
-            let show_price = req.body.show_price;
+            let imp_yn = req.body.imp_yn;
+            let order_price = req.body.order_price || 0;
+            let work_price = req.body.show_price || 0;
 
 
             if (!title) {
@@ -66,33 +66,37 @@ exports.setOrder = (req) => {
 
             if (sortData != "broker") {
                 order_price = price;
-                show_price = price;
+                work_price = price;
             }
 
-            let orderParams = {
-                title: title
-                , b_time: b_time
-                , e_time: e_time
-                , output: output
-                , content: content
-                , note: note
-                , import: importData
+            let params = {
+                title: title,
+                b_time: b_time,
+                e_time: e_time,
+                output: output,
+                order_price: order_price,
+                work_price: work_price,
+                content: content,
+                note: note,
+                imp_yn: imp_yn,
+                delete_yn: "N",
+                show_yn: "Y",
+                status: "01"
             }
-
 
             connection = await connectionManager.getConnection({ readOnly: false });
-            let insertOrder = await indexModule.insertOrder(connection, orderParams);
-            let order_idx = insertOrder.insertId;
 
-            let priceParams = {
-                order_idx: order_idx
-                , order_price: order_price
-                , show_price: show_price
-            }
+            const insertContent = await indexModule.insertContent(connection, params);
+            params.content_idx = insertContent.insertId;
 
-            await indexModule.insertPrice(connection, priceParams);
+            const insertOrder = await indexModule.insertOrder(connection, params);
+            params.order_idx = insertOrder.insertId;
 
-            result.order_id = order_idx;
+            await indexModule.insertOrderHis(connection, params);
+            await indexModule.insertPrice(connection, params);
+            await indexModule.insertOrderStatus(connection, params);
+
+            result.order_id = params.order_idx;
 
             // connection.rollback();
             connection.commit();
@@ -123,7 +127,7 @@ exports.changeStatus = (req) => {
 
             connection = await connectionManager.getConnection({ readOnly: false });
 
-            await indexModule.updateOrder(connection, { order_idx: order_idx, status: status });
+            await indexModule.updateOrderStatus(connection, { order_idx: order_idx, status: status });
 
             // connection.rollback();
             connection.commit();

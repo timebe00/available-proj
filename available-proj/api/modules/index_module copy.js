@@ -1,10 +1,10 @@
 _mybatisMapper.createMapper([_base + '/api/sqlmap/index_sqlmap.xml']);
 
-exports.selectOutput = (connection, sqlParamObj) => {
+exports.getOrders = (connection, sqlParamObj) => {
     return new Promise(
         async (resolve, reject) => {
             try {
-                var sql = _mybatisMapper.getStatement('available', 'available.selectOutput', sqlParamObj);
+                var sql = _mybatisMapper.getStatement('available', 'available.getOrders', sqlParamObj);
                 console.log(sql);
                 let [result] = await connection.raw(sql);
                 resolve(result);
@@ -15,11 +15,26 @@ exports.selectOutput = (connection, sqlParamObj) => {
     )
 }
 
-exports.insertContent = (connection, sqlParamObj) => {
+exports.getOrderOne = (connection, sqlParamObj) => {
     return new Promise(
         async (resolve, reject) => {
             try {
-                var sql = _mybatisMapper.getStatement('available', 'available.insertContent', sqlParamObj);
+                var sql = _mybatisMapper.getStatement('available', 'available.getOrderOne', sqlParamObj);
+                console.log(sql);
+                let [result] = await connection.raw(sql);
+                resolve(result);
+            } catch (error) {
+                reject(error);
+            }
+        }
+    )
+}
+
+exports.getOutputs = (connection, sqlParamObj) => {
+    return new Promise(
+        async (resolve, reject) => {
+            try {
+                var sql = _mybatisMapper.getStatement('available', 'available.getOutputs', sqlParamObj);
                 console.log(sql);
                 let [result] = await connection.raw(sql);
                 resolve(result);
@@ -45,21 +60,6 @@ exports.insertOrder = (connection, sqlParamObj) => {
     )
 }
 
-exports.insertOrderHis = (connection, sqlParamObj) => {
-    return new Promise(
-        async (resolve, reject) => {
-            try {
-                var sql = _mybatisMapper.getStatement('available', 'available.insertOrderHis', sqlParamObj);
-                console.log(sql);
-                let [result] = await connection.raw(sql);
-                resolve(result);
-            } catch (error) {
-                reject(error);
-            }
-        }
-    )
-}
-
 exports.insertPrice = (connection, sqlParamObj) => {
     return new Promise(
         async (resolve, reject) => {
@@ -75,11 +75,11 @@ exports.insertPrice = (connection, sqlParamObj) => {
     )
 }
 
-exports.insertOrderStatus = (connection, sqlParamObj) => {
+exports.updateOrder = (connection, sqlParamObj) => {
     return new Promise(
         async (resolve, reject) => {
             try {
-                var sql = _mybatisMapper.getStatement('available', 'available.insertOrderStatus', sqlParamObj);
+                var sql = _mybatisMapper.getStatement('available', 'available.updateOrder', sqlParamObj);
                 console.log(sql);
                 let [result] = await connection.raw(sql);
                 resolve(result);
@@ -90,11 +90,11 @@ exports.insertOrderStatus = (connection, sqlParamObj) => {
     )
 }
 
-exports.selectOrderList = (connection, sqlParamObj) => {
+exports.selectOrderFix = (connection, sqlParamObj) => {
     return new Promise(
         async (resolve, reject) => {
             try {
-                var sql = _mybatisMapper.getStatement('available', 'available.selectOrderList', sqlParamObj);
+                var sql = _mybatisMapper.getStatement('available', 'available.selectOrderFix', sqlParamObj);
                 console.log(sql);
                 let [result] = await connection.raw(sql);
                 resolve(result);
@@ -105,11 +105,26 @@ exports.selectOrderList = (connection, sqlParamObj) => {
     )
 }
 
-exports.updateOrderStatus = (connection, sqlParamObj) => {
+exports.insertOrderFix = (connection, sqlParamObj) => {
     return new Promise(
         async (resolve, reject) => {
             try {
-                var sql = _mybatisMapper.getStatement('available', 'available.updateOrderStatus', sqlParamObj);
+                var sql = _mybatisMapper.getStatement('available', 'available.insertOrderFix', sqlParamObj);
+                console.log(sql);
+                let [result] = await connection.raw(sql);
+                resolve(result);
+            } catch (error) {
+                reject(error);
+            }
+        }
+    )
+}
+
+exports.updatePrice = (connection, sqlParamObj) => {
+    return new Promise(
+        async (resolve, reject) => {
+            try {
+                var sql = _mybatisMapper.getStatement('available', 'available.updatePrice', sqlParamObj);
                 console.log(sql);
                 let [result] = await connection.raw(sql);
                 resolve(result);

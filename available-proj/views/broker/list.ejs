@@ -78,7 +78,7 @@
         }
 
         .deliverable {
-            width: 15%;
+            width: 10%;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -116,38 +116,53 @@
             font-size: 24px;
             cursor: pointer;
         }
+
+        .hover_line:hover {
+            border: 2px solid rgb(0, 217, 255);
+            background-color: #e6fffd;
+        }
     </style>
 </head>
 
 <body>
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <h1>작업 항목 확인</h1>
-        <a href="/dd684590eb0244c0871d6c7abf734b61/broker/write"
-            style="padding: 10px 16px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px;">작성하기</a>
+        <div>
+            <a href="/dd684590eb0244c0871d6c7abf734b61/broker/write"
+                style="padding: 10px 16px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px;">작성하기</a>
+            <a href=""
+                style="padding: 10px 16px; background-color: #000000; color: white; text-decoration: none; border-radius: 4px;">단가
+                적용하기</a>
+        </div>
     </div>
 
     <table>
         <thead>
             <tr>
-                <th>요청일</th>
+                <th>Best</th>
+                <th>At Least</th>
                 <th class="task-name">작업명</th>
                 <th class="deliverable">산출물</th>
                 <th>완료 여부</th>
                 <th>주문자 단가</th>
                 <th>작업자 단가</th>
+                <th>단가 노출 여부</th>
             </tr>
         </thead>
         <tbody id="taskTableBody">
             <% for(let orderIdx in data.orders) { let order=data.orders[orderIdx];%>
                 <!-- <tr class=" important"> -->
-                <tr data-order_idx="<%=order.order_idx%>">
+                <tr class="hover_line" data-order_idx="<%=order.order_idx%>">
                     <td>
-                        <%=order.reg_date%>
+                        <%=order.b_time%>
+                    </td>
+                    <td>
+                        <%=order.e_time%>
                     </td>
                     <td class="task-name">
                         <a href="#" class="open-view-modal" data-order-idx="<%=order.order_idx%>">
                             <%=order.title%>
-                                <% if(order.import> 0){ %><span style="color: red; font-size: 20px;">*</span>
+                                <% if(order.imp_yn=="Y" ){ %><span style="color: red; font-size: 20px;">*</span>
                                     <% } %>
                         </a>
                     </td>
@@ -166,10 +181,15 @@
                         </select>
                     </td>
                     <td>
-                        <%=order.order_price || '' %>
+                        <input type="text" style="width: 100px;" name="order_price"
+                            onkeypress="return allowOnlyNumbersAndComma(event)" value="<%=order.order_price || '' %>" />
                     </td>
                     <td>
-                        <%=order.show_price || '' %>
+                        <input type="text" style="width: 100px;" name="work_price"
+                            onkeypress="return allowOnlyNumbersAndComma(event)" value="<%=order.work_price || '' %>" />
+                    </td>
+                    <td>
+                        <input type="checkbox" name="priceShow" <%=order.show_yn=="Y" ? "checked" : "" %> />
                     </td>
                 </tr>
                 <%}%>
@@ -225,6 +245,15 @@
     function closeViewModal() {
         document.getElementById('viewModal').style.display = 'none';
         document.getElementById('viewModalBody').innerHTML = '불러오는 중...';
+    }
+
+    function allowOnlyNumbersAndComma(event) {
+        const charCode = (event.which) ? event.which : event.keyCode;
+        if (charCode > 31 && (charCode < 48 || charCode > 57) && charCode !== 44) {
+            event.preventDefault();
+            return false;
+        }
+        return true;
     }
 
     let quill;

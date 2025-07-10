@@ -395,10 +395,10 @@
             let show_price = document.getElementById("showPriceFormatted").value;
             let content = quill.root.innerHTML;
             let note = document.getElementById("note").value;
-            let importData = 0;
+            let imp_yn = "N";
 
             if ($('#isImportant').is(':checked')) {
-                importData = 1;
+                imp_yn = "Y";
             }
 
             if (!title) {
@@ -415,7 +415,7 @@
                 , show_price: show_price
                 , content: content
                 , note: note
-                , importData: importData
+                , imp_yn: imp_yn
             }
 
             senderAxios.callAxios("/dd684590eb0244c0871d6c7abf734b61/broker/setOrder", "post", params)
