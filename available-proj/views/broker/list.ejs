@@ -130,7 +130,7 @@
         <div>
             <a href="/dd684590eb0244c0871d6c7abf734b61/broker/write"
                 style="padding: 10px 16px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px;">작성하기</a>
-            <a href=""
+            <a href="javascript:changePrice()"
                 style="padding: 10px 16px; background-color: #000000; color: white; text-decoration: none; border-radius: 4px;">단가
                 적용하기</a>
         </div>
@@ -150,49 +150,7 @@
             </tr>
         </thead>
         <tbody id="taskTableBody">
-            <% for(let orderIdx in data.orders) { let order=data.orders[orderIdx];%>
-                <!-- <tr class=" important"> -->
-                <tr class="hover_line" data-order_idx="<%=order.order_idx%>">
-                    <td>
-                        <%=order.b_time%>
-                    </td>
-                    <td>
-                        <%=order.e_time%>
-                    </td>
-                    <td class="task-name">
-                        <a href="#" class="open-view-modal" data-order-idx="<%=order.order_idx%>">
-                            <%=order.title%>
-                                <% if(order.imp_yn=="Y" ){ %><span style="color: red; font-size: 20px;">*</span>
-                                    <% } %>
-                        </a>
-                    </td>
 
-                    <td class="deliverable">
-                        <%=order.output || "미정" %>
-                    </td>
-                    <td>
-                        <select class="status">
-                            <option value="01" <%=order.status=="01" ? "selected" : "" %> >작업요청</option>
-                            <option value="02" <%=order.status=="02" ? "selected" : "" %> >수정요청</option>
-                            <option value="03" <%=order.status=="03" ? "selected" : "" %> >작업완료</option>
-                            <option value="04" <%=order.status=="04" ? "selected" : "" %> >납품완료</option>
-                            <option value="05" <%=order.status=="05" ? "selected" : "" %> >수정완료</option>
-                            <option value="06" <%=order.status=="06" ? "selected" : "" %> >완료후 수정 요청</option>
-                        </select>
-                    </td>
-                    <td>
-                        <input type="text" style="width: 100px;" name="order_price"
-                            onkeypress="return allowOnlyNumbersAndComma(event)" value="<%=order.order_price || '' %>" />
-                    </td>
-                    <td>
-                        <input type="text" style="width: 100px;" name="work_price"
-                            onkeypress="return allowOnlyNumbersAndComma(event)" value="<%=order.work_price || '' %>" />
-                    </td>
-                    <td>
-                        <input type="checkbox" name="priceShow" <%=order.show_yn=="Y" ? "checked" : "" %> />
-                    </td>
-                </tr>
-                <%}%>
         </tbody>
     </table>
     <!-- <div class="pagination">
@@ -213,34 +171,8 @@
 </html>
 
 <script>
-    $(document).ready(function () {
-        $(".status").on("change", function () {
-            let status = $(this).val();
-            let order_idx = $(this).parent().parent().data("order_idx")
-
-            let params = {
-                status: status,
-                order_idx: order_idx
-            }
-
-            senderAxios.callAxios("/dd684590eb0244c0871d6c7abf734b61/broker/changeStatus", "post", params);
-        })
-
-        $('.open-view-modal').on('click', function (e) {
-            e.preventDefault();
-            const orderIdx = $(this).data('order-idx');
-
-            $('#viewModal').show();
-
-            $('#viewModalBody').load(`/dd684590eb0244c0871d6c7abf734b61/broker/view?order_idx=${orderIdx}`);
-        });
-
-        $('#viewModal').on('click', function (e) {
-            if (e.target.id === 'viewModal') {
-                closeViewModal();
-            }
-        });
-    })
+    var priceObj = {};
+    var quill;
 
     function closeViewModal() {
         document.getElementById('viewModal').style.display = 'none';
@@ -256,5 +188,93 @@
         return true;
     }
 
-    let quill;
+    // ✅ 동적으로 생성된 항목에 이벤트 다시 바인딩
+    function attachDynamicEvents() {
+        $(".status").off().on("change", function () {
+            const status = $(this).val();
+            const order_idx = $(this).closest("tr").data("order_idx");
+
+            senderAxios.callAxios("/dd684590eb0244c0871d6c7abf734b61/broker/changeStatus", "post", {
+                status,
+                order_idx
+            });
+        });
+
+        $(".open-view-modal").off().on("click", function (e) {
+            e.preventDefault();
+            const orderIdx = $(this).data('order-idx');
+
+            $('#viewModal').show();
+            $('#viewModalBody').load(`/dd684590eb0244c0871d6c7abf734b61/broker/view?order_idx=${orderIdx}`);
+        });
+
+        $("input[name='order_price'], input[name='work_price']").off().on("input", function () {
+            const row = $(this).closest("tr");
+            addChangePrice(row);
+        });
+
+        $("input[name='priceShow']").off().on("change", function () {
+            const row = $(this).closest("tr");
+            addChangePrice(row);
+        });
+    }
+
+    function addChangePrice(row) {
+        const order_idx = $(row).data("order_idx");
+        const order_price = $(row).find("input[name='order_price']").val();
+        const work_price = $(row).find("input[name='work_price']").val();
+        const price_show = $(row).find("input[name='priceShow']").is(":checked") ? "Y" : "N";
+
+        priceObj["order_" + order_idx] = {
+            order_idx,
+            order_price,
+            work_price,
+            price_show
+        };
+    }
+
+    function changePrice() {
+        const keys = Object.keys(priceObj);
+        for (let key of keys) {
+            const item = priceObj[key];
+            const row = $("#taskTableBody").find("tr[data-order_idx='" + item.order_idx + "']");
+            if (item.order_price) {
+                const formatted = Number(item.order_price.replaceAll(",", "")).toLocaleString("ko-KR");
+                $(row).find("input[name='order_price']").val(formatted);
+                item.order_price = formatted;
+            }
+            if (item.work_price) {
+                const formatted = Number(item.work_price.replaceAll(",", "")).toLocaleString("ko-KR");
+                $(row).find("input[name='work_price']").val(formatted);
+                item.work_price = formatted;
+            }
+        }
+
+        senderAxios.callAxios("/dd684590eb0244c0871d6c7abf734b61/broker/changePrice", "post", {
+            priceObj: JSON.stringify(priceObj)
+        }).then(() => priceObj = {});
+    }
+
+    // ✅ 테이블 새로고침 함수
+    function reloadTableBody() {
+        $("#taskTableBody").load("/dd684590eb0244c0871d6c7abf734b61/broker/listTable", function () {
+            attachDynamicEvents();
+        });
+    }
+
+    // ✅ 최초 실행 시
+    $(document).ready(function () {
+        attachDynamicEvents();
+        reloadTableBody();
+
+        // ✅ 30초마다 테이블 새로고침
+        setInterval(reloadTableBody, 30000);
+    });
+
+    $(document).on("click", "#viewModal", function (e) {
+        const $viewModalBody = $('#viewModalBody');
+        if ($viewModalBody.is(':visible') && e.target.id === 'viewModal') {
+            closeViewModal();
+        }
+    })
 </script>

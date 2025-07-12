@@ -8,10 +8,10 @@ exports.getOrders = (req) => {
         let result = {};
         let connection;
         try {
-            let sortData = req.params.sortData;
+            let sneder = req.params.sneder;
 
             connection = await connectionManager.getConnection({ readOnly: true });
-            let orders = await indexModule.selectOrderList(connection, { sortData: sortData });
+            let orders = await indexModule.selectOrderList(connection, { sneder: sneder });
 
             result.orders = orders;
 
@@ -47,7 +47,7 @@ exports.setOrder = (req) => {
         let result = {};
         let connection;
         try {
-            let sortData = req.body.sortData || "order"
+            let sneder = req.body.sneder || "order"
             let title = req.body.title;
             let b_time = req.body.b_time;
             let e_time = req.body.e_time;
@@ -64,7 +64,7 @@ exports.setOrder = (req) => {
                 throw ({ code: "99", message: "title 없음" });
             }
 
-            if (sortData != "broker") {
+            if (sneder != "broker") {
                 order_price = price;
                 work_price = price;
             }
@@ -93,7 +93,10 @@ exports.setOrder = (req) => {
             params.order_idx = insertOrder.insertId;
 
             await indexModule.insertOrderHis(connection, params);
+
             await indexModule.insertPrice(connection, params);
+            await indexModule.insertPriceHis(connection, params);
+
             await indexModule.insertOrderStatus(connection, params);
 
             result.order_id = params.order_idx;
@@ -151,7 +154,7 @@ exports.getOrder = (req) => {
 
             connection = await connectionManager.getConnection({ readOnly: true });
 
-            let [order] = await indexModule.getOrderOne(connection, { order_idx: order_idx });
+            let [order] = await indexModule.selectOrderView(connection, { order_idx: order_idx });
             let orderFixs = await indexModule.selectOrderFix(connection, { order_idx: order_idx });
 
             result = {
@@ -180,10 +183,15 @@ exports.setOrderFix = (req) => {
                 content: content,
             }
 
+            let insertContent = await indexModule.insertContent(connection, params);
+            params.content_idx = insertContent.insertId
+
             let insertOrderFix = await indexModule.insertOrderFix(connection, params);
+            params.order_fix_idx = insertOrderFix.insertId;
 
-            result.order_fix_idx = insertOrderFix.insertId;
+            await indexModule.insertOrderFixHis(connection, params);
 
+            result.order_fix_idx = params.order_fix_idx;
             connection.commit();
             resolve(result);
         } catch (error) {
@@ -200,50 +208,84 @@ exports.modifyOrder = (req) => {
         let result = {};
         let connection;
         try {
-            let sortData = req.body.sortData;
-            let order_idx = req.body.order_idx;
-            let title = req.body.title;
+            console.log("req.body : ", req.body)
+
+            let sneder = req.body.sneder;
+            let order_idx = req.body.order_idx
+            let title = req.body.title
             let b_time = req.body.b_time || null;
             let e_time = req.body.e_time || null;
             let output = req.body.output;
-            let price = req.body.price || 0;
+            let order_price = req.body.order_price || 0;
+            let work_price = req.body.show_price || 0;
             let content = req.body.content;
             let note = req.body.note;
-            let importData = req.body.importData;
-
-            let order_price = req.body.order_price || null;
-            let show_price = req.body.show_price || null;
+            let imp_yn = req.body.imp_yn;
+            let delete_yn = "N"
 
             if (!title) {
                 throw ({ code: "99", message: "title 없음" });
             }
 
-            if (sortData != "broker") {
+            if (sneder != "broker") {
                 order_price = price;
             }
 
-            let orderParams = {
+            let params = {
+                sneder: sneder,
                 order_idx: order_idx,
                 title: title,
                 b_time: b_time,
-                b_time_set: true,
                 e_time: e_time,
-                e_time_set: true,
                 output: output,
+                order_price: order_price,
+                work_price: work_price,
                 content: content,
                 note: note,
-                import: importData,
-            }
-
-            let pricePraams = {
-                order_idx: order_idx
-                , order_price: order_price
-                , show_price: show_price
+                imp_yn: imp_yn,
+                delete_yn: delete_yn
             }
 
             connection = await connectionManager.getConnection({ readOnly: false });
-            await indexModule.updateOrder(connection, orderParams);
-            await indexModule.updatePrice(connection, pricePraams);
+
+            let updatePrice = await indexModule.updatePrice(connection, params);
+            let insertContent = await indexModule.insertContent(connection, params);
+            params.content_idx = insertContent.insertId;
+
+            let updateOrder = await indexModule.updateOrder(connection, params);
+            await indexModule.insertOrderHis(connection, params);
+
+            connection.commit();
+            resolve(result);
+        } catch (error) {
+            if (connection) {
+                connection.rollback();
+            }
+            reject(error); // <- 여기 수정
+        }
+    });
+}
+
+exports.changePrice = (req) => {
+    return new Promise(async (resolve, reject) => {
+        let result = {};
+        let connection;
+        try {
+            let priceObj = JSON.parse(req.body.priceObj);
+            let keys = Object.keys(priceObj);
+
+            connection = await connectionManager.getConnection({ readOnly: false });
+
+            for (let key of keys) {
+                let params = {
+                    order_idx: priceObj[key].order_idx,
+                    order_price: priceObj[key].order_price,
+                    work_price: priceObj[key].work_price,
+                    show_yn: priceObj[key].price_show,
+                }
+                await indexModule.updatePrice(connection, params);
+                await indexModule.insertPriceHis(connection, params);
+            }
 
             connection.commit();
             resolve(result);

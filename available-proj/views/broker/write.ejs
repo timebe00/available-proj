@@ -260,8 +260,8 @@
                         </select>
                         <div class="checkbox-group">
                             <label for="isImportant">중요여부</label>
-                            <input type="checkbox" id="isImportant" name="isImportant" <%=modify.import> 0 ?
-                            "checked" : "" %> />
+                            <input type="checkbox" id="isImportant" name="isImportant" <%=modify.imp_yn=="Y" ? "checked"
+                                : "" %> />
                         </div>
 
                     </div>
@@ -276,7 +276,7 @@
                 <div>
                     <label for="showPriceFormatted">작업자 단가</label>
                     <input type="text" id="showPriceFormatted" placeholder="금액 입력" autocomplete="off"
-                        value="<%=modify.show_price%>" />
+                        value="<%=modify.work_price%>" />
                     <input type="number" id="show_price" name="show_price" min="0" step="1000" />
                 </div>
 
@@ -435,12 +435,11 @@
             let show_price = document.getElementById("showPriceFormatted").value;
             let content = quill.root.innerHTML;
             let note = document.getElementById("note").value;
-            let importData = 0;
+            let imp_yn = "N";
 
             if ($('#isImportant').is(':checked')) {
-                importData = 1;
+                imp_yn = "Y";
             }
-
 
             if (!title) {
                 alert("작업명 입력해주세요.");
@@ -457,13 +456,14 @@
                 , show_price: show_price
                 , content: content
                 , note: note
-                , importData: importData
+                , imp_yn: imp_yn
             }
+            console.log("params : ", params)
 
             senderAxios.callAxios("/dd684590eb0244c0871d6c7abf734b61/broker/modifyOrder", "post", params)
                 .then(function (data) {
                     alert("저장되었습니다.")
-                    location.href = "/dd684590eb0244c0871d6c7abf734b61/broker/view?order_idx=<%=modify.order_idx%>"
+                    location.href = "/dd684590eb0244c0871d6c7abf734b61/broker"
                 })
         })
     });

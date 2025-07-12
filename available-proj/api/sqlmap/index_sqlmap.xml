@@ -79,6 +79,24 @@
         )
     </insert>
 
+    <insert id="available.insertPriceHis">
+        INSERT INTO TB_PRICE_HIS (
+            ORDER_IDX,
+            ORDER_PRICE,
+            WORK_PRICE,
+            SHOW_YN,
+            REG_DATE
+            
+        )
+        VALUES(
+            #{order_idx},
+            #{order_price},
+            #{work_price},
+            #{show_yn},
+            CURRENT_TIMESTAMP()
+        )
+    </insert>
+
     <insert id="available.insertOrderStatus">
         INSERT INTO TB_ORDER_STATUS (
             ORDER_IDX,
@@ -108,7 +126,7 @@
         where 
             A.delete_yn = 'N'
         ORDER BY 
-        <if test="sortData == 'order' or sortData == 'broker'">
+        <if test="sneder == 'order' or sneder == 'broker'">
             (
                 CASE
                     WHEN D.status = '03' THEN 0
@@ -118,7 +136,7 @@
                 END
             ),
         </if>
-        <if test="sortData == 'work'">
+        <if test="sneder == 'work'">
             (
                 CASE
                     WHEN D.status = '01' THEN 0
@@ -136,5 +154,61 @@
         UPDATE TB_ORDER_STATUS
         SET STATUS = #{status}
         WHERE ORDER_IDX = #{order_idx}
+    </update>
+
+    <update id="available.updatePrice">
+        UPDATE available.tb_price
+        SET 
+            ORDER_IDX=#{order_idx}
+            <if test="order_price != null and order_price != ''">
+            , ORDER_PRICE=#{order_price}
+            </if>
+            <if test="work_price != null and work_price != ''">
+            , WORK_PRICE=#{work_price}
+            </if>
+            <if test="show_yn != null and show_yn != ''">
+            , SHOW_YN=#{show_yn}
+            </if>
+        WHERE ORDER_IDX=#{order_idx}
+    </update>
+
+    <select id="available.selectOrderView">
+        SELECT 
+            TO2.order_idx, TO2.title , DATE_FORMAT(TO2.b_time, '%Y-%m-%d %H:%i') AS 'b_time' 
+            , DATE_FORMAT(TO2.e_time, '%Y-%m-%d %H:%i') AS 'e_time' , TO2.`output` , TO2.note 
+            , TO2.imp_yn , TC.content , TP.order_price 
+            , TP.work_price , TP.show_yn , TOS.status 
+        FROM TB_ORDER TO2 
+        INNER JOIN TB_CONTENT TC ON TO2.CONTENT_IDX = TC.CONTENT_IDX
+        INNER JOIN TB_PRICE TP ON TO2.ORDER_IDX = TP.ORDER_IDX 
+        INNER JOIN TB_ORDER_STATUS TOS ON TO2.ORDER_IDX = TOS.ORDER_IDX 
+        WHERE TO2.order_idx  = #{order_idx} AND TO2.delete_yn = 'N'
+    </select>
+
+    <select id="available.selectOrderFix">
+        SELECT TOF.order_idx , TOF.order_fix_idx , TC.content 
+        FROM TB_ORDER_FIX TOF 
+        INNER JOIN TB_CONTENT TC ON TOF.CONTENT_IDX  = TC.CONTENT_IDX 
+        WHERE TOF.ORDER_IDX = #{order_idx}
+    </select>
+
+    <insert id="available.insertOrderFix">
+        INSERT INTO TB_ORDER_FIX
+        (ORDER_IDX, CONTENT_IDX)
+        VALUES(#{order_idx}, #{content_idx});
+    </insert>
+
+    <insert id="available.insertOrderFixHis">
+        INSERT INTO TB_ORDER_FIX_HIS
+        (ORDER_FIX_IDX, ORDER_IDX, CONTENT_IDX, REG_DATE)
+        VALUES(#{order_fix_idx}, #{order_idx}, #{content_idx}, current_timestamp());
+    </insert>
+    
+    <update id="available.updateOrder">
+        UPDATE TB_ORDER
+        SET TITLE=#{title}, B_TIME=#{b_time}, E_TIME=#{e_time}
+            , `OUTPUT`=#{output}, CONTENT_IDX=#{content_idx}, NOTE=#{note}
+            , IMP_YN=#{imp_yn}, DELETE_YN=#{delete_yn}
+        WHERE ORDER_IDX=#{order_idx};
     </update>
 </mapper>
