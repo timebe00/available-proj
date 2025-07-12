@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>작업 항목 확인</title>
 
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/quill-image-resize-module@3.0.0/image-resize.min.js"></script>
+
     <script src="/common/vander/jquery.js"></script>
 
     <script src="/common/vander/axios.js"></script>
@@ -75,7 +78,7 @@
         }
 
         .deliverable {
-            width: 15%;
+            width: 10%;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -94,6 +97,30 @@
         a:hover {
             text-decoration: underline;
         }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 12px;
+            right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .hover_line:hover {
+            border: 2px solid rgb(0, 217, 255);
+            background-color: #e6fffd;
+        }
     </style>
 </head>
 
@@ -105,7 +132,8 @@
     <table>
         <thead>
             <tr>
-                <th>요청일</th>
+                <th>Best</th>
+                <th>At Least</th>
                 <th class="task-name">작업명</th>
                 <th class="deliverable">산출물</th>
                 <th>완료 여부</th>
@@ -113,37 +141,7 @@
             </tr>
         </thead>
         <tbody id="taskTableBody">
-            <% for(let orderIdx in data.orders) { let order=data.orders[orderIdx];%>
-                <!-- <tr class=" important"> -->
-                <tr data-order_idx="<%=order.order_idx%>">
-                    <td>
-                        <%=order.reg_date%>
-                    </td>
-                    <td class="task-name"
-                        onclick="location.href='/e6e7b89523ac41e0ba406fbd05ed9de6/work/view?order_idx=<%=order.order_idx%>'">
-                        <%=order.title%>
-                            <%if(order.import> 0){%>
-                                <span style="color: red; font-size: 20px;">*</span>
-                                <%}%>
-                    </td>
-                    <td class="deliverable">
-                        <%=order.output || "미정" %>
-                    </td>
-                    <td>
-                        <select class="status">
-                            <option value="01" <%=order.status=="01" ? "selected" : "" %> >작업요청</option>
-                            <option value="02" <%=order.status=="02" ? "selected" : "" %> >수정요청</option>
-                            <option value="03" <%=order.status=="03" ? "selected" : "" %> >작업완료</option>
-                            <option value="04" <%=order.status=="04" ? "selected" : "" %> >납품완료</option>
-                            <option value="05" <%=order.status=="05" ? "selected" : "" %> >수정완료</option>
-                            <option value="06" <%=order.status=="06" ? "selected" : "" %> >완료후 수정 요청</option>
-                        </select>
-                    </td>
-                    <td>
-                        <%=order.order_price || "미정" %>
-                    </td>
-                </tr>
-                <%}%>
+
         </tbody>
     </table>
     <!-- <div class="pagination">
@@ -151,22 +149,65 @@
         <button>2</button>
         <button>3</button>
     </div> -->
+
+    <!-- 작업 보기 모달 -->
+    <div id="viewModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeViewModal()">&times;</span>
+            <div id="viewModalBody">불러오는 중...</div>
+        </div>
+    </div>
 </body>
 
 </html>
 
 <script>
+    function closeViewModal() {
+        document.getElementById('viewModal').style.display = 'none';
+        document.getElementById('viewModalBody').innerHTML = '불러오는 중...';
+    }
+
+    // ✅ 동적으로 생성된 항목에 이벤트 다시 바인딩
+    function attachDynamicEvents() {
+        $(".status").off().on("change", function () {
+            const status = $(this).val();
+            const order_idx = $(this).closest("tr").data("order_idx");
+
+            senderAxios.callAxios("/e6e7b89523ac41e0ba406fbd05ed9de6/work/changeStatus", "post", {
+                status,
+                order_idx
+            });
+        });
+
+        $(".open-view-modal").off().on("click", function (e) {
+            e.preventDefault();
+            const orderIdx = $(this).data('order-idx');
+
+            $('#viewModal').show();
+            $('#viewModalBody').load(`/e6e7b89523ac41e0ba406fbd05ed9de6/work/view?order_idx=${orderIdx}`);
+        });
+    }
+
+    // ✅ 테이블 새로고침 함수
+    function reloadTableBody() {
+        $("#taskTableBody").load("/e6e7b89523ac41e0ba406fbd05ed9de6/work/listTable", function () {
+            attachDynamicEvents();
+        });
+    }
+
+    // ✅ 최초 실행 시
     $(document).ready(function () {
-        $(".status").on("change", function () {
-            let status = $(this).val();
-            let order_idx = $(this).parent().parent().data("order_idx")
+        attachDynamicEvents();
+        reloadTableBody();
 
-            let params = {
-                status: status,
-                order_idx: order_idx
-            }
+        // ✅ 30초마다 테이블 새로고침
+        setInterval(reloadTableBody, 30000);
+    });
 
-            senderAxios.callAxios("/e6e7b89523ac41e0ba406fbd05ed9de6/work/changeStatus", "post", params);
-        })
+    $(document).on("click", "#viewModal", function (e) {
+        const $viewModalBody = $('#viewModalBody');
+        if ($viewModalBody.is(':visible') && e.target.id === 'viewModal') {
+            closeViewModal();
+        }
     })
 </script>

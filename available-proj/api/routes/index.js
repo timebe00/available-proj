@@ -30,6 +30,19 @@ router.get('/5521ed612b874a198fc98c71fbcee437/order', async function (req, res, 
 
 });
 
+router.get('/5521ed612b874a198fc98c71fbcee437/order/listTable', async function (req, res, next) {
+  try {
+    req.params.sneder = "order"
+    let result = await indexService.getOrders(req);
+
+    res.render('order/listTable', { data: result });
+  } catch (error) {
+    console.log("error", error)
+    next(error);
+  }
+
+});
+
 //  발주처 작성 페이지
 router.get('/5521ed612b874a198fc98c71fbcee437/order/write', async function (req, res, next) {
   try {
@@ -117,6 +130,18 @@ router.post('/5521ed612b874a198fc98c71fbcee437/order/modifyOrder', async functio
   }
 
 });
+
+router.post('/dd684590eb0244c0871d6c7abf734b61/broker/changePrice', async function (req, res, next) {
+  try {
+    let result = await indexService.changePrice(req);
+
+    res.json({ data: result });
+  } catch (error) {
+    console.log("error", error)
+    next(error);
+  }
+
+});
 /////////////////////////////   order E    ///////////////////////////// 
 
 /////////////////////////////   worker S    ///////////////////////////// 
@@ -127,6 +152,19 @@ router.get('/e6e7b89523ac41e0ba406fbd05ed9de6/work', async function (req, res, n
     let result = await indexService.getOrders(req);
 
     res.render('work/list', { data: result });
+  } catch (error) {
+    console.log("error", error)
+    next(error);
+  }
+
+});
+
+router.get('/e6e7b89523ac41e0ba406fbd05ed9de6/work/listTable', async function (req, res, next) {
+  try {
+    req.params.sneder = "order"
+    let result = await indexService.getOrders(req);
+
+    res.render('work/listTable', { data: result });
   } catch (error) {
     console.log("error", error)
     next(error);

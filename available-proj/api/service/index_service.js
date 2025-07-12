@@ -52,7 +52,6 @@ exports.setOrder = (req) => {
             let b_time = req.body.b_time;
             let e_time = req.body.e_time;
             let output = req.body.output;
-            let price = req.body.price;
             let content = req.body.content;
             let note = req.body.note;
             let imp_yn = req.body.imp_yn;
@@ -65,8 +64,8 @@ exports.setOrder = (req) => {
             }
 
             if (sneder != "broker") {
-                order_price = price;
-                work_price = price;
+                order_price = order_price;
+                work_price = order_price;
             }
 
             let params = {

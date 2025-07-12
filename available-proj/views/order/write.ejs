@@ -69,7 +69,7 @@
             display: none;
         }
 
-        #priceFormatted {
+        #orderPriceFormatted {
             width: 100%;
             padding: 8px;
             box-sizing: border-box;
@@ -253,19 +253,20 @@
                         </select>
                         <div class="checkbox-group">
                             <label for="isImportant">중요여부</label>
-                            <input type="checkbox" id="isImportant" name="isImportant" <%=modify.import> 0 ?
-                            "checked" : "" %> />
+                            <input type="checkbox" id="isImportant" name="isImportant" <%=modify.imp_yn=="Y" ? "checked"
+                                : "" %> />
                         </div>
 
                     </div>
                 </div>
 
                 <div>
-                    <label for="priceFormatted">단가</label>
-                    <input type="text" id="priceFormatted" placeholder="금액 입력" autocomplete="off"
+                    <label for="orderPriceFormatted">주문자 단가</label>
+                    <input type="text" id="orderPriceFormatted" placeholder="금액 입력" autocomplete="off"
                         value="<%=modify.order_price%>" />
                     <input type="number" id="price" name="price" min="0" step="1000" />
                 </div>
+
 
                 <div>
                     <label for="editor">작업 내용</label>
@@ -320,18 +321,20 @@
         }
     });
 
-    const priceInput = document.getElementById('price');
-    const priceFormatted = document.getElementById('priceFormatted');
+    const orderPriceInput = document.getElementById('order_price');
+    const showPriceInput = document.getElementById('show_price');
 
-    priceFormatted.addEventListener('input', (e) => {
+    const orderPriceFormatted = document.getElementById('orderPriceFormatted');
+
+    orderPriceFormatted.addEventListener('input', (e) => {
         let value = e.target.value.replace(/[^0-9]/g, '');
         if (value === '') {
-            priceInput.value = '0';
-            priceFormatted.value = '0';
+            orderPriceInput.value = '0';
+            orderPriceFormatted.value = '0';
             return;
         }
-        priceFormatted.value = Number(value).toLocaleString('ko-KR');
-        priceInput.value = value;
+        orderPriceFormatted.value = Number(value).toLocaleString('ko-KR');
+        orderPriceInput.value = value;
     });
 
     $(document).ready(function () {
@@ -346,7 +349,7 @@
             }
 
             document.getElementById("output").value = this.options[selectedIndex].text;
-            priceFormatted.value = Number(this.value).toLocaleString('ko-KR');
+            orderPriceFormatted.value = Number(this.value).toLocaleString('ko-KR');
         })
 
         document.getElementById("b_time").addEventListener("click", function () {
@@ -362,13 +365,13 @@
             let b_time = document.getElementById("b_time").value || null;
             let e_time = document.getElementById("e_time").value || null;
             let output = document.getElementById("output").value;
-            let price = document.getElementById("priceFormatted").value;
+            let order_price = document.getElementById("orderPriceFormatted").value;
             let content = quill.root.innerHTML;
             let note = document.getElementById("note").value;
-            let importData = 0;
+            let imp_yn = "N";
 
             if ($('#isImportant').is(':checked')) {
-                importData = 1;
+                imp_yn = "Y";
             }
 
             if (!title) {
@@ -381,10 +384,10 @@
                 , b_time: b_time
                 , e_time: e_time
                 , output: output
-                , price: price
+                , order_price: order_price
                 , content: content
                 , note: note
-                , importData: importData
+                , imp_yn: imp_yn
             }
 
             senderAxios.callAxios("/5521ed612b874a198fc98c71fbcee437/order/setOrder", "post", params)
@@ -400,15 +403,14 @@
             let b_time = document.getElementById("b_time").value || null;
             let e_time = document.getElementById("e_time").value || null;
             let output = document.getElementById("output").value;
-            let price = document.getElementById("priceFormatted").value;
+            let order_price = document.getElementById("orderPriceFormatted").value;
             let content = quill.root.innerHTML;
             let note = document.getElementById("note").value;
-            let importData = 0;
+            let imp_yn = "N";
 
             if ($('#isImportant').is(':checked')) {
-                importData = 1;
+                imp_yn = "Y";
             }
-
 
             if (!title) {
                 alert("작업명 입력해주세요.");
@@ -421,16 +423,17 @@
                 , b_time: b_time
                 , e_time: e_time
                 , output: output
-                , price: price
+                , order_price: order_price
                 , content: content
                 , note: note
-                , importData: importData
+                , imp_yn: imp_yn
             }
+            console.log("params : ", params)
 
             senderAxios.callAxios("/5521ed612b874a198fc98c71fbcee437/order/modifyOrder", "post", params)
                 .then(function (data) {
                     alert("저장되었습니다.")
-                    location.href = "/5521ed612b874a198fc98c71fbcee437/order/view?order_idx=<%=modify.order_idx%>"
+                    location.href = "/5521ed612b874a198fc98c71fbcee437/order"
                 })
         })
     });
