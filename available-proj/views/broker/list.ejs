@@ -48,10 +48,7 @@
         }
 
         select.status {
-            background-color: #e0f7fa;
-            border: 1px solid #00acc1;
-            color: #006064;
-            width: 100px;
+            width: 130px;
         }
 
         .pagination {
@@ -192,6 +189,14 @@
         $(".status").off().on("change", function () {
             const status = $(this).val();
             const order_idx = $(this).closest("tr").data("order_idx");
+
+            if (status == "03" || status == "05") {
+                $(this).css("background-color", "#ee293b");
+                $(this).css("color", "#ffffff");
+            } else {
+                $(this).css("background-color", "")
+                $(this).css("color", "");
+            }
 
             senderAxios.callAxios("/dd684590eb0244c0871d6c7abf734b61/broker/changeStatus", "post", {
                 status,

@@ -17,7 +17,8 @@
             <%=order.output || "미정" %>
         </td>
         <td>
-            <select class="status">
+            <select class="status"
+                style='<%=(order.status=="03" || order.status=="05") ? "background-color: #ee293b; color: #ffffff;" : ""%>'>
                 <option value="01" <%=order.status=="01" ? "selected" : "" %> >작업요청</option>
                 <option value="02" <%=order.status=="02" ? "selected" : "" %> >수정요청</option>
                 <option value="03" <%=order.status=="03" ? "selected" : "" %> >작업완료</option>
