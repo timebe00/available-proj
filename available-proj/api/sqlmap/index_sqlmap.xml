@@ -157,7 +157,7 @@
     </update>
 
     <update id="available.updatePrice">
-        UPDATE available.tb_price
+        UPDATE tb_price
         SET 
             ORDER_IDX=#{order_idx}
             <if test="order_price != null and order_price != ''">

@@ -7,12 +7,10 @@
         <td>
             <%=order.e_time%>
         </td>
-        <td class="task-name">
-            <a href="#" class="open-view-modal" data-order-idx="<%=order.order_idx%>">
-                <%=order.title%>
-                    <% if(order.imp_yn=="Y" ){ %><span style="color: red; font-size: 20px;">*</span>
-                        <% } %>
-            </a>
+        <td class="task-name show_view_model" data-order-idx="<%=order.order_idx%>">
+            <%=order.title%>
+                <% if(order.imp_yn=="Y" ){ %><span style="color: red; font-size: 20px;">*</span>
+                    <% } %>
         </td>
 
         <td class="deliverable">
