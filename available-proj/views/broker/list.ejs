@@ -219,10 +219,21 @@
     }
 
     function addChangePrice(row) {
-        const order_idx = $(row).data("order_idx");
-        const order_price = $(row).find("input[name='order_price']").val();
-        const work_price = $(row).find("input[name='work_price']").val();
-        const price_show = $(row).find("input[name='priceShow']").is(":checked") ? "Y" : "N";
+        let order_idx = $(row).data("order_idx");
+        let order_price = $(row).find("input[name='order_price']").val();
+        let work_price = $(row).find("input[name='work_price']").val();
+        let price_show = $(row).find("input[name='priceShow']").is(":checked") ? "Y" : "N";
+
+        if (order_price) {
+            let orderFormatted = Number(order_price.replaceAll(",", "")).toLocaleString("ko-KR");
+            $(row).find("input[name='order_price']").val(orderFormatted);
+            order_price = orderFormatted;
+        }
+        if (work_price) {
+            let workFormatted = Number(work_price.replaceAll(",", "")).toLocaleString("ko-KR");
+            $(row).find("input[name='work_price']").val(workFormatted);
+            work_price = workFormatted;
+        }
 
         priceObj["order_" + order_idx] = {
             order_idx,
