@@ -3,18 +3,6 @@ var router = express.Router();
 
 const indexService = require("../service/index_service");
 
-/* GET home page. */
-router.get('/', function (req, res, next) {
-  try {
-    indexService.getOrders(req);
-
-    res.render('index', { title: 'Express' });
-
-  } catch (error) {
-    console.log("error", error)
-    next(error);
-  }
-});
 /////////////////////////////   order S    ///////////////////////////// 
 //  발주처 리스트
 router.get('/5521ed612b874a198fc98c71fbcee437/order', async function (req, res, next) {
