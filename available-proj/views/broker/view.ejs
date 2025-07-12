@@ -79,8 +79,6 @@
         .status {
             display: inline-block;
             padding: 6px 12px;
-            background-color: #f3f7fe;
-            color: #0f69f4;
             border-radius: 4px;
             font-weight: bold;
         }
@@ -199,7 +197,8 @@
 
         <div class="row">
             <label>현재 상태</label>
-            <div class="value"><span class="status">
+            <div class="value"><span class="status"
+                    style='<%=(status=="03" || status=="05") ? "background-color: #ee293b; color: #ffffff;" : "background-color: #f3f7fe; color: #0f69f4;"%>'>
                     <%=statusTxt%>
                 </span></div>
         </div>
