@@ -149,7 +149,7 @@ router.get('/e6e7b89523ac41e0ba406fbd05ed9de6/work', async function (req, res, n
 
 router.get('/e6e7b89523ac41e0ba406fbd05ed9de6/work/listTable', async function (req, res, next) {
   try {
-    req.params.sneder = "order"
+    req.params.sneder = "work"
     let result = await indexService.getOrders(req);
 
     res.render('work/listTable', { data: result });
