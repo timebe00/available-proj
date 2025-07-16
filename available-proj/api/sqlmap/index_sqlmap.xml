@@ -119,10 +119,12 @@
             A.imp_yn,
             C.order_price,
             C.work_price,
-            C.show_yn
+            C.show_yn,
+            E.content
         FROM TB_ORDER A
         INNER JOIN TB_PRICE C ON A.ORDER_IDX = C.ORDER_IDX 
         INNER JOIN TB_ORDER_STATUS D ON A.ORDER_IDX = D.ORDER_IDX
+        INNER JOIN TB_CONTENT E ON A.CONTENT_IDX  = E.CONTENT_IDX
         where 
             A.delete_yn = 'N'
         ORDER BY 

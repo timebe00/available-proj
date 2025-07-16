@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>작업 항목 확인</title>
+
+  <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/quill-image-resize-module@3.0.0/image-resize.min.js"></script>
+
+  <script src="/common/vander/jquery.js"></script>
+
+  <script src="/common/vander/axios.js"></script>
+  <script src="/common/js/senderAxios.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+
+    th,
+    td {
+      padding: 10px;
+      border: 1px solid #ccc;
+      text-align: center;
+    }
+
+    th {
+      background-color: #f5f5f5;
+    }
+
+    td select {
+      padding: 4px;
+      font-weight: bold;
+    }
+
+    select.status {
+      width: 130px;
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .pagination button {
+      padding: 6px 12px;
+      border: 1px solid #ccc;
+      background-color: white;
+      cursor: pointer;
+    }
+
+    .pagination button.active {
+      background-color: #007bff;
+      color: white;
+      border-color: #007bff;
+    }
+
+    .task-name {
+      width: 50%;
+    }
+
+    .deliverable {
+      width: 10%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .important {
+      border: 2px solid red;
+      background-color: #ffe6e6;
+    }
+
+    a {
+      color: #007bff;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 12px;
+      right: 20px;
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    .hover_line:hover {
+      background-color: #f3f7fe;
+    }
+  </style>
+</head>
+
+<body>
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <h1>작업 항목 확인</h1>
+    <div>
+      <a href="/dd684590eb0244c0871d6c7abf734b61/broker/write"
+        style="padding: 10px 16px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px;">작성하기</a>
+      <a href="javascript:changePrice()"
+        style="padding: 10px 16px; background-color: #000000; color: white; text-decoration: none; border-radius: 4px;">단가
+        적용하기</a>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Best</th>
+        <th>At Least</th>
+        <th class="task-name">작업명</th>
+        <th class="deliverable">산출물</th>
+        <th>완료 여부</th>
+        <th>주문자 단가</th>
+        <th>작업자 단가</th>
+        <th>단가 노출 여부</th>
+      </tr>
+    </thead>
+    <tbody id="taskTableBody">
+      <tr class="hover_line" data-order_idx="<%=order.order_idx%>">
+        <td>
+          2024-07-15 01:56:25
+        </td>
+        <td>
+          2024-07-15 02:56:25
+        </td>
+        <td class="task-name show_view_model" data-order-idx="<%=order.order_idx%>">
+          test1<span style="color: red; font-size: 20px;">*</span>
+        </td>
+
+        <td class="deliverable">
+          메시지
+        </td>
+        <td>
+          <select class="status" style='background-color: #ee293b; color: #ffffff;'>
+            <option value="01" <%=order.status=="01" ? "selected" : "" %> >작업요청</option>
+            <option value="02" <%=order.status=="02" ? "selected" : "" %> >수정요청</option>
+            <option value="03" <%=order.status=="03" ? "selected" : "" %> >작업완료</option>
+            <option value="04" <%=order.status=="04" ? "selected" : "" %> >납품완료</option>
+            <option value="05" <%=order.status=="05" ? "selected" : "" %> >수정완료</option>
+            <option value="06" <%=order.status=="06" ? "selected" : "" %> >완료후 수정 요청</option>
+          </select>
+        </td>
+        <td>
+          <input type="text" style="width: 100px;" name="order_price" value="111,111" />
+        </td>
+        <td>
+          <input type="text" style="width: 100px;" name="work_price" value="222,222" />
+        </td>
+        <td>
+          <input type="checkbox" name="priceShow" checked />
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- 작업 보기 모달 -->
+  <div id="viewModal" class="modal">
+    <div class="modal-content">
+      <span class="modal-close" onclick="closeViewModal()">&times;</span>
+      <div id="viewModalBody">불러오는 중...</div>
+    </div>
+  </div>
+</body>
+
+</html>

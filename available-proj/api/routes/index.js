@@ -3,6 +3,16 @@ var router = express.Router();
 
 const indexService = require("../service/index_service");
 
+router.get('/', async function (req, res, next) {
+  try {
+    res.render('index');
+  } catch (error) {
+    console.log("error", error)
+    next(error);
+  }
+
+});
+
 /////////////////////////////   order S    ///////////////////////////// 
 //  발주처 리스트
 router.get('/5521ed612b874a198fc98c71fbcee437/order', async function (req, res, next) {
@@ -190,9 +200,8 @@ router.post('/e6e7b89523ac41e0ba406fbd05ed9de6/work/changeStatus', async functio
 router.get('/dd684590eb0244c0871d6c7abf734b61/broker', async function (req, res, next) {
   try {
     req.params.sneder = "broker"
-    let result = await indexService.getOrders(req);
 
-    res.render('broker/list', { data: result });
+    res.render('broker/listView');
   } catch (error) {
     console.log("error", error)
     next(error);
