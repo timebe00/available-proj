@@ -18,9 +18,8 @@ router.get('/', async function (req, res, next) {
 router.get('/5521ed612b874a198fc98c71fbcee437/order', async function (req, res, next) {
   try {
     req.params.sneder = "order"
-    let result = await indexService.getOrders(req);
 
-    res.render('order/list', { data: result });
+    res.render('order/listView');
   } catch (error) {
     console.log("error", error)
     next(error);
@@ -129,9 +128,21 @@ router.post('/5521ed612b874a198fc98c71fbcee437/order/modifyOrder', async functio
 
 });
 
-router.post('/dd684590eb0244c0871d6c7abf734b61/broker/changePrice', async function (req, res, next) {
+router.post('/5521ed612b874a198fc98c71fbcee437/order/changePrice', async function (req, res, next) {
   try {
     let result = await indexService.changePrice(req);
+
+    res.json({ data: result });
+  } catch (error) {
+    console.log("error", error)
+    next(error);
+  }
+
+});
+
+router.post('/5521ed612b874a198fc98c71fbcee437/order/getOrderFixs', async function (req, res, next) {
+  try {
+    let result = await indexService.getOrderFixs(req);
 
     res.json({ data: result });
   } catch (error) {
@@ -147,9 +158,8 @@ router.post('/dd684590eb0244c0871d6c7abf734b61/broker/changePrice', async functi
 router.get('/e6e7b89523ac41e0ba406fbd05ed9de6/work', async function (req, res, next) {
   try {
     req.params.sneder = "work"
-    let result = await indexService.getOrders(req);
 
-    res.render('work/list', { data: result });
+    res.render('work/listView');
   } catch (error) {
     console.log("error", error)
     next(error);
@@ -185,6 +195,18 @@ router.get('/e6e7b89523ac41e0ba406fbd05ed9de6/work/view', async function (req, r
 router.post('/e6e7b89523ac41e0ba406fbd05ed9de6/work/changeStatus', async function (req, res, next) {
   try {
     let result = await indexService.changeStatus(req);
+
+    res.json({ data: result });
+  } catch (error) {
+    console.log("error", error)
+    next(error);
+  }
+
+});
+
+router.post('/e6e7b89523ac41e0ba406fbd05ed9de6/work/getOrderFixs', async function (req, res, next) {
+  try {
+    let result = await indexService.getOrderFixs(req);
 
     res.json({ data: result });
   } catch (error) {

@@ -209,16 +209,15 @@ exports.modifyOrder = (req) => {
         let result = {};
         let connection;
         try {
-            console.log("req.body : ", req.body)
-
             let sneder = req.body.sneder;
             let order_idx = req.body.order_idx
             let title = req.body.title
             let b_time = req.body.b_time || null;
             let e_time = req.body.e_time || null;
             let output = req.body.output;
+            let price = req.body.price || 0;
             let order_price = req.body.order_price || 0;
-            let work_price = req.body.show_price || 0;
+            let work_price = req.body.show_price || null;
             let content = req.body.content;
             let note = req.body.note;
             let imp_yn = req.body.imp_yn;
@@ -226,10 +225,6 @@ exports.modifyOrder = (req) => {
 
             if (!title) {
                 throw ({ code: "99", message: "title 없음" });
-            }
-
-            if (sneder != "broker") {
-                order_price = price;
             }
 
             let params = {

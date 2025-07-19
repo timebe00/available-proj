@@ -1,4 +1,6 @@
-<% for(let orderIdx in data.orders) { let order=data.orders[orderIdx];%>
+<% let orderData={} ;for(let orderIdx in data.orders) { let order=data.orders[orderIdx];%>
+
+
     <!-- <tr class=" important"> -->
     <tr class="hover_line" data-order_idx="<%=order.order_idx%>">
         <td>
@@ -7,7 +9,7 @@
         <td>
             <%=order.e_time%>
         </td>
-        <td class="task-name show_view_model" data-order-idx="<%=order.order_idx%>">
+        <td class="task-name show_view_model" data-order_idx="<%=order.order_idx%>">
             <%=order.title%>
                 <% if(order.imp_yn=="Y" ){ %><span style="color: red; font-size: 20px;">*</span>
                     <% } %>
@@ -28,7 +30,25 @@
             </select>
         </td>
         <td>
-            <%=order.order_price%>
+            <%if(order.show_yn=="Y" ){%>
+                <%=order.order_price || '' %>
+                    <%}%>
         </td>
     </tr>
+
+    <script>
+        contentData["<%= order.order_idx %>"] = {
+            status: "<%=order.status%>",
+            title: "<%=order.title%>",
+            b_time: "<%=order.b_time%>",
+            e_time: "<%=order.e_time%>",
+            output: "<%=order.output%>",
+            status: "<%=order.status%>",
+            imp_yn: "<%=order.imp_yn%>",
+            order_price: "<%=order.order_price%>",
+            work_price: "<%=order.work_price%>",
+            show_yn: "<%=order.show_yn%>",
+            content: `<%-order.content.replace( /\\"/g, '"' )%>`,
+        }
+    </script>
     <%}%>

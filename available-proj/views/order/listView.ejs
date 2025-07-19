@@ -239,11 +239,8 @@
     <h1>작업 항목 확인</h1>
 
     <div style="text-align: right; margin-bottom: 35px;">
-        <a href="/dd684590eb0244c0871d6c7abf734b61/broker/write"
+        <a href="/5521ed612b874a198fc98c71fbcee437/order/write"
             style="padding: 10px 16px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px;">작성하기</a>
-        <a href="javascript:changePrice()"
-            style="padding: 10px 16px; background-color: #000000; color: white; text-decoration: none; border-radius: 4px;">단가
-            적용하기</a>
     </div>
 
     <table>
@@ -254,9 +251,7 @@
                 <th class="task-name">작업명</th>
                 <th class="deliverable">산출물</th>
                 <th>완료 여부</th>
-                <th>주문자 단가</th>
-                <th>작업자 단가</th>
-                <th>단가 노출 여부</th>
+                <th>단가</th>
             </tr>
         </thead>
         <tbody id="taskTableBody"></tbody>
@@ -291,11 +286,8 @@
                     <div class="row"><label>산출물</label>
                         <div class="value" id="output">main_ui_v2.png (PNG)</div>
                     </div>
-                    <div class="row"><label>주문자 단가</label>
+                    <div class="row"><label>단가</label>
                         <div class="value" id="price">250,000원</div>
-                    </div>
-                    <div class="row"><label>작업자 단가</label>
-                        <div class="value" id="work_price">250,000원</div>
                     </div>
                     <div class="row"><label>비고</label>
                         <div class="value" id="note">-</div>
@@ -393,7 +385,7 @@
             content: html,
         }
 
-        senderAxios.callAxios("/dd684590eb0244c0871d6c7abf734b61/broker/setOrderFix", "post", params)
+        senderAxios.callAxios("/5521ed612b874a198fc98c71fbcee437/order/setOrderFix", "post", params)
             .then((data) => {
                 const phase = document.querySelectorAll('.revision-phase').length + 1;
                 const section = document.createElement('div');
@@ -435,7 +427,7 @@
 
     // ✅ 테이블 새로고침 함수
     function reloadTableBody() {
-        $("#taskTableBody").load("/dd684590eb0244c0871d6c7abf734b61/broker/listTable");
+        $("#taskTableBody").load("/5521ed612b874a198fc98c71fbcee437/order/listTable");
     }
 
     // ✅ 최초 실행 시
@@ -498,7 +490,7 @@
     })
 
     function sendModify() {
-        location.href = "/dd684590eb0244c0871d6c7abf734b61/broker/modify?order_idx=" + selectOrder
+        location.href = "/5521ed612b874a198fc98c71fbcee437/order/modify?order_idx=" + selectOrder
     }
 
     $(document).on("click", "#viewModal", function (e) {
@@ -508,45 +500,9 @@
         }
     })
 
-    function changePriceObj(tr) {
-        let order_idx = $(tr).data("order_idx");
-        let order_price = $(tr).find("input[name='order_price']").val();
-        let work_price = $(tr).find("input[name='work_price']").val();
-        let priceShow = $(tr).find("input[name='priceShow']").is(":checked");
-
-        let params = {
-            order_idx: order_idx,
-            order_price: order_price,
-            work_price: work_price,
-            price_show: (priceShow ? "Y" : "N"),
-        }
-
-        priceObj["order_" + order_idx] = params;
-    };
-
-    $(document).on("input", "input[name='order_price']", function () {
-        let tr = $(this).parent().parent();
-        let price = Number($(this).val().replace(/[^0-9]/g, ""));
-        $(this).val(price.toLocaleString("ko-KR"));
-
-        changePriceObj(tr);
-    })
-
-    $(document).on("input", "input[name='work_price']", function () {
-        let tr = $(this).parent().parent();
-        let price = Number($(this).val().replace(/[^0-9]/g, ""));
-        $(this).val(price.toLocaleString("ko-KR"));
-
-        changePriceObj(tr);
-    })
-
-    $(document).on("change", "input[name='priceShow']", function () {
-        let tr = $(this).parent().parent();
-        changePriceObj(tr);
-    })
 
     function changePrice() {
-        senderAxios.callAxios("/dd684590eb0244c0871d6c7abf734b61/broker/changePrice", "post", {
+        senderAxios.callAxios("/5521ed612b874a198fc98c71fbcee437/order/changePrice", "post", {
             priceObj: JSON.stringify(priceObj)
         }).then(() => priceObj = {});
     }
