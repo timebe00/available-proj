@@ -296,3 +296,22 @@ exports.changePrice = (req) => {
         }
     });
 }
+
+exports.getOrderFixs = (req) => {
+    return new Promise(async (resolve, reject) => {
+        let result = {};
+        let connection;
+        try {
+            let order_idx = req.body.order_idx
+            connection = await connectionManager.getConnection({ readOnly: true });
+
+            const orderFixs = await indexModule.selectOrderFix(connection, { order_idx: order_idx });
+
+            result.orderFixs = orderFixs;
+
+            resolve(result);
+        } catch (error) {
+            reject(error); // <- 여기 수정
+        }
+    });
+}

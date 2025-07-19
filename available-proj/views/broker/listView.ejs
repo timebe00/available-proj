@@ -228,11 +228,24 @@
         .revision-content {
             word-break: break-all;
         }
+
+        .text_center {
+            text-align: center;
+        }
     </style>
 </head>
 
 <body>
     <h1>작업 항목 확인</h1>
+
+    <div style="text-align: right; margin-bottom: 35px;">
+        <a href="/dd684590eb0244c0871d6c7abf734b61/broker/write"
+            style="padding: 10px 16px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px;">작성하기</a>
+        <a href="javascript:changePrice()"
+            style="padding: 10px 16px; background-color: #000000; color: white; text-decoration: none; border-radius: 4px;">단가
+            적용하기</a>
+    </div>
+
     <table>
         <thead>
             <tr>
@@ -256,9 +269,9 @@
             <div id="viewModalBody">
                 <!-- view.ejs 내용 통합 -->
                 <div class="container">
-                    <h1>작업 내용 확인</h1>
+                    <h1 class="text_center">작업 내용 확인</h1>
                     <div class="top-actions">
-                        <a href="#" class="btn btn-blue">수정하기</a>
+                        <a href="javascript:sendModify()" class="btn btn-blue">수정하기</a>
                     </div>
                     <div class="row"><label>작업명</label>
                         <div class="value" id="order_title">메인페이지 UI 구성</div>
@@ -306,6 +319,24 @@
                                 </ul>
                             </div>
                         </div>
+                        <div class="revision-phase">
+                            <div class="revision-title">수정 사항 2차</div>
+                            <div class="revision-content">
+                                <ul>
+                                    <li>버튼 색상 변경 요청</li>
+                                    <li>폰트 사이즈 확대</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="revision-phase">
+                            <div class="revision-title">수정 사항 3차</div>
+                            <div class="revision-content">
+                                <ul>
+                                    <li>버튼 색상 변경 요청</li>
+                                    <li>폰트 사이즈 확대</li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -322,7 +353,9 @@
 </html>
 
 <script>
-    let contentData = {}
+    var contentData = {};
+    var priceObj = {};
+    var selectOrder = 0;
 
     const quill = new Quill('#editor', {
         theme: 'snow',
@@ -393,6 +426,7 @@
     $(document).on("click", ".show_view_model", function () {
         let order_idx = $(this).data("order_idx");
         let order = contentData[order_idx]
+        selectOrder = order_idx;
 
         $("#order_title").text(order.title);
         $("#b_time").text(order.b_time);
@@ -404,5 +438,91 @@
         $("#order_content").html(order.content);
 
         $("#viewModal").show();
+
+        senderAxios.callAxios("/dd684590eb0244c0871d6c7abf734b61/broker/getOrderFixs", "post", { order_idx: order_idx })
+            .then((data) => {
+                $("#revisionsContainer").empty();
+
+                for (let orderFixIdx in data.data.data.orderFixs) {
+                    let orderFix = data.data.data.orderFixs[orderFixIdx];
+
+                    let txt = '<div class="revision-phase">';
+                    txt += '<div class="revision-title">수정 사항 ' + (data.data.data.orderFixs.length - Number(orderFixIdx)) + '차</div>';
+                    txt += '<div class="revision-content">';
+                    txt += orderFix.content.replace(/\\"/g, '"');
+                    txt += '</div>';
+                    txt += '</div>';
+
+                    $("#revisionsContainer").append(txt)
+                }
+            })
+    })
+
+    function sendModify() {
+        location.href = "/dd684590eb0244c0871d6c7abf734b61/broker/modify?order_idx=" + selectOrder
+    }
+
+    $(document).on("click", "#viewModal", function (e) {
+        const $viewModalBody = $('#viewModalBody');
+        if ($viewModalBody.is(':visible') && e.target.id === 'viewModal') {
+            $('#viewModal').hide();
+        }
+    })
+
+    function changePriceObj(tr) {
+        let order_idx = $(tr).data("order_idx");
+        let order_price = $(tr).find("input[name='order_price']").val();
+        let work_price = $(tr).find("input[name='work_price']").val();
+        let priceShow = $(tr).find("input[name='priceShow']").is(":checked");
+
+        let params = {
+            order_idx: order_idx,
+            order_price: order_price,
+            work_price: work_price,
+            price_show: (priceShow ? "Y" : "N"),
+        }
+
+        priceObj["order_" + order_idx] = params;
+    };
+
+    $(document).on("input", "input[name='order_price']", function () {
+        let tr = $(this).parent().parent();
+        let price = Number($(this).val().replace(/[^0-9]/g, ""));
+        $(this).val(price.toLocaleString("ko-KR"));
+
+        changePriceObj(tr);
+    })
+
+    $(document).on("input", "input[name='work_price']", function () {
+        let tr = $(this).parent().parent();
+        let price = Number($(this).val().replace(/[^0-9]/g, ""));
+        $(this).val(price.toLocaleString("ko-KR"));
+
+        changePriceObj(tr);
+    })
+
+    $(document).on("change", "input[name='priceShow']", function () {
+        let tr = $(this).parent().parent();
+        changePriceObj(tr);
+    })
+
+    function changePrice() {
+        senderAxios.callAxios("/dd684590eb0244c0871d6c7abf734b61/broker/changePrice", "post", {
+            priceObj: JSON.stringify(priceObj)
+        }).then(() => priceObj = {});
+    }
+
+    $(document).on("change", ".status", function () {
+        let status = $(this).val();
+        let order_idx = $(this).parent().parent().data("order_idx")
+        if (status == "03" || status == "05") {
+            $(this).css("background-color", "#ee293b");
+            $(this).css("color", "#ffffff");
+        }
+
+        senderAxios.callAxios("/dd684590eb0244c0871d6c7abf734b61/broker/changeStatus", "post", {
+            status,
+            order_idx
+        });
     })
 </script>

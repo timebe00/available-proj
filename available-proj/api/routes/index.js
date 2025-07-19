@@ -322,5 +322,17 @@ router.post('/dd684590eb0244c0871d6c7abf734b61/broker/changePrice', async functi
   }
 
 });
+
+router.post('/dd684590eb0244c0871d6c7abf734b61/broker/getOrderFixs', async function (req, res, next) {
+  try {
+    let result = await indexService.getOrderFixs(req);
+
+    res.json({ data: result });
+  } catch (error) {
+    console.log("error", error)
+    next(error);
+  }
+
+});
 /////////////////////////////   broker E    ///////////////////////////// 
 module.exports = router;

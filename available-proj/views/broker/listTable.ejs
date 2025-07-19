@@ -30,12 +30,10 @@
             </select>
         </td>
         <td>
-            <input type="text" style="width: 100px;" name="order_price"
-                onkeypress="return allowOnlyNumbersAndComma(event)" value="<%=order.order_price || '' %>" />
+            <input type="text" style="width: 100px;" name="order_price" value="<%=order.order_price || '' %>" />
         </td>
         <td>
-            <input type="text" style="width: 100px;" name="work_price"
-                onkeypress="return allowOnlyNumbersAndComma(event)" value="<%=order.work_price || '' %>" />
+            <input type="text" style="width: 100px;" name="work_price" value="<%=order.work_price || '' %>" />
         </td>
         <td>
             <input type="checkbox" name="priceShow" <%=order.show_yn=="Y" ? "checked" : "" %> />

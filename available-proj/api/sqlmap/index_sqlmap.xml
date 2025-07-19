@@ -188,10 +188,11 @@
     </select>
 
     <select id="available.selectOrderFix">
-        SELECT TOF.order_idx , TOF.order_fix_idx , TC.content 
-        FROM TB_ORDER_FIX TOF 
-        INNER JOIN TB_CONTENT TC ON TOF.CONTENT_IDX  = TC.CONTENT_IDX 
-        WHERE TOF.ORDER_IDX = #{order_idx}
+        SELECT TOF.order_fix_idx, TOF.order_idx, TC.content 
+        FROM TB_ORDER_FIX TOF
+        INNER JOIN TB_CONTENT TC ON TOF.CONTENT_IDX  = TC.CONTENT_IDX
+        WHERE TOF.ORDER_IDX = #{order_idx} AND TOF.DELETE_YN = 'N'
+        ORDER BY TOF.ORDER_FIX_IDX DESC
     </select>
 
     <insert id="available.insertOrderFix">
