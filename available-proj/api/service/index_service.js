@@ -190,6 +190,8 @@ exports.setOrderFix = (req) => {
 
             await indexModule.insertOrderFixHis(connection, params);
 
+            await indexModule.updateOrderStatus(connection, { order_idx: order_idx, status: "02" });
+
             result.order_fix_idx = params.order_fix_idx;
             connection.commit();
             resolve(result);
