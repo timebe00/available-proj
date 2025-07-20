@@ -281,7 +281,7 @@
                         </div>
                     </div>
                     <div class="row"><label>작업명</label>
-                        <div class="value" id="order_title">메인페이지 UI 구성</div>
+                        <div class="value" id="order_title" style="word-break: break-all;">메인페이지 UI 구성</div>
                     </div>
                     <div class="row"><label>Best</label>
                         <div class="value" id="b_time">2025-07-10 18:00</div>
@@ -299,7 +299,7 @@
                         <div class="value" id="work_price">250,000원</div>
                     </div>
                     <div class="row"><label>비고</label>
-                        <div class="value" id="note">-</div>
+                        <div class="value" id="note" style="word-break: break-all;">-</div>
                     </div>
                     <div class="section-title">
                         <span>작업 내용</span>
@@ -461,8 +461,6 @@
         else if (order.status == "04") { status = "납품완료"; }
         else if (order.status == "05") { status = "수정완료"; background_color = "#ee293b"; color = "#ffffff"; }
         else if (order.status == "06") { status = "완료후 수정 요청"; }
-
-
 
         $("#order_status").text(status);
         $("#order_status").css("background-color", background_color);

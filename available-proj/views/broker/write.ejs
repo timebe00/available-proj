@@ -472,6 +472,14 @@
                     location.href = "/dd684590eb0244c0871d6c7abf734b61/broker"
                 })
         })
+
+        $("#title").on("input", function () {
+            if ($(this).val().length > 255) {
+                alert("제목을 255자 이내로 수정해주세요.");
+                let titleMax = $(this).val().substring(0, 255);
+                $(this).val(titleMax);
+            }
+        })
     });
 
     $(function () {

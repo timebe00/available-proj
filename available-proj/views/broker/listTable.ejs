@@ -9,7 +9,7 @@
         <td>
             <%=order.e_time%>
         </td>
-        <td class="task-name show_view_model" data-order_idx="<%=order.order_idx%>">
+        <td class="task-name show_view_model" style="text-align: left;" data-order_idx="<%=order.order_idx%>">
             <%=order.title%>
                 <% if(order.imp_yn=="Y" ){ %><span style="color: red; font-size: 20px;">*</span>
                     <% } %>
@@ -56,6 +56,7 @@
             work_price: "<%=order.work_price%>",
             show_yn: "<%=order.show_yn%>",
             content: `<%-order.content.replace( /\\"/g, '"' )%>`,
+            note: `<%-order.note%>`,
         }
     </script>
     <%}%>

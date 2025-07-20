@@ -120,7 +120,8 @@
             C.order_price,
             C.work_price,
             C.show_yn,
-            E.content
+            E.content,
+            A.note
         FROM TB_ORDER A
         INNER JOIN TB_PRICE C ON A.ORDER_IDX = C.ORDER_IDX 
         INNER JOIN TB_ORDER_STATUS D ON A.ORDER_IDX = D.ORDER_IDX
