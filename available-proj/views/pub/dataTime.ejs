@@ -1,0 +1,39 @@
+<!-- jQuery + jQuery UI -->
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+
+<!-- jQuery UI Timepicker Addon -->
+<script
+    src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.3/jquery-ui-timepicker-addon.min.js"></script>
+<link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.3/jquery-ui-timepicker-addon.min.css">
+
+
+<!-- Input -->
+<input type="text" id="customDatetime" placeholder="날짜와 시간 선택" />
+
+<script>
+    $(function () {
+        $('#customDatetime').datetimepicker({
+            dateFormat: 'yy-mm-dd',
+            timeFormat: 'HH:mm',
+            hourMin: 13,
+            hourMax: 22,
+            stepMinute: 30,
+            controlType: 'select',
+            beforeShow: function (input, inst) {
+                setTimeout(function () {
+                    // 시간 필터링
+                    const hourSelect = inst.dpDiv.find(".ui_tpicker_hour");
+                    hourSelect.find("option").each(function () {
+                        const val = parseInt($(this).val(), 10);
+                        if (![13, 17, 22].includes(val)) {
+                            $(this).remove();
+                        }
+                    });
+                }, 10);
+            }
+        });
+    });
+</script>
