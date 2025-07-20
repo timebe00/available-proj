@@ -10,6 +10,14 @@
     <script src="https://cdn.jsdelivr.net/npm/quill-image-resize-module@3.0.0/image-resize.min.js"></script>
 
     <script src="/common/vander/jquery.js"></script>
+    <!-- 2. 라이브러리 로드 -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css" />
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.3/jquery-ui-timepicker-addon.min.css" />
+
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.3/jquery-ui-timepicker-addon.min.js"></script>
 
     <script src="/common/vander/axios.js"></script>
     <script src="/common/js/senderAxios.js"></script>
@@ -230,11 +238,13 @@
                 <div class="date-group">
                     <div>
                         <label for="b_time">Best</label>
-                        <input type="datetime-local" step="300" id="b_time" name="b_time" value="<%=b_time%>" />
+                        <input type="text" id="b_time" name="datatime" placeholder="날짜와 시간 선택" value="<%=b_time%>" />
+                        <!-- <input type="datetime-local" step="300" id="b_time" name="b_time" value="<%=b_time%>" /> -->
                     </div>
                     <div>
                         <label for="e_time">At Least</label>
-                        <input type="datetime-local" id="e_time" name="e_time" value="<%=e_time%>" />
+                        <input type="text" id="e_time" name="datatime" placeholder="날짜와 시간 선택" value="<%=e_time%>" />
+                        <!-- <input type="datetime-local" id="e_time" name="e_time" value="<%=e_time%>" /> -->
                     </div>
                 </div>
 
@@ -432,5 +442,47 @@
                     location.href = "/5521ed612b874a198fc98c71fbcee437/order"
                 })
         })
+    });
+
+    $(function () {
+        $('input[name="datatime"]').datetimepicker({
+            dateFormat: 'yy-mm-dd',
+            timeFormat: 'HH:mm',
+            controlType: 'select',
+            stepMinute: 30,
+            hourMin: 13,
+            hourMax: 22,
+
+            beforeShow: function (input, inst) {
+                setTimeout(() => filterOptions(), 10);
+            },
+
+            onSelect: function () {
+                setTimeout(() => filterOptions(), 10);
+            }
+        });
+
+        function filterOptions() {
+            const dp = $('.ui-timepicker-div');
+            if (!dp.length) return;
+
+            // 시간 필터
+            dp.find('.ui_tpicker_hour select option').each(function () {
+                const val = parseInt($(this).val(), 10);
+                if (![13, 17, 22].includes(val)) $(this).remove();
+            });
+
+            // 분 필터
+            dp.find('.ui_tpicker_minute select option').each(function () {
+                const val = parseInt($(this).val(), 10);
+                if (![0, 30].includes(val)) $(this).remove();
+            });
+        }
+
+        // ✅ 기본값 지정: 오늘 날짜 13:00
+        const now = new Date();
+        now.setHours(13);
+        now.setMinutes(0);
+        $('input[name="datatime"]').datetimepicker('setDate', now);
     });
 </script>

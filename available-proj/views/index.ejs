@@ -1,39 +1,72 @@
-<!-- jQuery + jQuery UI -->
-<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
-
-<!-- jQuery UI Timepicker Addon -->
-<script
-  src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.3/jquery-ui-timepicker-addon.min.js"></script>
-<link rel="stylesheet"
-  href="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.3/jquery-ui-timepicker-addon.min.css">
-
-
-<!-- Input -->
+<!-- 1. HTML -->
 <input type="text" id="customDatetime" placeholder="날짜와 시간 선택" />
 
+<!-- 2. 라이브러리 로드 -->
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css" />
+<link rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.3/jquery-ui-timepicker-addon.min.css" />
+
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.3/jquery-ui-timepicker-addon.min.js"></script>
+
+<!-- 3. 스타일 -->
+<style>
+  .ui-datepicker-close-btn {
+    position: absolute;
+    bottom: 6px;
+    right: 10px;
+    background: #dc3545;
+    color: #fff;
+    padding: 4px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+  }
+</style>
+
+<!-- 4. 스크립트 -->
 <script>
   $(function () {
     $('#customDatetime').datetimepicker({
       dateFormat: 'yy-mm-dd',
       timeFormat: 'HH:mm',
+      controlType: 'select',
+      stepMinute: 30,
       hourMin: 13,
       hourMax: 22,
-      stepMinute: 30,
-      controlType: 'select',
+
       beforeShow: function (input, inst) {
-        setTimeout(function () {
-          // 시간 필터링
-          const hourSelect = inst.dpDiv.find(".ui_tpicker_hour");
-          hourSelect.find("option").each(function () {
-            const val = parseInt($(this).val(), 10);
-            if (![13, 17, 22].includes(val)) {
-              $(this).remove();
-            }
-          });
-        }, 10);
+        setTimeout(() => filterOptions(), 10);
+      },
+
+      onSelect: function () {
+        setTimeout(() => filterOptions(), 10);
       }
     });
+
+    function filterOptions() {
+      const dp = $('.ui-timepicker-div');
+      if (!dp.length) return;
+
+      // 시간 필터
+      dp.find('.ui_tpicker_hour select option').each(function () {
+        const val = parseInt($(this).val(), 10);
+        if (![13, 17, 22].includes(val)) $(this).remove();
+      });
+
+      // 분 필터
+      dp.find('.ui_tpicker_minute select option').each(function () {
+        const val = parseInt($(this).val(), 10);
+        if (![0, 30].includes(val)) $(this).remove();
+      });
+    }
+
+    // ✅ 기본값 지정: 오늘 날짜 13:00
+    const now = new Date();
+    now.setHours(13);
+    now.setMinutes(0);
+    $('#customDatetime').datetimepicker('setDate', now);
   });
 </script>
