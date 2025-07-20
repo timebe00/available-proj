@@ -132,21 +132,28 @@
         <if test="sneder == 'order' or sneder == 'broker'">
             (
                 CASE
-                    WHEN D.status = '03' THEN 0
-                    WHEN D.status = '05' THEN 0
-                    WHEN D.status = '04' THEN 2
-                    ELSE 1
+                    WHEN A.IMP_YN = 'Y' AND D.status = '03' then 0
+                    WHEN A.IMP_YN = 'Y' AND D.status = '05' then 0
+                    WHEN A.IMP_YN = 'Y' AND D.status != '04' then 1
+                    WHEN D.status = '03' THEN 2
+                    WHEN D.status = '05' THEN 2
+                    WHEN D.status = '04' THEN 99
+                    ELSE 3
                 END
             ),
         </if>
         <if test="sneder == 'work'">
             (
                 CASE
-                    WHEN D.status = '01' THEN 0
-                    WHEN D.status = '02' THEN 0
-                    WHEN D.status = '06' THEN 0
-                    WHEN D.status = '04' THEN 2
-                    ELSE 1
+                    WHEN A.IMP_YN = 'Y' AND D.status = '01' then 0
+                    WHEN A.IMP_YN = 'Y' AND D.status = '02' then 0
+                    WHEN A.IMP_YN = 'Y' AND D.status = '06' then 0
+                    WHEN A.IMP_YN = 'Y' AND D.status != '04' then 1
+                    WHEN D.status = '01' THEN 2
+                    WHEN D.status = '02' THEN 2
+                    WHEN D.status = '06' THEN 2
+                    WHEN D.status = '04' THEN 99
+                    ELSE 3
                 END
             ),
         </if>
