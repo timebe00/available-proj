@@ -10,10 +10,13 @@
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/quill-image-resize-module@3.0.0/image-resize.min.js"></script>
 
+
     <script src="/common/vander/jquery.js"></script>
     <script src="/common/vander/axios.js"></script>
     <script src="/common/js/senderAxios.js"></script>
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -231,6 +234,13 @@
         #modalClose:hover {
             color: #bbb;
         }
+
+        .revision-edit-btn.black-pencil {
+            margin-left: 10px;
+            font-size: 18px;
+            color: #000;
+            text-decoration: none;
+        }
     </style>
 </head>
 
@@ -318,9 +328,18 @@
                         <span>수정 사항</span>
                         <button id="toggleEditorBtn" class="btn">+ 수정 사항 쓰기</button>
                     </div>
+                    <div class="editor-container" id="editorWrapper">
+                        <div id="editor" class="quill-container"></div>
+                        <button id="submitRevisionPhase" class="btn btn-blue">차수 추가</button>
+                        <hr />
+                    </div>
                     <div id="revisionsContainer">
                         <div class="revision-phase">
-                            <div class="revision-title">수정 사항 1차</div>
+                            <div class="revision-title">
+                                수정 사항 1차
+                                <a href="#" class="revision-edit-btn black-pencil" title="수정"><i
+                                        class="fas fa-pencil-alt"></i></a>
+                            </div>
                             <div class="revision-content">
                                 <ul>
                                     <li>버튼 색상 변경 요청</li>
@@ -328,10 +347,6 @@
                                 </ul>
                             </div>
                         </div>
-                    </div>
-                    <div class="editor-container" id="editorWrapper">
-                        <div id="editor" class="quill-container"></div>
-                        <button id="submitRevisionPhase" class="btn btn-blue">차수 추가</button>
                     </div>
                 </div>
             </div>

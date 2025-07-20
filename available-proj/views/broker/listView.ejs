@@ -257,6 +257,7 @@
                 <th>주문자 단가</th>
                 <th>작업자 단가</th>
                 <th>단가 노출 여부</th>
+                <th>삭제</th>
             </tr>
         </thead>
         <tbody id="taskTableBody"></tbody>
@@ -573,5 +574,20 @@
                 contentData[order_idx].status = status;
             })
             ;
+    })
+
+    $(document).on("click", "button[name='orderDel']", function () {
+        const tr = $(this).parent().parent();
+        if (confirm("해당 주문을 정말 삭제하시겠습니까?")) {
+            const order_idx = $(tr).data("order_idx");
+            const params = {
+                order_idx: order_idx,
+            }
+
+            senderAxios.callAxios("/dd684590eb0244c0871d6c7abf734b61/broker/delOrder", "post", params)
+                .then((data) => {
+                    $(tr).remove();
+                });
+        }
     })
 </script>

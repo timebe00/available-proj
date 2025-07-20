@@ -214,4 +214,10 @@
             , IMP_YN=#{imp_yn}, DELETE_YN=#{delete_yn}
         WHERE ORDER_IDX=#{order_idx};
     </update>
+
+    <update id="available.deletOrder" >
+        UPDATE TB_ORDER
+        SET DELETE_YN = 'Y'
+        WHERE ORDER_IDX = #{order_idx}
+    </update>
 </mapper>

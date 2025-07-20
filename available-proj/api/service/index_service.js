@@ -312,3 +312,24 @@ exports.getOrderFixs = (req) => {
         }
     });
 }
+
+exports.delOrder = (req) => {
+    return new Promise(async (resolve, reject) => {
+        let result = {};
+        let connection;
+        try {
+            let order_idx = req.body.order_idx
+            connection = await connectionManager.getConnection({ readOnly: false });
+
+            const orderFixs = await indexModule.deletOrder(connection, { order_idx: order_idx });
+
+            connection.commit();
+            resolve(result);
+        } catch (error) {
+            if (connection) {
+                connection.rollback();
+            }
+            reject(error); // <- 여기 수정
+        }
+    });
+}
