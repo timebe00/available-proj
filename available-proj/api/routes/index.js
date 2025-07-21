@@ -368,5 +368,17 @@ router.post('/dd684590eb0244c0871d6c7abf734b61/broker/delOrder', async function 
   }
 
 });
+
+router.post('/dd684590eb0244c0871d6c7abf734b61/broker/delOrderFix', async function (req, res, next) {
+  try {
+    let result = await indexService.delOrderFix(req);
+
+    res.json({ data: result });
+  } catch (error) {
+    console.log("error", error)
+    next(error);
+  }
+
+});
 /////////////////////////////   broker E    ///////////////////////////// 
 module.exports = router;

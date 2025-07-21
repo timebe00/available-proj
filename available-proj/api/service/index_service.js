@@ -321,7 +321,8 @@ exports.delOrder = (req) => {
             let order_idx = req.body.order_idx
             connection = await connectionManager.getConnection({ readOnly: false });
 
-            const orderFixs = await indexModule.deletOrder(connection, { order_idx: order_idx });
+            await indexModule.deletOrder(connection, { order_idx: order_idx });
+            await indexModule.deleteOrderHis(connection, { order_idx: order_idx });
 
             connection.commit();
             resolve(result);
@@ -333,3 +334,26 @@ exports.delOrder = (req) => {
         }
     });
 }
+
+exports.delOrderFix = (req) => {
+    return new Promise(async (resolve, reject) => {
+        let result = {};
+        let connection;
+        try {
+            let order_fix_idx = req.body.order_fix_idx
+            connection = await connectionManager.getConnection({ readOnly: false });
+
+            await indexModule.deleteOrderFix(connection, { order_fix_idx: order_fix_idx });
+            await indexModule.deleteOrderFixHis(connection, { order_fix_idx: order_fix_idx });
+
+            connection.commit();
+            resolve(result);
+        } catch (error) {
+            if (connection) {
+                connection.rollback();
+            }
+            reject(error); // <- 여기 수정
+        }
+    });
+}
+

@@ -228,4 +228,36 @@
         SET DELETE_YN = 'Y'
         WHERE ORDER_IDX = #{order_idx}
     </update>
+
+    <insert id="available.deleteOrderHis">
+        INSERT INTO TB_ORDER_HIS(
+            ORDER_IDX
+            , TITLE
+            , B_TIME
+            , E_TIME
+            , OUTPUT
+            , CONTENT_IDX
+            , NOTE
+            , IMP_YN
+            , DELETE_YN
+            , REG_DATE
+        )
+        SELECT ORDER_IDX, TITLE, B_TIME, E_TIME, OUTPUT, CONTENT_IDX, NOTE, IMP_YN, 'Y', CURRENT_TIMESTAMP()
+        FROM TB_ORDER
+        WHERE ORDER_IDX = #{order_idx}
+    </insert>
+
+    <update id="available.deleteOrderFix" >
+        UPDATE TB_ORDER_FIX
+        SET DELETE_YN = 'Y'
+        WHERE ORDER_FIX_IDX = #{order_fix_idx}
+    </update>
+
+    <insert id="available.deleteOrderFixHis">
+        INSERT INTO TB_ORDER_FIX_HIS
+        (ORDER_FIX_IDX, ORDER_IDX, CONTENT_IDX, DELETE_YN, REG_DATE)
+        SELECT ORDER_FIX_IDX, ORDER_IDX, CONTENT_IDX, 'Y', CURRENT_TIMESTAMP()
+        FROM TB_ORDER_FIX
+        WHERE ORDER_FIX_IDX = #{order_fix_idx}
+    </insert>
 </mapper>
