@@ -264,6 +264,9 @@
                 <!-- view.ejs 내용 통합 -->
                 <div class="container">
                     <h1 class="text_center">작업 내용 확인</h1>
+                    <div class="top-actions">
+                        <a href="javascript:sendModify()" class="btn btn-blue">수정하기</a>
+                    </div>
                     <div class="row">
                         <label>현재 상태</label>
                         <div class="value">
@@ -391,6 +394,10 @@
         //setInterval(reloadTableBody, 30000);
     });
 
+    function sendModify() {
+        location.href = "/e6e7b89523ac41e0ba406fbd05ed9de6/work/modify?order_idx=" + selectOrder
+    }
+
     $(document).on("click", ".show_view_model", function () {
         let order_idx = $(this).data("order_idx");
         let order = contentData[order_idx];
@@ -405,6 +412,7 @@
         else if (order.status == "04") { status = "납품완료"; }
         else if (order.status == "05") { status = "수정완료"; }
         else if (order.status == "06") { status = "완료후 수정 요청"; background_color = "#ee293b"; color = "#ffffff"; }
+        else if (order.status == "07") { status = "작업자 코멘트"; }
 
 
 
@@ -415,7 +423,11 @@
         $("#b_time").text(order.b_time);
         $("#e_time").text(order.e_time);
         $("#output").text(order.output);
-        $("#price").text(order.work_price);
+        if (order.show_yn == "Y") {
+            $("#price").text(order.work_price);
+        } else {
+            $("#price").text("");
+        }
         $("#note").text(order.note || "-");
         $("#order_content").html(order.content);
 

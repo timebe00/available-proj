@@ -456,6 +456,7 @@
         else if (order.status == "04") { status = "납품완료"; }
         else if (order.status == "05") { status = "수정완료"; background_color = "#ee293b"; color = "#ffffff"; }
         else if (order.status == "06") { status = "완료후 수정 요청"; }
+        else if (order.status == "07") { status = "작업자 코멘트"; }
 
 
 
@@ -466,8 +467,12 @@
         $("#b_time").text(order.b_time);
         $("#e_time").text(order.e_time);
         $("#output").text(order.output);
-        $("#price").text(order.order_price);
-        $("#work_price").text(order.work_price);
+        console.log("order.show_yn : ", order.show_yn)
+        if (order.show_yn == 'Y') {
+            $("#price").text(order.order_price);
+        } else {
+            $("#price").text("");
+        }
         $("#note").text(order.note || "-");
         $("#order_content").html(order.content);
 

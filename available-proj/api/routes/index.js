@@ -215,6 +215,32 @@ router.post('/e6e7b89523ac41e0ba406fbd05ed9de6/work/getOrderFixs', async functio
   }
 
 });
+
+router.get('/e6e7b89523ac41e0ba406fbd05ed9de6/work/modify', async function (req, res, next) {
+  try {
+    let result = await indexService.getOutputs(req);
+    result.modify = await indexService.getOrder(req);
+
+    res.render('work/write', { data: result });
+  } catch (error) {
+    console.log("error", error)
+    next(error);
+  }
+
+});
+
+router.post('/e6e7b89523ac41e0ba406fbd05ed9de6/work/modifyOrder', async function (req, res, next) {
+  try {
+    req.body.sneder = "work";
+    let result = await indexService.modifyOrder(req);
+
+    res.json({ data: result });
+  } catch (error) {
+    console.log("error", error)
+    next(error);
+  }
+
+});
 /////////////////////////////   worker E    ///////////////////////////// 
 
 /////////////////////////////   broker S    ///////////////////////////// 

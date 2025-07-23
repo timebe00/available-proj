@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>신규 작업 작성</title>
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet" />
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/quill-image-resize-module@3.0.0/image-resize.min.js"></script>
+
+    <script src="/common/vander/jquery.js"></script>
+    <!-- 2. 라이브러리 로드 -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css" />
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.3/jquery-ui-timepicker-addon.min.css" />
+
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.3/jquery-ui-timepicker-addon.min.js"></script>
+
+    <script src="/common/vander/axios.js"></script>
+    <script src="/common/js/senderAxios.js"></script>
+
+    <style>
+        body,
+        html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 700px;
+            max-width: 95vw;
+            box-sizing: border-box;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .form-section {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        input[type="text"],
+        input[type="datetime-local"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        input[type="number"] {
+            display: none;
+        }
+
+        #orderPriceFormatted {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        .deliverable-group label {
+            margin-bottom: 5px;
+        }
+
+        .deliverable-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: space-between;
+            /* 중요 체크박스를 오른쪽으로 */
+        }
+
+        .deliverable-controls input[type="text"] {
+            width: 60%;
+        }
+
+        .deliverable-controls select {
+            width: 40%;
+        }
+
+        .date-group {
+            display: flex;
+            gap: 20px;
+        }
+
+        .date-group>div {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .checkbox-group {
+            margin-right: 20%;
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        input[type="checkbox"] {
+            width: auto;
+            transform: scale(1.2);
+            cursor: pointer;
+            margin: 0;
+        }
+
+        #editor {
+            height: 700px;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .file-links {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .file-link-item {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .file-link-item input[type="text"] {
+            flex: 1;
+            padding: 8px;
+            font-size: 14px;
+        }
+
+        .file-link-item button {
+            width: 35px;
+            height: 38px;
+            margin: 0;
+            padding: 0;
+            background-color: #dc3545;
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .file-link-item button:hover {
+            background-color: #a71d2a;
+        }
+
+        button {
+            width: 120px;
+            padding: 10px;
+            font-size: 16px;
+            background-color: #007bff;
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-top: 10px;
+            align-self: center;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #addFileLinkBtn {
+            width: auto;
+            background-color: #28a745;
+            margin-top: 5px;
+            padding: 6px 12px;
+            font-size: 14px;
+            border-radius: 4px;
+        }
+
+        #addFileLinkBtn:hover {
+            background-color: #1e7e34;
+        }
+
+        #goMenuBtn {
+            background-color: #6c757d;
+        }
+
+        #goMenuBtn:hover {
+            background-color: #5a6268;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<% let modify={}; let b_time="" ; let e_time="" ; let content="" ; if(data.modify) { modify=data.modify.order;
+    if(modify.b_time){ b_time=new Date(modify.b_time).toISOString().slice(0, 16);} if(modify.e_time) {e_time=new
+    Date(modify.e_time).toISOString().slice(0, 16);} content=modify.content.replace( /\\"/g, '"' );} %>
+
+    <body>
+        <div class="container">
+            <h1>신규 작업 작성</h1>
+            <div class="form-section">
+                <div>
+                    <label for="title">작업명</label>
+                    <input type="text" id="title" name="title" value="<%=modify.title%>" />
+                </div>
+
+                <div class="date-group">
+                    <div>
+                        <label for="b_time">Best</label>
+                        <input type="text" id="b_time" name="datatime" placeholder="날짜와 시간 선택" value="<%=b_time%>" />
+                        <!-- <input type="datetime-local" step="300" id="b_time" name="b_time" value="<%=b_time%>" /> -->
+                    </div>
+                    <div>
+                        <label for="e_time">At Least</label>
+                        <input type="text" id="e_time" name="datatime" placeholder="날짜와 시간 선택" value="<%=e_time%>" />
+                        <!-- <input type="datetime-local" id="e_time" name="e_time" value="<%=e_time%>" /> -->
+                    </div>
+                </div>
+
+                <div class="deliverable-group">
+                    <label for="output">산출물</label>
+                    <div class="deliverable-controls">
+                        <input type="text" id="output" name="output" style="display: none;" placeholder="산출물 입력" />
+                        <select id="output_type" name="output_type">
+                            <option value="">입력하기</option>
+                            <% for(let outputIdx in data.outputs){ let output=data.outputs[outputIdx]; %>
+                                <option value="<%=output.price%>" <%=modify.output==output.name ? 'selected' : '' %>
+                                    >
+                                    <%=output.name%>
+                                </option>
+                                <% } %>
+                        </select>
+                        <div class="checkbox-group">
+                            <label for="isImportant">상단노출여부</label>
+                            <input type="checkbox" id="isImportant" name="isImportant" <%=modify.imp_yn=="Y" ? "checked"
+                                : "" %> />
+                        </div>
+
+                    </div>
+                </div>
+
+                <div>
+                    <label for="orderPriceFormatted">단가</label>
+                    <input type="text" id="orderPriceFormatted" placeholder="금액 입력" autocomplete="off"
+                        value="<%=modify.work_price%>" />
+                    <input type="number" id="price" name="price" min="0" step="1000" />
+                </div>
+
+
+                <div>
+                    <label for="editor">작업 내용</label>
+                    <div id="editor">
+                        <%-content%>
+                    </div>
+                    <input type="hidden" id="taskContent" name="taskContent" />
+                </div>
+
+                <div>
+                    <label for="note">비고</label>
+                    <textarea id="note" name="note" placeholder="특이사항이나 메모"><%=modify.note%></textarea>
+                </div>
+
+                <div class="button-group">
+                    <%if(modify.order_idx) {%>
+                        <button type="button" id="modifyBtn">수정 완료</button>
+                        <%} else {%>
+                            <button type="button" id="submitBtn">작성 완료</button>
+                            <%}%>
+                                <button type="button" id="goMenuBtn"
+                                    onclick="location.href='/e6e7b89523ac41e0ba406fbd05ed9de6/work'">
+                                    메뉴로 이동
+                                </button>
+                </div>
+
+            </div>
+        </div>
+
+    </body>
+
+</html>
+<script>
+    const quill = new Quill('#editor', {
+        theme: 'snow',
+        placeholder: '수정 내용을 입력하세요...',
+        modules: {
+            toolbar: [
+                [{ header: [1, 2, false] }],
+                ['bold', 'italic', 'underline'],
+                ['link', 'image'],
+                [{ list: 'ordered' }, { list: 'bullet' }],
+                ['clean']
+            ],
+            imageResize: {
+                modules: ['Resize', 'DisplaySize']
+            }
+        }
+    });
+
+    const orderPriceInput = document.getElementById('order_price');
+    const showPriceInput = document.getElementById('show_price');
+
+    const orderPriceFormatted = document.getElementById('orderPriceFormatted');
+
+    var isModify = false;
+    var isWrite = false;
+
+    orderPriceFormatted.addEventListener('input', (e) => {
+        let value = e.target.value.replace(/[^0-9]/g, '');
+        if (value === '') {
+            orderPriceInput.value = '0';
+            orderPriceFormatted.value = '0';
+            return;
+        }
+        orderPriceFormatted.value = Number(value).toLocaleString('ko-KR');
+        orderPriceInput.value = value;
+    });
+
+    $(document).ready(function () {
+        document.getElementById("output_type").addEventListener("change", function () {
+            if (!this.value) {
+                return
+            }
+
+            var selectedIndex = this.selectedIndex;
+            if (selectedIndex === -1) {
+                return null; // 또는 빈 문자열 "" 반환
+            }
+
+            document.getElementById("output").value = this.options[selectedIndex].text;
+            orderPriceFormatted.value = Number(this.value).toLocaleString('ko-KR');
+        })
+
+        document.getElementById("b_time").addEventListener("click", function () {
+            this.showPicker();
+        })
+
+        document.getElementById("e_time").addEventListener("click", function () {
+            this.showPicker();
+        })
+
+        $("#submitBtn").on('click', () => {
+            if (!isWrite) {
+                isWrite = true;
+                let title = document.getElementById("title").value;
+                let b_time = document.getElementById("b_time").value || null;
+                let e_time = document.getElementById("e_time").value || null;
+                let output = document.getElementById("output").value;
+                let order_price = document.getElementById("orderPriceFormatted").value;
+                let content = quill.root.innerHTML;
+                let note = document.getElementById("note").value;
+                let imp_yn = "N";
+
+                if ($('#isImportant').is(':checked')) {
+                    imp_yn = "Y";
+                }
+
+                if (!title) {
+                    alert("작업명 입력해주세요.");
+                    return;
+                }
+
+                let params = {
+                    title: title
+                    , b_time: b_time
+                    , e_time: e_time
+                    , output: output
+                    , show_price: order_price
+                    , content: content
+                    , note: note
+                    , imp_yn: imp_yn
+                }
+
+                senderAxios.callAxios("/e6e7b89523ac41e0ba406fbd05ed9de6/work/setOrder", "post", params)
+                    .then(function (data) {
+                        alert("저장되었습니다.")
+                        location.href = "/e6e7b89523ac41e0ba406fbd05ed9de6/work"
+                    })
+            }
+
+        });
+
+        $("#modifyBtn").on("click", () => {
+            if (!isModify) {
+                isModify = true;
+                let title = document.getElementById("title").value;
+                let b_time = document.getElementById("b_time").value || null;
+                let e_time = document.getElementById("e_time").value || null;
+                let output = document.getElementById("output").value;
+                let order_price = document.getElementById("orderPriceFormatted").value;
+                let content = quill.root.innerHTML;
+                let note = document.getElementById("note").value;
+                let imp_yn = "N";
+
+                if ($('#isImportant').is(':checked')) {
+                    imp_yn = "Y";
+                }
+
+                if (!title) {
+                    alert("작업명 입력해주세요.");
+                    return;
+                }
+
+                let params = {
+                    order_idx: "<%=modify.order_idx%>"
+                    , title: title
+                    , b_time: b_time
+                    , e_time: e_time
+                    , output: output
+                    , show_price: order_price
+                    , content: content
+                    , note: note
+                    , imp_yn: imp_yn
+                }
+                console.log("params : ", params)
+
+                senderAxios.callAxios("/e6e7b89523ac41e0ba406fbd05ed9de6/work/modifyOrder", "post", params)
+                    .then(function (data) {
+                        alert("저장되었습니다.")
+                        location.href = "/e6e7b89523ac41e0ba406fbd05ed9de6/work"
+                    })
+            }
+        })
+
+        $("#title").on("input", function () {
+            if ($(this).val().length > 255) {
+                alert("제목을 255자 이내로 수정해주세요.");
+                let titleMax = $(this).val().substring(0, 255);
+                $(this).val(titleMax);
+            }
+        })
+    });
+
+    $(function () {
+        $('input[name="datatime"]').datetimepicker({
+            dateFormat: 'yy-mm-dd',
+            timeFormat: 'HH:mm',
+            controlType: 'select',
+            stepMinute: 30,
+            hourMin: 13,
+            hourMax: 22,
+
+            beforeShow: function (input, inst) {
+                setTimeout(() => filterOptions(), 10);
+            },
+
+            onSelect: function () {
+                setTimeout(() => filterOptions(), 10);
+            }
+        });
+
+        function filterOptions() {
+            const dp = $('.ui-timepicker-div');
+            if (!dp.length) return;
+
+            // 시간 필터
+            dp.find('.ui_tpicker_hour select option').each(function () {
+                const val = parseInt($(this).val(), 10);
+                if (![13, 17, 22].includes(val)) $(this).remove();
+            });
+
+            // 분 필터
+            dp.find('.ui_tpicker_minute select option').each(function () {
+                const val = parseInt($(this).val(), 10);
+                if (![0, 30].includes(val)) $(this).remove();
+            });
+        }
+
+        // ✅ 기본값 지정: 오늘 날짜 13:00
+        const now = new Date();
+        now.setHours(13);
+        now.setMinutes(0);
+        $('input[name="datatime"]').datetimepicker('setDate', now);
+    });
+</script>

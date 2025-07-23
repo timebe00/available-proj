@@ -251,6 +251,10 @@ exports.modifyOrder = (req) => {
             let updateOrder = await indexModule.updateOrder(connection, params);
             await indexModule.insertOrderHis(connection, params);
 
+            if (sneder == "work") {
+                await indexModule.updateOrderStatus(connection, { order_idx: order_idx, status: "07" });
+            }
+
             connection.commit();
             resolve(result);
         } catch (error) {
