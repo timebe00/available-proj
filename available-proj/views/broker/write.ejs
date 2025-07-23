@@ -346,6 +346,9 @@
     const orderPriceFormatted = document.getElementById('orderPriceFormatted');
     const showPriceFormatted = document.getElementById('showPriceFormatted');
 
+    var isModify = false;
+    var isWrite = false;
+
     orderPriceFormatted.addEventListener('input', (e) => {
         let value = e.target.value.replace(/[^0-9]/g, '');
         if (value === '') {
@@ -393,84 +396,91 @@
         })
 
         $("#submitBtn").on('click', () => {
-            let title = document.getElementById("title").value;
-            let b_time = document.getElementById("b_time").value || null;
-            let e_time = document.getElementById("e_time").value || null;
-            let output = document.getElementById("output").value;
-            let order_price = document.getElementById("orderPriceFormatted").value;
-            let show_price = document.getElementById("showPriceFormatted").value;
-            let content = quill.root.innerHTML;
-            let note = document.getElementById("note").value;
-            let imp_yn = "N";
+            if (!isWrite) {
+                isWrite = true;
 
-            if ($('#isImportant').is(':checked')) {
-                imp_yn = "Y";
+                let title = document.getElementById("title").value;
+                let b_time = document.getElementById("b_time").value || null;
+                let e_time = document.getElementById("e_time").value || null;
+                let output = document.getElementById("output").value;
+                let order_price = document.getElementById("orderPriceFormatted").value;
+                let show_price = document.getElementById("showPriceFormatted").value;
+                let content = quill.root.innerHTML;
+                let note = document.getElementById("note").value;
+                let imp_yn = "N";
+
+                if ($('#isImportant').is(':checked')) {
+                    imp_yn = "Y";
+                }
+
+                if (!title) {
+                    alert("작업명 입력해주세요.");
+                    return;
+                }
+
+                let params = {
+                    title: title
+                    , b_time: b_time
+                    , e_time: e_time
+                    , output: output
+                    , order_price: order_price
+                    , show_price: show_price
+                    , content: content
+                    , note: note
+                    , imp_yn: imp_yn
+                }
+
+                senderAxios.callAxios("/dd684590eb0244c0871d6c7abf734b61/broker/setOrder", "post", params)
+                    .then(function (data) {
+                        alert("저장되었습니다.")
+                        location.href = "/dd684590eb0244c0871d6c7abf734b61/broker"
+                    })
             }
-
-            if (!title) {
-                alert("작업명 입력해주세요.");
-                return;
-            }
-
-            let params = {
-                title: title
-                , b_time: b_time
-                , e_time: e_time
-                , output: output
-                , order_price: order_price
-                , show_price: show_price
-                , content: content
-                , note: note
-                , imp_yn: imp_yn
-            }
-
-            senderAxios.callAxios("/dd684590eb0244c0871d6c7abf734b61/broker/setOrder", "post", params)
-                .then(function (data) {
-                    alert("저장되었습니다.")
-                    location.href = "/dd684590eb0244c0871d6c7abf734b61/broker"
-                })
 
         });
 
         $("#modifyBtn").on("click", () => {
-            let title = document.getElementById("title").value;
-            let b_time = document.getElementById("b_time").value || null;
-            let e_time = document.getElementById("e_time").value || null;
-            let output = document.getElementById("output").value;
-            let order_price = document.getElementById("orderPriceFormatted").value;
-            let show_price = document.getElementById("showPriceFormatted").value;
-            let content = quill.root.innerHTML;
-            let note = document.getElementById("note").value;
-            let imp_yn = "N";
+            if (!isModify) {
+                isModify = true;
+                let title = document.getElementById("title").value;
+                let b_time = document.getElementById("b_time").value || null;
+                let e_time = document.getElementById("e_time").value || null;
+                let output = document.getElementById("output").value;
+                let order_price = document.getElementById("orderPriceFormatted").value;
+                let show_price = document.getElementById("showPriceFormatted").value;
+                let content = quill.root.innerHTML;
+                let note = document.getElementById("note").value;
+                let imp_yn = "N";
 
-            if ($('#isImportant').is(':checked')) {
-                imp_yn = "Y";
+                if ($('#isImportant').is(':checked')) {
+                    imp_yn = "Y";
+                }
+
+                if (!title) {
+                    alert("작업명 입력해주세요.");
+                    return;
+                }
+
+                let params = {
+                    order_idx: "<%=modify.order_idx%>"
+                    , title: title
+                    , b_time: b_time
+                    , e_time: e_time
+                    , output: output
+                    , order_price: order_price
+                    , show_price: show_price
+                    , content: content
+                    , note: note
+                    , imp_yn: imp_yn
+                }
+                console.log("params : ", params)
+
+                senderAxios.callAxios("/dd684590eb0244c0871d6c7abf734b61/broker/modifyOrder", "post", params)
+                    .then(function (data) {
+                        alert("저장되었습니다.")
+                        location.href = "/dd684590eb0244c0871d6c7abf734b61/broker"
+                    })
             }
-
-            if (!title) {
-                alert("작업명 입력해주세요.");
-                return;
-            }
-
-            let params = {
-                order_idx: "<%=modify.order_idx%>"
-                , title: title
-                , b_time: b_time
-                , e_time: e_time
-                , output: output
-                , order_price: order_price
-                , show_price: show_price
-                , content: content
-                , note: note
-                , imp_yn: imp_yn
-            }
-            console.log("params : ", params)
-
-            senderAxios.callAxios("/dd684590eb0244c0871d6c7abf734b61/broker/modifyOrder", "post", params)
-                .then(function (data) {
-                    alert("저장되었습니다.")
-                    location.href = "/dd684590eb0244c0871d6c7abf734b61/broker"
-                })
         })
 
         $("#title").on("input", function () {
