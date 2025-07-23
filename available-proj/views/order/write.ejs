@@ -319,6 +319,7 @@
                 ['bold', 'italic', 'underline'],
                 ['link', 'image'],
                 [{ list: 'ordered' }, { list: 'bullet' }],
+                [{ color: [] }, { background: [] }],  // ✅ 글자색 & 배경색 추가
                 ['clean']
             ],
             imageResize: {
@@ -327,8 +328,8 @@
         }
     });
 
+
     const orderPriceInput = document.getElementById('order_price');
-    const showPriceInput = document.getElementById('show_price');
 
     const orderPriceFormatted = document.getElementById('orderPriceFormatted');
 
@@ -336,14 +337,13 @@
     var isWrite = false;
 
     orderPriceFormatted.addEventListener('input', (e) => {
-        let value = e.target.value.replace(/[^0-9]/g, '');
+        let valueData = orderPriceFormatted.value;
+        let value = valueData.replace(/[^0-9]/g, '');
         if (value === '') {
-            orderPriceInput.value = '0';
             orderPriceFormatted.value = '0';
             return;
         }
         orderPriceFormatted.value = Number(value).toLocaleString('ko-KR');
-        orderPriceInput.value = value;
     });
 
     $(document).ready(function () {
@@ -387,6 +387,7 @@
 
                 if (!title) {
                     alert("작업명 입력해주세요.");
+                    isWrite = false;
                     return;
                 }
 
@@ -428,6 +429,7 @@
 
                 if (!title) {
                     alert("작업명 입력해주세요.");
+                    isModify = false;
                     return;
                 }
 

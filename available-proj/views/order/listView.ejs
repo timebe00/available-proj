@@ -368,6 +368,7 @@
                 ['bold', 'italic', 'underline'],
                 ['link', 'image'],
                 [{ list: 'ordered' }, { list: 'bullet' }],
+                [{ color: [] }, { background: [] }],  // ✅ 글자색 & 배경색 추가
                 ['clean']
             ],
             imageResize: {
@@ -375,6 +376,7 @@
             }
         }
     });
+
 
     $('#toggleEditorBtn').on("click", function () {
         $("#editorWrapper").toggle();

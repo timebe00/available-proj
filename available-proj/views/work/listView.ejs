@@ -357,6 +357,7 @@
                 ['bold', 'italic', 'underline'],
                 ['link', 'image'],
                 [{ list: 'ordered' }, { list: 'bullet' }],
+                [{ color: [] }, { background: [] }],  // ✅ 글자색 & 배경색 추가
                 ['clean']
             ],
             imageResize: {
@@ -364,6 +365,7 @@
             }
         }
     });
+
 
     document.addEventListener('click', function (e) {
         if (e.target.tagName === 'IMG' && (e.target.closest('.multiline') || e.target.closest('.revision-content'))) {
