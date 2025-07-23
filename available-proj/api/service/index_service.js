@@ -216,7 +216,7 @@ exports.modifyOrder = (req) => {
             let e_time = req.body.e_time || null;
             let output = req.body.output;
             let price = req.body.price || 0;
-            let order_price = req.body.order_price || 0;
+            let order_price = req.body.order_price || null;
             let work_price = req.body.show_price || null;
             let content = req.body.content;
             let note = req.body.note;
