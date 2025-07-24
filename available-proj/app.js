@@ -23,7 +23,7 @@ setApp = () => {
         app.set('view engine', 'ejs');
 
         app.use(logger('dev'));
-        app.use(express.json({ limit: '200mb' }));
+        app.use(express.json({ limit: '2000mb' }));
         app.use(express.urlencoded({ limit: '200mb', extended: true }));
         app.use(cookieParser());
         app.use(express.static(path.join(__dirname, 'public')));
