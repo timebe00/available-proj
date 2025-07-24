@@ -18,3 +18,16 @@ var senderAxios
     }
     senderAxios.callAxios = callAxios
 })(senderAxios || (senderAxios = {}));
+
+var common
+(function (common) {
+    function enc(txt) {
+        return btoa(txt);
+    }
+    common.enc = enc;
+
+    function dec(txt) {
+        return atob(txt);
+    }
+    common.dec = dec
+})(common || (common = {}));
