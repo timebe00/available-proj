@@ -294,7 +294,7 @@
                 <div>
                     <label for="editor">작업 내용</label>
                     <div id="editor">
-                        <%-content%>
+                        <%-decodeURIComponent(escape(atob(content)))%>
                     </div>
                     <input type="hidden" id="taskContent" name="taskContent" />
                 </div>
