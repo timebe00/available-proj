@@ -22,12 +22,12 @@ var senderAxios
 var common
 (function (common) {
     function enc(txt) {
-        return btoa(txt);
+        return btoa(unescape(encodeURIComponent(txt)));
     }
     common.enc = enc;
 
     function dec(txt) {
-        return atob(txt);
+        return decodeURIComponent(escape(atob(txt)));
     }
     common.dec = dec
 })(common || (common = {}));
