@@ -407,17 +407,17 @@
         $("#editorWrapper").toggle();
     });
 
-    $('#submitRevisionPhase').on("click", function () {
+    $('#submitRevisionPhase').on("click", async function () {
         const html = quill.root.innerHTML.trim();
         if (!html || html === '<p><br></p>') return;
 
-        let content = common.enc(html)
+        let content = await common.enc(html)
         let params = {
             order_idx: selectOrder,
             content: content,
         }
 
-        senderAxios.callAxios("/dd684590eb0244c0871d6c7abf734b61/broker/setOrderFix", "post", params)
+        await senderAxios.callAxios("/dd684590eb0244c0871d6c7abf734b61/broker/setOrderFix", "post", params)
             .then((data) => {
                 console.log("data : ", data.data.data.order_fix_idx)
                 const phase = document.querySelectorAll('.revision-phase').length + 1;
@@ -474,7 +474,7 @@
         // setInterval(reloadTableBody, 30000);
     });
 
-    $(document).on("click", ".show_view_model", function () {
+    $(document).on("click", ".show_view_model", async function () {
         let order_idx = $(this).data("order_idx");
         let order = contentData[order_idx];
         let status = "";
@@ -490,7 +490,8 @@
         else if (order.status == "06") { status = "완료후 수정 요청"; }
         else if (order.status == "07") { status = "작업자 코멘트"; }
 
-        let content = common.dec(order.content);
+        let content = await common.dec(order.content);
+        let note = await common.dec(order.note);
 
         $("#order_status").text(status);
         $("#order_status").css("background-color", background_color);
@@ -501,14 +502,14 @@
         $("#output").text(order.output);
         $("#price").text(order.order_price);
         $("#work_price").text(order.work_price);
-        $("#note").text(order.note || "-");
+        $("#note").text(note || "-");
         $("#order_content").html(content);
 
 
         $("#viewModal").show();
 
-        senderAxios.callAxios("/dd684590eb0244c0871d6c7abf734b61/broker/getOrderFixs", "post", { order_idx: order_idx })
-            .then((data) => {
+        await senderAxios.callAxios("/dd684590eb0244c0871d6c7abf734b61/broker/getOrderFixs", "post", { order_idx: order_idx })
+            .then(async (data) => {
                 $("#revisionsContainer").empty();
 
                 for (let orderFixIdx in data.data.data.orderFixs) {
@@ -518,7 +519,7 @@
                     txt += '<div class="revision-title"><span>수정 사항 ' + (data.data.data.orderFixs.length - Number(orderFixIdx)) + '차</span>'
                     txt += '</div>';
                     txt += '<div class="revision-content">';
-                    txt += common.dec(orderFix.content.replace(/\\"/g, '"'));
+                    txt += await common.dec(orderFix.content.replace(/\\"/g, '"'));
                     txt += '</div>';
                     txt += '</div>';
 
@@ -531,13 +532,13 @@
         console.log("modify", order_fix_idx);
     }
 
-    function delOrderFix(order_fix_idx) {
+    async function delOrderFix(order_fix_idx) {
         if (confirm("수정 사항을 정말 삭제하시겠습니까?")) {
             let params = {
                 order_fix_idx: order_fix_idx,
             }
 
-            senderAxios.callAxios("/dd684590eb0244c0871d6c7abf734b61/broker/delOrderFix", "post", params)
+            await senderAxios.callAxios("/dd684590eb0244c0871d6c7abf734b61/broker/delOrderFix", "post", params)
                 .then((data) => {
                     $("#revisionsContainer").find("div.revision-phase[data-order_fix_idx='" + order_fix_idx + "']").remove();
                     let containerLen = $("#revisionsContainer div.revision-phase").length;
@@ -604,13 +605,13 @@
         changePriceObj(tr);
     })
 
-    function changePrice() {
-        senderAxios.callAxios("/dd684590eb0244c0871d6c7abf734b61/broker/changePrice", "post", {
+    async function changePrice() {
+        await senderAxios.callAxios("/dd684590eb0244c0871d6c7abf734b61/broker/changePrice", "post", {
             priceObj: JSON.stringify(priceObj)
         }).then(() => priceObj = {});
     }
 
-    $(document).on("change", ".status", function () {
+    $(document).on("change", ".status", async function () {
         let status = $(this).val();
         let order_idx = $(this).parent().parent().data("order_idx")
         if (status == "03" || status == "05") {
@@ -627,14 +628,14 @@
             order_idx: order_idx
         }
 
-        senderAxios.callAxios("/dd684590eb0244c0871d6c7abf734b61/broker/changeStatus", "post", params)
+        await senderAxios.callAxios("/dd684590eb0244c0871d6c7abf734b61/broker/changeStatus", "post", params)
             .then((data) => {
                 contentData[order_idx].status = status;
             })
             ;
     })
 
-    $(document).on("click", "button[name='orderDel']", function () {
+    $(document).on("click", "button[name='orderDel']", async function () {
         const tr = $(this).parent().parent();
         if (confirm("해당 주문을 정말 삭제하시겠습니까?")) {
             const order_idx = $(tr).data("order_idx");
@@ -642,7 +643,7 @@
                 order_idx: order_idx,
             }
 
-            senderAxios.callAxios("/dd684590eb0244c0871d6c7abf734b61/broker/delOrder", "post", params)
+            await senderAxios.callAxios("/dd684590eb0244c0871d6c7abf734b61/broker/delOrder", "post", params)
                 .then((data) => {
                     $(tr).remove();
                 });

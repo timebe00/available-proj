@@ -251,7 +251,8 @@
                 <div class="deliverable-group">
                     <label for="output">산출물</label>
                     <div class="deliverable-controls">
-                        <input type="text" id="output" name="output" style="display: none;" placeholder="산출물 입력" />
+                        <input type="text" id="output" name="output" style="display: none;" placeholder="산출물 입력"
+                            value="<%=modify.output%>" />
                         <select id="output_type" name="output_type">
                             <option value="">입력하기</option>
                             <% for(let outputIdx in data.outputs){ let output=data.outputs[outputIdx]; %>
@@ -281,14 +282,15 @@
                 <div>
                     <label for="editor">작업 내용</label>
                     <div id="editor">
-                        <%-decodeURIComponent(escape(atob(content)))%>
+                        <%-decodeURIComponent(escape(atob(content || "" )))%>
                     </div>
                     <input type="hidden" id="taskContent" name="taskContent" />
                 </div>
 
                 <div>
                     <label for="note">비고</label>
-                    <textarea id="note" name="note" placeholder="특이사항이나 메모"><%=modify.note%></textarea>
+                    <textarea id="note" name="note"
+                        placeholder="특이사항이나 메모"><%=decodeURIComponent(escape(atob(modify.note || "")))%></textarea>
                 </div>
 
                 <div class="button-group">
@@ -366,7 +368,7 @@
             this.showPicker();
         })
 
-        $("#submitBtn").on('click', () => {
+        $("#submitBtn").on('click', async () => {
             if (!isWrite) {
                 isWrite = true;
                 let title = document.getElementById("title").value;
@@ -387,7 +389,8 @@
                     return;
                 }
 
-                let contentData = common.enc(content);
+                const contentData = await common.enc(content);
+                const noteData = await common.enc(note);
 
                 let params = {
                     title: title
@@ -396,11 +399,11 @@
                     , output: output
                     , show_price: order_price
                     , content: contentData
-                    , note: note
+                    , note: noteData
                     , imp_yn: imp_yn
                 }
 
-                senderAxios.callAxios("/e6e7b89523ac41e0ba406fbd05ed9de6/work/setOrder", "post", params)
+                await senderAxios.callAxios("/e6e7b89523ac41e0ba406fbd05ed9de6/work/setOrder", "post", params)
                     .then(function (data) {
                         alert("저장되었습니다.")
                         location.href = "/e6e7b89523ac41e0ba406fbd05ed9de6/work"
@@ -409,7 +412,7 @@
 
         });
 
-        $("#modifyBtn").on("click", () => {
+        $("#modifyBtn").on("click", async () => {
             if (!isModify) {
                 isModify = true;
                 let title = document.getElementById("title").value;
@@ -430,7 +433,8 @@
                     return;
                 }
 
-                let contentData = common.enc(content);
+                const contentData = await common.enc(content);
+                const noteData = await common.enc(note);
 
                 let params = {
                     order_idx: "<%=modify.order_idx%>"
@@ -440,12 +444,11 @@
                     , output: output
                     , show_price: order_price
                     , content: contentData
-                    , note: note
+                    , note: noteData
                     , imp_yn: imp_yn
                 }
-                console.log("params : ", params)
 
-                senderAxios.callAxios("/e6e7b89523ac41e0ba406fbd05ed9de6/work/modifyOrder", "post", params)
+                await senderAxios.callAxios("/e6e7b89523ac41e0ba406fbd05ed9de6/work/modifyOrder", "post", params)
                     .then(function (data) {
                         alert("저장되었습니다.")
                         location.href = "/e6e7b89523ac41e0ba406fbd05ed9de6/work"
@@ -468,7 +471,7 @@
             timeFormat: 'HH:mm',
             controlType: 'select',
             stepMinute: 30,
-            hourMin: 13,
+            hourMin: 10,
             hourMax: 22,
 
             beforeShow: function (input, inst) {
@@ -486,8 +489,8 @@
 
             // 시간 필터
             dp.find('.ui_tpicker_hour select option').each(function () {
-                const val = parseInt($(this).val(), 10);
-                if (![13, 17, 22].includes(val)) $(this).remove();
+                const val = parseInt($(this).val(), 0);
+                if (![10, 13, 17, 22].includes(val)) $(this).remove();
             });
 
             // 분 필터
@@ -497,10 +500,25 @@
             });
         }
 
-        // ✅ 기본값 지정: 오늘 날짜 13:00
+        let b_time = "<%=modify.b_time%>"
+        let e_time = "<%=modify.e_time%>"
+
         const now = new Date();
         now.setHours(13);
         now.setMinutes(0);
-        $('input[name="datatime"]').datetimepicker('setDate', now);
+
+        if (b_time) {
+            let b_time_data = new Date("<%=modify.b_time%>");
+            $('#b_time').datetimepicker('setDate', b_time_data);
+        } else {
+            $('#b_time').datetimepicker('setDate', now);
+        }
+
+        if (e_time) {
+            let e_time_data = new Date("<%=modify.e_time%>");
+            $('#e_time').datetimepicker('setDate', e_time_data);
+        } else {
+            $('#e_time').datetimepicker('setDate', now);
+        }
     });
 </script>

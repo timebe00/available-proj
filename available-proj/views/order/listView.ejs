@@ -382,7 +382,7 @@
         $("#editorWrapper").toggle();
     });
 
-    $('#submitRevisionPhase').on("click", function () {
+    $('#submitRevisionPhase').on("click", async function () {
         const html = quill.root.innerHTML.trim();
         if (!html || html === '<p><br></p>') return;
 
@@ -394,7 +394,7 @@
         }
 
 
-        senderAxios.callAxios("/5521ed612b874a198fc98c71fbcee437/order/setOrderFix", "post", params)
+        await senderAxios.callAxios("/5521ed612b874a198fc98c71fbcee437/order/setOrderFix", "post", params)
             .then((data) => {
                 const phase = document.querySelectorAll('.revision-phase').length + 1;
                 const section = document.createElement('div');
@@ -447,7 +447,7 @@
         // setInterval(reloadTableBody, 30000);
     });
 
-    $(document).on("click", ".show_view_model", function () {
+    $(document).on("click", ".show_view_model", async function () {
         let order_idx = $(this).data("order_idx");
         let order = contentData[order_idx];
         let status = "";
@@ -463,7 +463,8 @@
         else if (order.status == "06") { status = "완료후 수정 요청"; }
         else if (order.status == "07") { status = "작업자 코멘트"; }
 
-        let content = common.dec(order.content);
+        let content = await common.dec(order.content);
+        let note = await common.dec(order.note);
 
         $("#order_status").text(status);
         $("#order_status").css("background-color", background_color);
@@ -478,14 +479,14 @@
         } else {
             $("#price").text("");
         }
-        $("#note").text(order.note || "-");
+        $("#note").text(note || "-");
         $("#order_content").html(content);
 
 
         $("#viewModal").show();
 
-        senderAxios.callAxios("/dd684590eb0244c0871d6c7abf734b61/broker/getOrderFixs", "post", { order_idx: order_idx })
-            .then((data) => {
+        await senderAxios.callAxios("/dd684590eb0244c0871d6c7abf734b61/broker/getOrderFixs", "post", { order_idx: order_idx })
+            .then(async (data) => {
                 $("#revisionsContainer").empty();
 
                 for (let orderFixIdx in data.data.data.orderFixs) {
@@ -494,7 +495,7 @@
                     let txt = '<div class="revision-phase">';
                     txt += '<div class="revision-title">수정 사항 ' + (data.data.data.orderFixs.length - Number(orderFixIdx)) + '차</div>';
                     txt += '<div class="revision-content">';
-                    txt += common.dec(orderFix.content.replace(/\\"/g, '"'));
+                    txt += await common.dec(orderFix.content.replace(/\\"/g, '"'));
                     txt += '</div>';
                     txt += '</div>';
 
@@ -515,13 +516,13 @@
     })
 
 
-    function changePrice() {
-        senderAxios.callAxios("/5521ed612b874a198fc98c71fbcee437/order/changePrice", "post", {
+    async function changePrice() {
+        await senderAxios.callAxios("/5521ed612b874a198fc98c71fbcee437/order/changePrice", "post", {
             priceObj: JSON.stringify(priceObj)
         }).then(() => priceObj = {});
     }
 
-    $(document).on("change", ".status", function () {
+    $(document).on("change", ".status", async function () {
         let status = $(this).val();
         let order_idx = $(this).parent().parent().data("order_idx")
         if (status == "03" || status == "05") {
@@ -538,7 +539,7 @@
             order_idx: order_idx
         }
 
-        senderAxios.callAxios("/dd684590eb0244c0871d6c7abf734b61/broker/changeStatus", "post", params)
+        await senderAxios.callAxios("/dd684590eb0244c0871d6c7abf734b61/broker/changeStatus", "post", params)
             .then((data) => {
                 contentData[order_idx].status = status;
             })

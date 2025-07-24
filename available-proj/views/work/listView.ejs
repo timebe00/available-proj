@@ -400,7 +400,7 @@
         location.href = "/e6e7b89523ac41e0ba406fbd05ed9de6/work/modify?order_idx=" + selectOrder
     }
 
-    $(document).on("click", ".show_view_model", function () {
+    $(document).on("click", ".show_view_model", async function () {
         let order_idx = $(this).data("order_idx");
         let order = contentData[order_idx];
         let status = "";
@@ -416,7 +416,8 @@
         else if (order.status == "06") { status = "완료후 수정 요청"; background_color = "#ee293b"; color = "#ffffff"; }
         else if (order.status == "07") { status = "작업자 코멘트"; }
 
-        let content = common.dec(order.content);
+        let content = await common.dec(order.content);
+        let note = await common.dec(order.note);
 
         $("#order_status").text(status);
         $("#order_status").css("background-color", background_color);
@@ -430,14 +431,14 @@
         } else {
             $("#price").text("");
         }
-        $("#note").text(order.note || "-");
+        $("#note").text(note || "-");
         $("#order_content").html(content);
 
 
         $("#viewModal").show();
 
-        senderAxios.callAxios("/e6e7b89523ac41e0ba406fbd05ed9de6/work/getOrderFixs", "post", { order_idx: order_idx })
-            .then((data) => {
+        await senderAxios.callAxios("/e6e7b89523ac41e0ba406fbd05ed9de6/work/getOrderFixs", "post", { order_idx: order_idx })
+            .then(async (data) => {
                 $("#revisionsContainer").empty();
 
                 for (let orderFixIdx in data.data.data.orderFixs) {
@@ -446,7 +447,7 @@
                     let txt = '<div class="revision-phase">';
                     txt += '<div class="revision-title">수정 사항 ' + (data.data.data.orderFixs.length - Number(orderFixIdx)) + '차</div>';
                     txt += '<div class="revision-content">';
-                    txt += common.dec(orderFix.content.replace(/\\"/g, '"'));
+                    txt += await common.dec(orderFix.content.replace(/\\"/g, '"'));
                     txt += '</div>';
                     txt += '</div>';
 
@@ -462,7 +463,7 @@
         }
     })
 
-    $(document).on("change", ".status", function () {
+    $(document).on("change", ".status", async function () {
         let status = $(this).val();
         let order_idx = $(this).parent().parent().data("order_idx")
         if (status == "01" || status == "02" || status == "06") {
@@ -479,7 +480,7 @@
             order_idx: order_idx
         }
 
-        senderAxios.callAxios("/e6e7b89523ac41e0ba406fbd05ed9de6/work/changeStatus", "post", params)
+        await senderAxios.callAxios("/e6e7b89523ac41e0ba406fbd05ed9de6/work/changeStatus", "post", params)
             .then((data) => {
                 contentData[order_idx].status = status;
             })

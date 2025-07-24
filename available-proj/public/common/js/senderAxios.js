@@ -1,14 +1,14 @@
 var senderAxios
 (function (senderAxios) {
 
-    function callAxios(url, method, params, headers = {}, async) {
+    async function callAxios(url, method, params, headers = {}, async) {
         let body = {};
         if (method && method.toLocaleUpperCase() != "GET") {
             body = Object.assign({}, params);
             params = {};
         }
 
-        return axios({
+        return await axios({
             method: method,
             headers: headers,
             url: url,
@@ -21,13 +21,13 @@ var senderAxios
 
 var common
 (function (common) {
-    function enc(txt) {
-        return btoa(unescape(encodeURIComponent(txt)));
+    async function enc(txt) {
+        return await btoa(unescape(encodeURIComponent(txt || "")));
     }
     common.enc = enc;
 
-    function dec(txt) {
-        return decodeURIComponent(escape(atob(txt)));
+    async function dec(txt) {
+        return await decodeURIComponent(escape(atob(txt || "")));
     }
     common.dec = dec
 })(common || (common = {}));

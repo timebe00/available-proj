@@ -112,8 +112,8 @@
         SELECT 
             A.order_idx,
             A.title,
-            DATE_FORMAT(A.b_time, '%Y-%m-%d') AS 'b_time',
-            DATE_FORMAT(A.e_time, '%Y-%m-%d') AS 'e_time',
+            DATE_FORMAT(A.b_time, '%Y-%m-%d %H:%i') AS 'b_time',
+            DATE_FORMAT(A.e_time, '%Y-%m-%d %H:%i') AS 'e_time',
             A.output,
             D.status,
             A.imp_yn,
