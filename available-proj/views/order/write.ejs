@@ -281,7 +281,7 @@
                 <div>
                     <label for="editor">작업 내용</label>
                     <div id="editor">
-                        <%-content%>
+                        <%-atob(content)%>
                     </div>
                     <input type="hidden" id="taskContent" name="taskContent" />
                 </div>
@@ -369,7 +369,7 @@
             this.showPicker();
         })
 
-        $("#submitBtn").on('click', () => {
+        $("#submitBtn").on('click', async () => {
             if (!isWrite) {
                 isWrite = true;
                 let title = document.getElementById("title").value;
@@ -391,18 +391,20 @@
                     return;
                 }
 
+                const contentData = await common.enc(content);
+
                 let params = {
                     title: title
                     , b_time: b_time
                     , e_time: e_time
                     , output: output
                     , order_price: order_price
-                    , content: content
+                    , content: contentData
                     , note: note
                     , imp_yn: imp_yn
                 }
 
-                senderAxios.callAxios("/5521ed612b874a198fc98c71fbcee437/order/setOrder", "post", params)
+                await senderAxios.callAxios("/5521ed612b874a198fc98c71fbcee437/order/setOrder", "post", params)
                     .then(function (data) {
                         alert("저장되었습니다.")
                         location.href = "/5521ed612b874a198fc98c71fbcee437/order"
@@ -411,7 +413,7 @@
 
         });
 
-        $("#modifyBtn").on("click", () => {
+        $("#modifyBtn").on("click", async () => {
             if (!isModify) {
                 isModify = true;
                 let title = document.getElementById("title").value;
@@ -433,6 +435,8 @@
                     return;
                 }
 
+                const contentData = await common.enc(content);
+
                 let params = {
                     order_idx: "<%=modify.order_idx%>"
                     , title: title
@@ -440,11 +444,10 @@
                     , e_time: e_time
                     , output: output
                     , order_price: order_price
-                    , content: content
+                    , content: contentData
                     , note: note
                     , imp_yn: imp_yn
                 }
-                console.log("params : ", params)
 
                 senderAxios.callAxios("/5521ed612b874a198fc98c71fbcee437/order/modifyOrder", "post", params)
                     .then(function (data) {

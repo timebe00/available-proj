@@ -281,7 +281,7 @@
                 <div>
                     <label for="editor">작업 내용</label>
                     <div id="editor">
-                        <%-content%>
+                        <%-atob(content)%>
                     </div>
                     <input type="hidden" id="taskContent" name="taskContent" />
                 </div>
@@ -387,13 +387,15 @@
                     return;
                 }
 
+                let contentData = common.enc(content);
+
                 let params = {
                     title: title
                     , b_time: b_time
                     , e_time: e_time
                     , output: output
                     , show_price: order_price
-                    , content: content
+                    , content: contentData
                     , note: note
                     , imp_yn: imp_yn
                 }
@@ -428,6 +430,8 @@
                     return;
                 }
 
+                let contentData = common.enc(content);
+
                 let params = {
                     order_idx: "<%=modify.order_idx%>"
                     , title: title
@@ -435,7 +439,7 @@
                     , e_time: e_time
                     , output: output
                     , show_price: order_price
-                    , content: content
+                    , content: contentData
                     , note: note
                     , imp_yn: imp_yn
                 }

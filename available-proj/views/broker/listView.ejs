@@ -411,9 +411,10 @@
         const html = quill.root.innerHTML.trim();
         if (!html || html === '<p><br></p>') return;
 
+        let content = common.enc(html)
         let params = {
             order_idx: selectOrder,
-            content: html,
+            content: content,
         }
 
         senderAxios.callAxios("/dd684590eb0244c0871d6c7abf734b61/broker/setOrderFix", "post", params)
@@ -489,6 +490,8 @@
         else if (order.status == "06") { status = "완료후 수정 요청"; }
         else if (order.status == "07") { status = "작업자 코멘트"; }
 
+        let content = common.dec(order.content);
+
         $("#order_status").text(status);
         $("#order_status").css("background-color", background_color);
         $("#order_status").css("color", color);
@@ -499,7 +502,7 @@
         $("#price").text(order.order_price);
         $("#work_price").text(order.work_price);
         $("#note").text(order.note || "-");
-        $("#order_content").html(order.content);
+        $("#order_content").html(content);
 
 
         $("#viewModal").show();
@@ -515,7 +518,7 @@
                     txt += '<div class="revision-title"><span>수정 사항 ' + (data.data.data.orderFixs.length - Number(orderFixIdx)) + '차</span>'
                     txt += '</div>';
                     txt += '<div class="revision-content">';
-                    txt += orderFix.content.replace(/\\"/g, '"');
+                    txt += common.dec(orderFix.content.replace(/\\"/g, '"'));
                     txt += '</div>';
                     txt += '</div>';
 

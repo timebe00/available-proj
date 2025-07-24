@@ -386,10 +386,13 @@
         const html = quill.root.innerHTML.trim();
         if (!html || html === '<p><br></p>') return;
 
+        let content = common.enc(html);
+
         let params = {
             order_idx: selectOrder,
-            content: html,
+            content: content,
         }
+
 
         senderAxios.callAxios("/5521ed612b874a198fc98c71fbcee437/order/setOrderFix", "post", params)
             .then((data) => {
@@ -460,7 +463,7 @@
         else if (order.status == "06") { status = "완료후 수정 요청"; }
         else if (order.status == "07") { status = "작업자 코멘트"; }
 
-
+        let content = common.dec(order.content);
 
         $("#order_status").text(status);
         $("#order_status").css("background-color", background_color);
@@ -469,14 +472,14 @@
         $("#b_time").text(order.b_time);
         $("#e_time").text(order.e_time);
         $("#output").text(order.output);
-        console.log("order.show_yn : ", order.show_yn)
+
         if (order.show_yn == 'Y') {
             $("#price").text(order.order_price);
         } else {
             $("#price").text("");
         }
         $("#note").text(order.note || "-");
-        $("#order_content").html(order.content);
+        $("#order_content").html(content);
 
 
         $("#viewModal").show();
@@ -491,7 +494,7 @@
                     let txt = '<div class="revision-phase">';
                     txt += '<div class="revision-title">수정 사항 ' + (data.data.data.orderFixs.length - Number(orderFixIdx)) + '차</div>';
                     txt += '<div class="revision-content">';
-                    txt += orderFix.content.replace(/\\"/g, '"');
+                    txt += common.dec(orderFix.content.replace(/\\"/g, '"'));
                     txt += '</div>';
                     txt += '</div>';
 

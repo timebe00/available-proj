@@ -370,6 +370,7 @@
         showPriceFormatted.value = Number(value).toLocaleString('ko-KR');
     });
 
+
     $(document).ready(function () {
         document.getElementById("output_type").addEventListener("change", function () {
             if (!this.value) {
@@ -394,7 +395,7 @@
             this.showPicker();
         })
 
-        $("#submitBtn").on('click', () => {
+        $("#submitBtn").on('click', async () => {
             if (!isWrite) {
                 isWrite = true;
 
@@ -418,6 +419,8 @@
                     return;
                 }
 
+                const contentData = await common.enc(content);
+
                 let params = {
                     title: title
                     , b_time: b_time
@@ -425,12 +428,12 @@
                     , output: output
                     , order_price: order_price
                     , show_price: show_price
-                    , content: content
+                    , content: contentData
                     , note: note
                     , imp_yn: imp_yn
                 }
 
-                senderAxios.callAxios("/dd684590eb0244c0871d6c7abf734b61/broker/setOrder", "post", params)
+                await senderAxios.callAxios("/dd684590eb0244c0871d6c7abf734b61/broker/setOrder", "post", params)
                     .then(function (data) {
                         alert("저장되었습니다.")
                         location.href = "/dd684590eb0244c0871d6c7abf734b61/broker"
@@ -439,7 +442,7 @@
 
         });
 
-        $("#modifyBtn").on("click", () => {
+        $("#modifyBtn").on("click", async () => {
             if (!isModify) {
                 isModify = true;
                 let title = document.getElementById("title").value;
@@ -462,6 +465,8 @@
                     return;
                 }
 
+                const contentData = await common.enc(content);
+
                 let params = {
                     order_idx: "<%=modify.order_idx%>"
                     , title: title
@@ -470,7 +475,7 @@
                     , output: output
                     , order_price: order_price
                     , show_price: show_price
-                    , content: content
+                    , content: contentData
                     , note: note
                     , imp_yn: imp_yn
                 }
