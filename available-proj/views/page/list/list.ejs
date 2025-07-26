@@ -47,75 +47,6 @@
         $("#taskTableBody").load("<%=_props.CORES.sender[sender]%>/listTable");
     }
 
-    $(document).on("click", ".show_view_model", async function () {
-        let order_idx = $(this).data("order_idx");
-        let order = contentData[order_idx];
-        let status = "";
-        let background_color = "#f3f7fe";
-        let color = "#0f69f4";
-        selectOrder = order_idx;
-
-        if("<%=sender%>" == "work") {
-            if (order.status == "01") { status = "작업요청"; background_color = "#ee293b"; color = "#ffffff"; }
-            else if (order.status == "02") { status = "수정요청"; background_color = "#ee293b"; color = "#ffffff"; }
-            else if (order.status == "03") { status = "작업완료"; }
-            else if (order.status == "04") { status = "납품완료"; }
-            else if (order.status == "05") { status = "수정완료"; }
-            else if (order.status == "06") { status = "완료후 수정 요청"; background_color = "#ee293b"; color = "#ffffff"; }
-            else if (order.status == "07") { status = "작업자 코멘트"; }
-        } else {
-            if (order.status == "01") { status = "작업요청"; }
-            else if (order.status == "02") { status = "수정요청"; }
-            else if (order.status == "03") { status = "작업완료"; background_color = "#ee293b"; color = "#ffffff"; }
-            else if (order.status == "04") { status = "납품완료"; }
-            else if (order.status == "05") { status = "수정완료"; background_color = "#ee293b"; color = "#ffffff"; }
-            else if (order.status == "06") { status = "완료후 수정 요청"; }
-            else if (order.status == "07") { status = "작업자 코멘트"; }
-        }
-
-        let content = await common.dec(order.content);
-        let note = await common.dec(order.note);
-
-        $("#order_status").text(status);
-        $("#order_status").css("background-color", background_color);
-        $("#order_status").css("color", color);
-
-        $("#order_title").text(order.title);
-        $("#b_time").text(order.b_time);
-        $("#e_time").text(order.e_time);
-        $("#output").text(order.output);
-        if("<%=sender%>" == "work") {
-            $("#price").text(order.work_price);
-        } else {
-            $("#price").text(order.order_price);
-        }
-        $("#work_price").text(order.work_price);
-        $("#note").text(note || "-");
-        $("#order_content").html(content);
-
-
-        $("#viewModal").show();
-
-        await senderAxios.callAxios("<%=_props.CORES.sender[sender]%>/getOrderFixs", "post", { order_idx: order_idx })
-            .then(async (data) => {
-                $("#revisionsContainer").empty();
-
-                for (let orderFixIdx in data.data.data.orderFixs) {
-                    let orderFix = data.data.data.orderFixs[orderFixIdx];
-
-                    let txt = '<div class="revision-phase" data-order_fix_idx="' + orderFix.order_fix_idx + '">';
-                    txt += '<div class="revision-title"><span>수정 사항 ' + (data.data.data.orderFixs.length - Number(orderFixIdx)) + '차</span>'
-                    txt += '</div>';
-                    txt += '<div class="revision-content">';
-                    txt += await common.dec(orderFix.content.replace(/\\"/g, '"'));
-                    txt += '</div>';
-                    txt += '</div>';
-
-                    $("#revisionsContainer").append(txt);
-                }
-            })
-    })
-
     function changePriceObj(tr) {
         let order_idx = $(tr).data("order_idx");
         let order_price = $(tr).find("input[name='order_price']").val();
@@ -146,9 +77,16 @@
     })
 
     async function changePrice() {
-        await senderAxios.callAxios("<%=_props.CORES.sender[sender]%>/changePrice", "post", {
-            priceObj: JSON.stringify(priceObj)
-        }).then(() => priceObj = {});
+        if(priceObj.length < 1) {
+            alert("변경할 단가가 없습니다.");
+            return;
+        }
+
+        await senderAxios.callAxios("<%=_props.CORES.sender[sender]%>/changePrice", "post", { priceObj: JSON.stringify(priceObj)})
+            .then(() => {
+                alert("단가 내용이 적용되었습니다.");
+                priceObj = [];
+            });
     }
 
     $(document).on("change", ".status", async function () {

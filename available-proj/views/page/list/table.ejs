@@ -41,13 +41,13 @@
             <td>
                 <button style="background-color: #ee293b; color: #ffffff; border: 0px;" name="orderDel">삭제</button>
             </td>
-        <%} else if(sender == "order") {%>
+        <%} else {%>
             <td>
-                <%=order.order_price || ''%>
-            </td>
-        <%}else if(sender == "work") {%>
-            <td>
-                <%=order.work_price || ''%>
+                <%if(order.show_yn == "Y" && sender == "order"){%>
+                    <%=order.order_price || ''%>
+                <%} else if (order.show_yn == "Y" && sender == "work") {%>
+                    <%=order.work_price || ''%>
+                <%}%>
             </td>
         <%}%>
     </tr>
