@@ -1,6 +1,4 @@
 <% let orderData={} ;for(let orderIdx in data.orders) { let order=data.orders[orderIdx];%>
-
-
     <!-- <tr class=" important"> -->
     <tr class="hover_line" data-order_idx="<%=order.order_idx%>">
         <td>
@@ -20,7 +18,7 @@
         </td>
         <td>
             <select class="status"
-                style='<%=(order.status=="03" || order.status=="05") ? "background-color: #ee293b; color: #ffffff;" : ""%>'>
+                style='<%=_props.CORES.sender.check[sender].includes(order.status) ? "background-color: #ee293b; color: #ffffff;" : ""%>'>
                 <option value="01" <%=order.status=="01" ? "selected" : "" %> >작업요청</option>
                 <option value="02" <%=order.status=="02" ? "selected" : "" %> >수정요청</option>
                 <option value="03" <%=order.status=="03" ? "selected" : "" %> >작업완료</option>
@@ -30,18 +28,28 @@
                 <option value="06" <%=order.status=="07" ? "selected" : "" %> >작업자 코멘트</option>
             </select>
         </td>
-        <td>
-            <input type="text" class="price_data" style="width: 100px;" name="order_price" value="<%=order.order_price || '' %>" />
-        </td>
-        <td>
-            <input type="text" class="price_data" style="width: 100px;" name="work_price" value="<%=order.work_price || '' %>" />
-        </td>
-        <td>
-            <input type="checkbox" name="priceShow" <%=order.show_yn=="Y" ? "checked" : "" %> />
-        </td>
-        <td>
-            <button style="background-color: #ee293b; color: #ffffff; border: 0px;" name="orderDel">삭제</button>
-        </td>
+        <%if(sender == "broker") {%>
+            <td>
+                <input type="text" class="price_data" style="width: 100px;" name="order_price" value="<%=order.order_price || '' %>" />
+            </td>
+            <td>
+                <input type="text" class="price_data" style="width: 100px;" name="work_price" value="<%=order.work_price || '' %>" />
+            </td>
+            <td>
+                <input type="checkbox" name="priceShow" <%=order.show_yn=="Y" ? "checked" : "" %> />
+            </td>
+            <td>
+                <button style="background-color: #ee293b; color: #ffffff; border: 0px;" name="orderDel">삭제</button>
+            </td>
+        <%} else if(sender == "order") {%>
+            <td>
+                <%=order.order_price || ''%>
+            </td>
+        <%}else if(sender == "work") {%>
+            <td>
+                <%=order.work_price || ''%>
+            </td>
+        <%}%>
     </tr>
 
     <script>

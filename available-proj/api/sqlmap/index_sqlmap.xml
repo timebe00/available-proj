@@ -129,7 +129,7 @@
         where 
             A.delete_yn = 'N'
         ORDER BY 
-        <if test="sneder == 'order' or sneder == 'broker'">
+        <if test="sender == 'order' or sender == 'broker'">
             (
                 CASE
                     WHEN A.IMP_YN = 'Y' AND D.status = '03' then 0
@@ -142,7 +142,7 @@
                 END
             ),
         </if>
-        <if test="sneder == 'work'">
+        <if test="sender == 'work'">
             (
                 CASE
                     WHEN A.IMP_YN = 'Y' AND D.status = '01' then 0

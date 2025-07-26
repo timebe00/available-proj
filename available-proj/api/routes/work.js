@@ -5,9 +5,9 @@ const indexService = require("../service/index_service");
 
 router.get('', async function (req, res, next) {
     try {
-        req.params.sneder = "work"
+        req.params.sender = "work"
 
-        res.render('work/listView', { sender: "work" });
+        res.render('page/list/page.ejs', { sender: "work" });
     } catch (error) {
         console.log("error", error)
         next(error);
@@ -17,10 +17,10 @@ router.get('', async function (req, res, next) {
 
 router.get('/listTable', async function (req, res, next) {
     try {
-        req.params.sneder = "work"
+        req.params.sender = "work"
         let result = await indexService.getOrders(req);
 
-        res.render('work/listTable', { data: result, sender: "work" });
+        res.render('page/list/table.ejs', { data: result, sender: "work" });
     } catch (error) {
         console.log("error", error)
         next(error);
@@ -67,7 +67,7 @@ router.get('/modify', async function (req, res, next) {
 
 router.post('/modifyOrder', async function (req, res, next) {
     try {
-        req.body.sneder = "work";
+        req.body.sender = "work";
         let result = await indexService.modifyOrder(req);
 
         res.json({ data: result, sender: "work" });

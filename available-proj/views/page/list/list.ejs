@@ -1,13 +1,16 @@
 <h1>작업 항목 확인</h1>
 
 <div style="text-align: right; margin-bottom: 35px;">
-    <a href="<%=_props.CORES.sender[sneder]%>/write"
-        style="padding: 10px 16px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px;">작성하기</a>
-    <a href="javascript:changePrice()"
-        style="padding: 10px 16px; background-color: #000000; color: white; text-decoration: none; border-radius: 4px;">단가
-        적용하기</a>
+    <%if(sender != "work"){%>
+        <a href="<%=_props.CORES.sender[sender]%>/write"
+            style="padding: 10px 16px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px;">작성하기</a>
+    <%}%>
+    <%if(sender == "broker") {%>
+        <a href="javascript:changePrice()"
+            style="padding: 10px 16px; background-color: #000000; color: white; text-decoration: none; border-radius: 4px;">단가
+            적용하기</a>
+    <%}%>
 </div>
-
 <table>
     <thead>
         <tr>
@@ -16,10 +19,14 @@
             <th class="task-name">작업명</th>
             <th class="deliverable">산출물</th>
             <th>작업 상태</th>
-            <th>주문자 단가</th>
-            <th>작업자 단가</th>
-            <th>단가 노출 여부</th>
-            <th>삭제</th>
+            <%if(sender == "broker") {%>
+                <th>주문자 단가</th>
+                <th>작업자 단가</th>
+                <th>단가 노출 여부</th>
+                <th>삭제</th>
+            <%} else{%>
+                <th>단가</th>
+            <%}%>
         </tr>
     </thead>
     <tbody id="taskTableBody"></tbody>
@@ -37,7 +44,7 @@
     });
 
     function reloadTableBody() {
-        $("#taskTableBody").load("<%=_props.CORES.sender[sneder]%>/listTable");
+        $("#taskTableBody").load("<%=_props.CORES.sender[sender]%>/listTable");
     }
 
     $(document).on("click", ".show_view_model", async function () {
@@ -48,13 +55,23 @@
         let color = "#0f69f4";
         selectOrder = order_idx;
 
-        if (order.status == "01") { status = "작업요청"; }
-        else if (order.status == "02") { status = "수정요청"; }
-        else if (order.status == "03") { status = "작업완료"; background_color = "#ee293b"; color = "#ffffff"; }
-        else if (order.status == "04") { status = "납품완료"; }
-        else if (order.status == "05") { status = "수정완료"; background_color = "#ee293b"; color = "#ffffff"; }
-        else if (order.status == "06") { status = "완료후 수정 요청"; }
-        else if (order.status == "07") { status = "작업자 코멘트"; }
+        if("<%=sender%>" == "work") {
+            if (order.status == "01") { status = "작업요청"; background_color = "#ee293b"; color = "#ffffff"; }
+            else if (order.status == "02") { status = "수정요청"; background_color = "#ee293b"; color = "#ffffff"; }
+            else if (order.status == "03") { status = "작업완료"; }
+            else if (order.status == "04") { status = "납품완료"; }
+            else if (order.status == "05") { status = "수정완료"; }
+            else if (order.status == "06") { status = "완료후 수정 요청"; background_color = "#ee293b"; color = "#ffffff"; }
+            else if (order.status == "07") { status = "작업자 코멘트"; }
+        } else {
+            if (order.status == "01") { status = "작업요청"; }
+            else if (order.status == "02") { status = "수정요청"; }
+            else if (order.status == "03") { status = "작업완료"; background_color = "#ee293b"; color = "#ffffff"; }
+            else if (order.status == "04") { status = "납품완료"; }
+            else if (order.status == "05") { status = "수정완료"; background_color = "#ee293b"; color = "#ffffff"; }
+            else if (order.status == "06") { status = "완료후 수정 요청"; }
+            else if (order.status == "07") { status = "작업자 코멘트"; }
+        }
 
         let content = await common.dec(order.content);
         let note = await common.dec(order.note);
@@ -62,11 +79,16 @@
         $("#order_status").text(status);
         $("#order_status").css("background-color", background_color);
         $("#order_status").css("color", color);
+
         $("#order_title").text(order.title);
         $("#b_time").text(order.b_time);
         $("#e_time").text(order.e_time);
         $("#output").text(order.output);
-        $("#price").text(order.order_price);
+        if("<%=sender%>" == "work") {
+            $("#price").text(order.work_price);
+        } else {
+            $("#price").text(order.order_price);
+        }
         $("#work_price").text(order.work_price);
         $("#note").text(note || "-");
         $("#order_content").html(content);
@@ -74,7 +96,7 @@
 
         $("#viewModal").show();
 
-        await senderAxios.callAxios("<%=_props.CORES.sender[sneder]%>/getOrderFixs", "post", { order_idx: order_idx })
+        await senderAxios.callAxios("<%=_props.CORES.sender[sender]%>/getOrderFixs", "post", { order_idx: order_idx })
             .then(async (data) => {
                 $("#revisionsContainer").empty();
 
@@ -124,7 +146,7 @@
     })
 
     async function changePrice() {
-        await senderAxios.callAxios("<%=_props.CORES.sender[sneder]%>/changePrice", "post", {
+        await senderAxios.callAxios("<%=_props.CORES.sender[sender]%>/changePrice", "post", {
             priceObj: JSON.stringify(priceObj)
         }).then(() => priceObj = {});
     }
@@ -146,7 +168,7 @@
             order_idx: order_idx
         }
 
-        await senderAxios.callAxios("<%=_props.CORES.sender[sneder]%>/changeStatus", "post", params)
+        await senderAxios.callAxios("<%=_props.CORES.sender[sender]%>/changeStatus", "post", params)
             .then((data) => {
                 contentData[order_idx].status = status;
             })
@@ -161,7 +183,7 @@
                 order_idx: order_idx,
             }
 
-            await senderAxios.callAxios("<%=_props.CORES.sender[sneder]%>/delOrder", "post", params)
+            await senderAxios.callAxios("<%=_props.CORES.sender[sender]%>/delOrder", "post", params)
                 .then((data) => {
                     $(tr).remove();
                 });

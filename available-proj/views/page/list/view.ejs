@@ -27,12 +27,18 @@
                 <div class="row"><label>산출물</label>
                     <div class="value" id="output">main_ui_v2.png (PNG)</div>
                 </div>
+                <%if(sender == "broker") {%>
                 <div class="row"><label>주문자 단가</label>
                     <div class="value" id="price">250,000원</div>
                 </div>
                 <div class="row"><label>작업자 단가</label>
                     <div class="value" id="work_price">250,000원</div>
                 </div>
+                <%} else {%>
+                    <div class="row"><label>단가</label>
+                        <div class="value" id="price">250,000원</div>
+                    </div>
+                <%}%>
                 <div class="row"><label>비고</label>
                     <div class="value" id="note" style="word-break: break-all;">-</div>
                 </div>
@@ -44,7 +50,9 @@
                 </div>
                 <div class="section-title">
                     <span>수정 사항</span>
-                    <button id="toggleEditorBtn" class="btn">+ 수정 사항 쓰기</button>
+                    <%if(sender != "work"){%>
+                        <button id="toggleEditorBtn" class="btn">+ 수정 사항 쓰기</button>
+                    <%}%>
                 </div>
                 <div class="editor-container" id="editorWrapper">
                     <div id="editor" class="quill-container"></div>
@@ -107,7 +115,7 @@
             content: content,
         }
 
-        await senderAxios.callAxios("<%=_props.CORES.sender[sneder]%>/setOrderFix", "post", params)
+        await senderAxios.callAxios("<%=_props.CORES.sender[sender]%>/setOrderFix", "post", params)
             .then((data) => {
                 const phase = document.querySelectorAll('.revision-phase').length + 1;
 
@@ -160,7 +168,7 @@
                 order_fix_idx: order_fix_idx,
             }
 
-            await senderAxios.callAxios("<%=_props.CORES.sender[sneder]%>/delOrderFix", "post", params)
+            await senderAxios.callAxios("<%=_props.CORES.sender[sender]%>/delOrderFix", "post", params)
                 .then((data) => {
                     $("#revisionsContainer").find("div.revision-phase[data-order_fix_idx='" + order_fix_idx + "']").remove();
                     let containerLen = $("#revisionsContainer div.revision-phase").length;
@@ -175,7 +183,7 @@
     }
 
     function sendModify() {
-        location.href = "<%=_props.CORES.sender[sneder]%>/modify?order_idx=" + selectOrder
+        location.href = "<%=_props.CORES.sender[sender]%>/modify?order_idx=" + selectOrder
     }
 
     $(document).on("click", "#viewModal", function (e) {

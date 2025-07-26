@@ -61,7 +61,7 @@
 
                     </div>
                 </div>
-
+                <%if(sender == "broker") {%>
                 <div>
                     <label for="orderPriceFormatted">주문자 단가</label>
                     <input type="text" id="orderPriceFormatted" placeholder="금액 입력" autocomplete="off"
@@ -74,7 +74,21 @@
                         value="<%=modify.work_price%>" />
                     <input type="number" id="show_price" name="show_price" min="0" step="1000" />
                 </div>
-
+                <%} else if(sender == "order") {%>
+                    <div>
+                        <label for="orderPriceFormatted">단가</label>
+                        <input type="text" id="orderPriceFormatted" placeholder="금액 입력" autocomplete="off"
+                            value="<%=modify.order_price%>" />
+                        <input type="number" id="price" name="price" min="0" step="1000" />
+                    </div>
+                <%}else if(sender == "work") {%>
+                    <div>
+                        <label for="showPriceFormatted">단가</label>
+                        <input type="text" id="showPriceFormatted" placeholder="금액 입력" autocomplete="off"
+                            value="<%=modify.work_price%>" />
+                        <input type="number" id="price" name="price" min="0" step="1000" />
+                    </div>
+                <%}%>
 
                 <div>
                     <label for="editor">작업 내용</label>
@@ -97,7 +111,7 @@
                             <button type="button" id="submitBtn">작성 완료</button>
                             <%}%>
                                 <button type="button" id="goMenuBtn"
-                                    onclick="location.href='/dd684590eb0244c0871d6c7abf734b61/broker'">
+                                    onclick="location.href='<%=_props.CORES.sender[sender]%>'">
                                     메뉴로 이동
                                 </button>
                 </div>
@@ -137,29 +151,31 @@
     var isModify = false;
     var isWrite = false;
 
-    orderPriceFormatted.addEventListener('input', (e) => {
-        let valueData = orderPriceFormatted.value;
+    $("#orderPriceFormatted").on('input', (e) => {
+        let valueData = $("#orderPriceFormatted").val();
         let value = valueData.replace(/[^0-9]/g, '');
         if (value === '') {
-            orderPriceFormatted.value = '0';
+            $("#orderPriceFormatted").val("0");
             return;
         }
-        orderPriceFormatted.value = Number(value).toLocaleString('ko-KR');
+
+        $("#orderPriceFormatted").val(Number(value).toLocaleString('ko-KR'));
     });
 
-    showPriceFormatted.addEventListener('input', (e) => {
-        let value = showPriceFormatted.value.replace(/[^0-9]/g, '');
+    $("#showPriceFormatted").on('input', (e) => {
+        let value = $("#showPriceFormatted").val().replace(/[^0-9]/g, '');
         if (value === '') {
-            showPriceFormatted.value = '0';
+            $("#showPriceFormatted").val("0");
             return;
         }
-        showPriceFormatted.value = Number(value).toLocaleString('ko-KR');
+
+        $("#showPriceFormatted").val(Number(value).toLocaleString('ko-KR'));
     });
 
 
     $(document).ready(function () {
-        document.getElementById("output_type").addEventListener("change", function () {
-            if (!this.value) {
+        $("#output_type").on("change", function () {
+            if (!$(this).val()) {
                 return
             }
 
@@ -168,9 +184,9 @@
                 return null; // 또는 빈 문자열 "" 반환
             }
 
-            document.getElementById("output").value = this.options[selectedIndex].text;
-            orderPriceFormatted.value = Number(this.value).toLocaleString('ko-KR');
-            showPriceFormatted.value = Number(this.value).toLocaleString('ko-KR');
+            $("#output").val(this.options[selectedIndex].text);
+            $("#orderPriceFormatted").val(Number(this.value).toLocaleString('ko-KR'));
+            $("#showPriceFormatted").val(Number(this.value).toLocaleString('ko-KR'));
         })
 
         document.getElementById("b_time").addEventListener("click", function () {
@@ -185,14 +201,14 @@
             if (!isWrite) {
                 isWrite = true;
 
-                let title = document.getElementById("title").value;
-                let b_time = document.getElementById("b_time").value || null;
-                let e_time = document.getElementById("e_time").value || null;
-                let output = document.getElementById("output").value;
-                let order_price = document.getElementById("orderPriceFormatted").value;
-                let show_price = document.getElementById("showPriceFormatted").value;
+                let title = $("#title").val();
+                let b_time = $("#b_time").val() || null;
+                let e_time = $("#e_time").val() || null;
+                let output = $("#output").val();
+                let order_price = $("#orderPriceFormatted").val();
+                let show_price =$("#showPriceFormatted").val();
                 let content = quill.root.innerHTML;
-                let note = document.getElementById("note").value;
+                let note = $("#note").val();
                 let imp_yn = "N";
 
                 if ($('#isImportant').is(':checked')) {
@@ -220,10 +236,10 @@
                     , imp_yn: imp_yn
                 }
 
-                await senderAxios.callAxios("/dd684590eb0244c0871d6c7abf734b61/broker/setOrder", "post", params)
+                await senderAxios.callAxios("<%=_props.CORES.sender[sender]%>/setOrder", "post", params)
                     .then(function (data) {
                         alert("저장되었습니다.")
-                        location.href = "/dd684590eb0244c0871d6c7abf734b61/broker"
+                        location.href = "<%=_props.CORES.sender[sender]%>"
                     })
             }
 
@@ -232,14 +248,14 @@
         $("#modifyBtn").on("click", async () => {
             if (!isModify) {
                 isModify = true;
-                let title = document.getElementById("title").value;
-                let b_time = document.getElementById("b_time").value || null;
-                let e_time = document.getElementById("e_time").value || null;
-                let output = document.getElementById("output").value;
-                let order_price = document.getElementById("orderPriceFormatted").value;
-                let show_price = document.getElementById("showPriceFormatted").value;
+                let title = $("#title").val();
+                let b_time = $("#b_time").val() || null;
+                let e_time = $("#e_time").val()|| null;
+                let output = $("#output").val();
+                let order_price = $("#orderPriceFormatted").val();
+                let show_price = $("#showPriceFormatted").val();
                 let content = quill.root.innerHTML;
-                let note = document.getElementById("note").value;
+                let note = $("#note").val();
                 let imp_yn = "N";
 
                 if ($('#isImportant').is(':checked')) {
@@ -267,12 +283,11 @@
                     , note: noteData
                     , imp_yn: imp_yn
                 }
-                console.log("params : ", params)
 
-                senderAxios.callAxios("/dd684590eb0244c0871d6c7abf734b61/broker/modifyOrder", "post", params)
+                senderAxios.callAxios("<%=_props.CORES.sender[sender]%>/modifyOrder", "post", params)
                     .then(function (data) {
                         alert("저장되었습니다.")
-                        location.href = "/dd684590eb0244c0871d6c7abf734b61/broker"
+                        location.href = "<%=_props.CORES.sender[sender]%>"
                     })
             }
         })
