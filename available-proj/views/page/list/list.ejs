@@ -1,0 +1,192 @@
+<h1>작업 항목 확인</h1>
+
+<div style="text-align: right; margin-bottom: 35px;">
+    <%if(sender != "work"){%>
+        <a href="<%=_props.CORES.sender[sender]%>/write"
+            style="padding: 10px 16px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px;">작성하기</a>
+    <%}%>
+    <%if(sender == "broker") {%>
+        <a href="javascript:changePrice()"
+            style="padding: 10px 16px; background-color: #000000; color: white; text-decoration: none; border-radius: 4px;">단가
+            적용하기</a>
+    <%}%>
+</div>
+<table>
+    <thead>
+        <tr>
+            <th>Best</th>
+            <th>At Least</th>
+            <th class="task-name">작업명</th>
+            <th class="deliverable">산출물</th>
+            <th>작업 상태</th>
+            <%if(sender == "broker") {%>
+                <th>주문자 단가</th>
+                <th>작업자 단가</th>
+                <th>단가 노출 여부</th>
+                <th>삭제</th>
+            <%} else{%>
+                <th>단가</th>
+            <%}%>
+        </tr>
+    </thead>
+    <tbody id="taskTableBody"></tbody>
+</table>
+
+<%- include("./view.ejs") %>
+
+<script>
+    var contentData = {};
+    var priceObj = {};
+    var selectOrder = 0;
+
+    $(document).ready(function () {
+        reloadTableBody();
+    });
+
+    function reloadTableBody() {
+        $("#taskTableBody").load("<%=_props.CORES.sender[sender]%>/listTable");
+    }
+
+    $(document).on("click", ".show_view_model", async function () {
+        let order_idx = $(this).data("order_idx");
+        let order = contentData[order_idx];
+        let status = "";
+        let background_color = "#f3f7fe";
+        let color = "#0f69f4";
+        selectOrder = order_idx;
+
+        if("<%=sender%>" == "work") {
+            if (order.status == "01") { status = "작업요청"; background_color = "#ee293b"; color = "#ffffff"; }
+            else if (order.status == "02") { status = "수정요청"; background_color = "#ee293b"; color = "#ffffff"; }
+            else if (order.status == "03") { status = "작업완료"; }
+            else if (order.status == "04") { status = "납품완료"; }
+            else if (order.status == "05") { status = "수정완료"; }
+            else if (order.status == "06") { status = "완료후 수정 요청"; background_color = "#ee293b"; color = "#ffffff"; }
+            else if (order.status == "07") { status = "작업자 코멘트"; }
+        } else {
+            if (order.status == "01") { status = "작업요청"; }
+            else if (order.status == "02") { status = "수정요청"; }
+            else if (order.status == "03") { status = "작업완료"; background_color = "#ee293b"; color = "#ffffff"; }
+            else if (order.status == "04") { status = "납품완료"; }
+            else if (order.status == "05") { status = "수정완료"; background_color = "#ee293b"; color = "#ffffff"; }
+            else if (order.status == "06") { status = "완료후 수정 요청"; }
+            else if (order.status == "07") { status = "작업자 코멘트"; }
+        }
+
+        let content = await common.dec(order.content);
+        let note = await common.dec(order.note);
+
+        $("#order_status").text(status);
+        $("#order_status").css("background-color", background_color);
+        $("#order_status").css("color", color);
+
+        $("#order_title").text(order.title);
+        $("#b_time").text(order.b_time);
+        $("#e_time").text(order.e_time);
+        $("#output").text(order.output);
+        if("<%=sender%>" == "work") {
+            $("#price").text(order.work_price);
+        } else {
+            $("#price").text(order.order_price);
+        }
+        $("#work_price").text(order.work_price);
+        $("#note").text(note || "-");
+        $("#order_content").html(content);
+
+
+        $("#viewModal").show();
+
+        await senderAxios.callAxios("<%=_props.CORES.sender[sender]%>/getOrderFixs", "post", { order_idx: order_idx })
+            .then(async (data) => {
+                $("#revisionsContainer").empty();
+
+                for (let orderFixIdx in data.data.data.orderFixs) {
+                    let orderFix = data.data.data.orderFixs[orderFixIdx];
+
+                    let txt = '<div class="revision-phase" data-order_fix_idx="' + orderFix.order_fix_idx + '">';
+                    txt += '<div class="revision-title"><span>수정 사항 ' + (data.data.data.orderFixs.length - Number(orderFixIdx)) + '차</span>'
+                    txt += '</div>';
+                    txt += '<div class="revision-content">';
+                    txt += await common.dec(orderFix.content.replace(/\\"/g, '"'));
+                    txt += '</div>';
+                    txt += '</div>';
+
+                    $("#revisionsContainer").append(txt);
+                }
+            })
+    })
+
+    function changePriceObj(tr) {
+        let order_idx = $(tr).data("order_idx");
+        let order_price = $(tr).find("input[name='order_price']").val();
+        let work_price = $(tr).find("input[name='work_price']").val();
+        let priceShow = $(tr).find("input[name='priceShow']").is(":checked");
+
+        let params = {
+            order_idx: order_idx,
+            order_price: order_price,
+            work_price: work_price,
+            price_show: (priceShow ? "Y" : "N"),
+        }
+
+        priceObj["order_" + order_idx] = params;
+    };
+
+    $(document).on("input", ".price_data", function () {
+        let tr = $(this).parent().parent();
+        let price = Number($(this).val().replace(/[^0-9]/g, ""));
+        $(this).val(price.toLocaleString("ko-KR"));
+
+        changePriceObj(tr);
+    })
+
+    $(document).on("change", "input[name='priceShow']", function () {
+        let tr = $(this).parent().parent();
+        changePriceObj(tr);
+    })
+
+    async function changePrice() {
+        await senderAxios.callAxios("<%=_props.CORES.sender[sender]%>/changePrice", "post", {
+            priceObj: JSON.stringify(priceObj)
+        }).then(() => priceObj = {});
+    }
+
+    $(document).on("change", ".status", async function () {
+        let status = $(this).val();
+        let order_idx = $(this).parent().parent().data("order_idx")
+        if (status == "03" || status == "05") {
+            $(this).css("background-color", "#ee293b");
+            $(this).css("color", "#ffffff");
+        }
+        else {
+            $(this).css("background-color", "");
+            $(this).css("color", "");
+        }
+
+        let params = {
+            status: status,
+            order_idx: order_idx
+        }
+
+        await senderAxios.callAxios("<%=_props.CORES.sender[sender]%>/changeStatus", "post", params)
+            .then((data) => {
+                contentData[order_idx].status = status;
+            })
+            ;
+    })
+
+    $(document).on("click", "button[name='orderDel']", async function () {
+        const tr = $(this).parent().parent();
+        if (confirm("해당 주문을 정말 삭제하시겠습니까?")) {
+            const order_idx = $(tr).data("order_idx");
+            const params = {
+                order_idx: order_idx,
+            }
+
+            await senderAxios.callAxios("<%=_props.CORES.sender[sender]%>/delOrder", "post", params)
+                .then((data) => {
+                    $(tr).remove();
+                });
+        }
+    })
+</script>

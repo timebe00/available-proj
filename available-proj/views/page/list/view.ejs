@@ -1,0 +1,195 @@
+<!-- 작업 보기 모달 -->
+<div id="viewModal" class="modal">
+    <div class="modal-content">
+        <span class="modal-close" onclick="document.getElementById('viewModal').style.display='none'">&times;</span>
+        <div id="viewModalBody">
+            <!-- view.ejs 내용 통합 -->
+            <div class="container">
+                <h1 class="text_center">작업 내용 확인</h1>
+                <div class="top-actions">
+                    <a href="javascript:sendModify()" class="btn btn-blue">수정하기</a>
+                </div>
+                <div class="row">
+                    <label>현재 상태</label>
+                    <div class="value">
+                        <span id="order_status" style=" padding:10px 20px;">작업완료</span>
+                    </div>
+                </div>
+                <div class="row"><label>작업명</label>
+                    <div class="value" id="order_title" style="word-break: break-all;">메인페이지 UI 구성</div>
+                </div>
+                <div class="row"><label>Best</label>
+                    <div class="value" id="b_time">2025-07-10 18:00</div>
+                </div>
+                <div class="row"><label>At Least</label>
+                    <div class="value" id="e_time">2025-07-08 12:00</div>
+                </div>
+                <div class="row"><label>산출물</label>
+                    <div class="value" id="output">main_ui_v2.png (PNG)</div>
+                </div>
+                <%if(sender == "broker") {%>
+                <div class="row"><label>주문자 단가</label>
+                    <div class="value" id="price">250,000원</div>
+                </div>
+                <div class="row"><label>작업자 단가</label>
+                    <div class="value" id="work_price">250,000원</div>
+                </div>
+                <%} else {%>
+                    <div class="row"><label>단가</label>
+                        <div class="value" id="price">250,000원</div>
+                    </div>
+                <%}%>
+                <div class="row"><label>비고</label>
+                    <div class="value" id="note" style="word-break: break-all;">-</div>
+                </div>
+                <div class="section-title">
+                    <span>작업 내용</span>
+                </div>
+                <div class="multiline" id="order_content">
+                    - 메인 UI 레이아웃 구성 완료<br />- 반응형 스타일 적용<br />- 버튼 인터랙션 구현
+                </div>
+                <div class="section-title">
+                    <span>수정 사항</span>
+                    <%if(sender != "work"){%>
+                        <button id="toggleEditorBtn" class="btn">+ 수정 사항 쓰기</button>
+                    <%}%>
+                </div>
+                <div class="editor-container" id="editorWrapper">
+                    <div id="editor" class="quill-container"></div>
+                    <button id="submitRevisionPhase" class="btn btn-blue">차수 추가</button>
+                    <hr />
+                </div>
+                <div id="revisionsContainer">
+                    <div class="revision-phase">
+                        <div class="revision-title">수정 사항 1차</div>
+                        <div class="revision-content">
+                            <ul>
+                                <li>버튼 색상 변경 요청</li>
+                                <li>폰트 사이즈 확대</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 이미지 보기 모달 -->
+<div id="imageModal">
+    <span id="modalClose">&times;</span>
+    <img id="modalImage" />
+</div>
+
+<script>
+    const quill = new Quill('#editor', {
+        theme: 'snow',
+        placeholder: '수정 내용을 입력하세요...',
+        modules: {
+            toolbar: [
+                [{ header: [1, 2, false] }],
+                ['bold', 'italic', 'underline'],
+                ['link', 'image'],
+                [{ list: 'ordered' }, { list: 'bullet' }],
+                [{ color: [] }, { background: [] }],  // ✅ 글자색 & 배경색 추가
+                ['clean']
+            ],
+            imageResize: {
+                modules: ['Resize', 'DisplaySize']
+            }
+        }
+    });
+
+
+    $('#toggleEditorBtn').on("click", function () {
+        $("#editorWrapper").toggle();
+    });
+
+    $('#submitRevisionPhase').on("click", async function () {
+        const html = quill.root.innerHTML.trim();
+        if (!html || html === '<p><br></p>') return;
+
+        let content = await common.enc(html)
+        let params = {
+            order_idx: selectOrder,
+            content: content,
+        }
+
+        await senderAxios.callAxios("<%=_props.CORES.sender[sender]%>/setOrderFix", "post", params)
+            .then((data) => {
+                const phase = document.querySelectorAll('.revision-phase').length + 1;
+
+                const txt = `
+                <div class="revision-phase" data-order_fix_idx="${data.data.data.order_fix_idx}">
+                    <div class="revision-title"><span>수정 사항 ${phase}차 </span>
+                    </div>
+                    <div class="revision-content">${html}</div>
+                </div>
+                `;
+
+                $('#revisionsContainer').prepend(txt);
+                quill.setContents([]);
+                document.getElementById('editorWrapper').style.display = 'none';
+
+                $("#order_status").text("수정요청");
+                $("#order_status").css("background-color", "#f3f7fe");
+                $("#order_status").css("color", "#0f69f4");
+
+                $("#taskTableBody").find(".hover_line[data-order_idx=" + selectOrder + "]").find(".status").val("02").prop("selected", true);
+                $("#taskTableBody").find(".hover_line[data-order_idx=" + selectOrder + "]").find(".status").css("background-color", "");
+                $("#taskTableBody").find(".hover_line[data-order_idx=" + selectOrder + "]").find(".status").css("color", "");
+            })
+
+    });
+
+    document.addEventListener('click', function (e) {
+        if (e.target.tagName === 'IMG' && (e.target.closest('.multiline') || e.target.closest('.revision-content'))) {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            modal.style.display = 'block';
+            modalImg.src = e.target.src;
+        }
+        if (e.target.id === 'imageModal') {
+            document.getElementById('imageModal').style.display = 'none';
+        }
+    });
+
+    $('#modalClose').on("click", function() {
+        document.getElementById('imageModal').style.display = 'none';
+    })
+
+    function modifyOrderFix(order_fix_idx) {
+        console.log("modify", order_fix_idx);
+    }
+
+    async function delOrderFix(order_fix_idx) {
+        if (confirm("수정 사항을 정말 삭제하시겠습니까?")) {
+            let params = {
+                order_fix_idx: order_fix_idx,
+            }
+
+            await senderAxios.callAxios("<%=_props.CORES.sender[sender]%>/delOrderFix", "post", params)
+                .then((data) => {
+                    $("#revisionsContainer").find("div.revision-phase[data-order_fix_idx='" + order_fix_idx + "']").remove();
+                    let containerLen = $("#revisionsContainer div.revision-phase").length;
+
+                    $("#revisionsContainer div.revision-phase").each((index, element) => {
+                        if ($(element).data("order_fix_idx") > order_fix_idx) {
+                            $(element).find(".revision-title span").text("수정 사항 " + (containerLen - index) + "차");
+                        }
+                    })
+                });
+        }
+    }
+
+    function sendModify() {
+        location.href = "<%=_props.CORES.sender[sender]%>/modify?order_idx=" + selectOrder
+    }
+
+    $(document).on("click", "#viewModal", function (e) {
+        const $viewModalBody = $('#viewModalBody');
+        if ($viewModalBody.is(':visible') && e.target.id === 'viewModal') {
+            $('#viewModal').hide();
+        }
+    })
+</script>

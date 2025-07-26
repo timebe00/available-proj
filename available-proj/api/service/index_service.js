@@ -8,10 +8,10 @@ exports.getOrders = (req) => {
         let result = {};
         let connection;
         try {
-            let sneder = req.params.sneder;
+            let sender = req.params.sender;
 
             connection = await connectionManager.getConnection({ readOnly: true });
-            let orders = await indexModule.selectOrderList(connection, { sneder: sneder });
+            let orders = await indexModule.selectOrderList(connection, { sender: sender });
 
             result.orders = orders;
 
@@ -47,7 +47,7 @@ exports.setOrder = (req) => {
         let result = {};
         let connection;
         try {
-            let sneder = req.body.sneder || "order"
+            let sender = req.body.sender || "order"
             let title = req.body.title;
             let b_time = req.body.b_time;
             let e_time = req.body.e_time;
@@ -63,7 +63,7 @@ exports.setOrder = (req) => {
                 throw ({ code: "99", message: "title 없음" });
             }
 
-            if (sneder != "broker") {
+            if (sender != "broker") {
                 order_price = order_price;
                 work_price = order_price;
             }
@@ -209,7 +209,7 @@ exports.modifyOrder = (req) => {
         let result = {};
         let connection;
         try {
-            let sneder = req.body.sneder;
+            let sender = req.body.sender;
             let order_idx = req.body.order_idx
             let title = req.body.title
             let b_time = req.body.b_time || null;
@@ -228,7 +228,7 @@ exports.modifyOrder = (req) => {
             }
 
             let params = {
-                sneder: sneder,
+                sender: sender,
                 order_idx: order_idx,
                 title: title,
                 b_time: b_time,
@@ -251,7 +251,7 @@ exports.modifyOrder = (req) => {
             let updateOrder = await indexModule.updateOrder(connection, params);
             await indexModule.insertOrderHis(connection, params);
 
-            if (sneder == "work") {
+            if (sender == "work") {
                 await indexModule.updateOrderStatus(connection, { order_idx: order_idx, status: "07" });
             }
 

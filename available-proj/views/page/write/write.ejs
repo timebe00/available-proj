@@ -1,0 +1,360 @@
+<% 
+    let modify={}; 
+    let b_time=""; 
+    let e_time=""; 
+    let content=""; 
+    
+    if(data.modify) { 
+        modify=data.modify.order;
+        
+        if(modify.b_time){ 
+            b_time=new Date(modify.b_time).toISOString().slice(0, 16);
+        } 
+        
+        if(modify.e_time) {
+            e_time=new Date(modify.e_time).toISOString().slice(0, 16);
+        } 
+        
+        content=modify.content;
+    } 
+%>
+
+    <body>
+        <div class="container">
+            <h1>신규 작업 작성</h1>
+            <div class="form-section">
+                <div>
+                    <label for="title">작업명</label>
+                    <input type="text" id="title" name="title" value="<%=modify.title%>" />
+                </div>
+
+                <div class="date-group">
+                    <div>
+                        <label for="b_time">Best</label>
+                        <input type="text" id="b_time" name="datatime" placeholder="날짜와 시간 선택" value="<%=b_time%>" />
+                    </div>
+                    <div>
+                        <label for="e_time">At Least</label>
+                        <input type="text" id="e_time" name="datatime" placeholder="날짜와 시간 선택" value="<%=e_time%>" />
+                    </div>
+                </div>
+
+                <div class="deliverable-group">
+                    <label for="output">산출물</label>
+                    <div class="deliverable-controls">
+                        <input type="text" id="output" name="output" style="display: none;" placeholder="산출물 입력"
+                            value="<%=modify.output%>" />
+                        <select id="output_type" name="output_type">
+                            <option value="">입력하기</option>
+                            <% for(let outputIdx in data.outputs){ let output=data.outputs[outputIdx]; %>
+                                <option value="<%=output.price%>" <%=modify.output==output.name ? 'selected' : '' %>
+                                    >
+                                    <%=output.name%>
+                                </option>
+                                <% } %>
+                        </select>
+                        <div class="checkbox-group">
+                            <label for="isImportant">상단노출여부</label>
+                            <input type="checkbox" id="isImportant" name="isImportant" <%=modify.imp_yn=="Y" ? "checked"
+                                : "" %> />
+                        </div>
+
+                    </div>
+                </div>
+                <%if(sender == "broker") {%>
+                <div>
+                    <label for="orderPriceFormatted">주문자 단가</label>
+                    <input type="text" id="orderPriceFormatted" placeholder="금액 입력" autocomplete="off"
+                        value="<%=modify.order_price%>" />
+                    <input type="number" id="price" name="price" min="0" step="1000" />
+                </div>
+                <div>
+                    <label for="showPriceFormatted">작업자 단가</label>
+                    <input type="text" id="showPriceFormatted" placeholder="금액 입력" autocomplete="off"
+                        value="<%=modify.work_price%>" />
+                    <input type="number" id="show_price" name="show_price" min="0" step="1000" />
+                </div>
+                <%} else if(sender == "order") {%>
+                    <div>
+                        <label for="orderPriceFormatted">단가</label>
+                        <input type="text" id="orderPriceFormatted" placeholder="금액 입력" autocomplete="off"
+                            value="<%=modify.order_price%>" />
+                        <input type="number" id="price" name="price" min="0" step="1000" />
+                    </div>
+                <%}else if(sender == "work") {%>
+                    <div>
+                        <label for="showPriceFormatted">단가</label>
+                        <input type="text" id="showPriceFormatted" placeholder="금액 입력" autocomplete="off"
+                            value="<%=modify.work_price%>" />
+                        <input type="number" id="price" name="price" min="0" step="1000" />
+                    </div>
+                <%}%>
+
+                <div>
+                    <label for="editor">작업 내용</label>
+                    <div id="editor">
+                        <%-decodeURIComponent(escape(atob(content || "" )))%>
+                    </div>
+                    <input type="hidden" id="taskContent" name="taskContent" />
+                </div>
+
+                <div>
+                    <label for="note">비고</label>
+                    <textarea id="note" name="note"
+                        placeholder="특이사항이나 메모"><%=decodeURIComponent(escape(atob(modify.note || "")))%></textarea>
+                </div>
+
+                <div class="button-group">
+                    <%if(modify.order_idx) {%>
+                        <button type="button" id="modifyBtn">수정 완료</button>
+                        <%} else {%>
+                            <button type="button" id="submitBtn">작성 완료</button>
+                            <%}%>
+                                <button type="button" id="goMenuBtn"
+                                    onclick="location.href='<%=_props.CORES.sender[sender]%>'">
+                                    메뉴로 이동
+                                </button>
+                </div>
+
+            </div>
+        </div>
+
+    </body>
+
+</html>
+<script>
+    const quill = new Quill('#editor', {
+        theme: 'snow',
+        placeholder: '수정 내용을 입력하세요...',
+        modules: {
+            toolbar: [
+                [{ header: [1, 2, false] }],
+                ['bold', 'italic', 'underline'],
+                ['link', 'image'],
+                [{ list: 'ordered' }, { list: 'bullet' }],
+                [{ color: [] }, { background: [] }],  // ✅ 글자색 & 배경색 추가
+                ['clean']
+            ],
+            imageResize: {
+                modules: ['Resize', 'DisplaySize']
+            }
+        }
+    });
+
+
+    const orderPriceInput = document.getElementById('order_price');
+    const showPriceInput = document.getElementById('show_price');
+
+    const orderPriceFormatted = document.getElementById('orderPriceFormatted');
+    const showPriceFormatted = document.getElementById('showPriceFormatted');
+
+    var isModify = false;
+    var isWrite = false;
+
+    $("#orderPriceFormatted").on('input', (e) => {
+        let valueData = $("#orderPriceFormatted").val();
+        let value = valueData.replace(/[^0-9]/g, '');
+        if (value === '') {
+            $("#orderPriceFormatted").val("0");
+            return;
+        }
+
+        $("#orderPriceFormatted").val(Number(value).toLocaleString('ko-KR'));
+    });
+
+    $("#showPriceFormatted").on('input', (e) => {
+        let value = $("#showPriceFormatted").val().replace(/[^0-9]/g, '');
+        if (value === '') {
+            $("#showPriceFormatted").val("0");
+            return;
+        }
+
+        $("#showPriceFormatted").val(Number(value).toLocaleString('ko-KR'));
+    });
+
+
+    $(document).ready(function () {
+        $("#output_type").on("change", function () {
+            if (!$(this).val()) {
+                return
+            }
+
+            var selectedIndex = this.selectedIndex;
+            if (selectedIndex === -1) {
+                return null; // 또는 빈 문자열 "" 반환
+            }
+
+            $("#output").val(this.options[selectedIndex].text);
+            $("#orderPriceFormatted").val(Number(this.value).toLocaleString('ko-KR'));
+            $("#showPriceFormatted").val(Number(this.value).toLocaleString('ko-KR'));
+        })
+
+        document.getElementById("b_time").addEventListener("click", function () {
+            this.showPicker();
+        })
+
+        document.getElementById("e_time").addEventListener("click", function () {
+            this.showPicker();
+        })
+
+        $("#submitBtn").on('click', async () => {
+            if (!isWrite) {
+                isWrite = true;
+
+                let title = $("#title").val();
+                let b_time = $("#b_time").val() || null;
+                let e_time = $("#e_time").val() || null;
+                let output = $("#output").val();
+                let order_price = $("#orderPriceFormatted").val();
+                let show_price =$("#showPriceFormatted").val();
+                let content = quill.root.innerHTML;
+                let note = $("#note").val();
+                let imp_yn = "N";
+
+                if ($('#isImportant').is(':checked')) {
+                    imp_yn = "Y";
+                }
+
+                if (!title) {
+                    alert("작업명 입력해주세요.");
+                    isWrite = false;
+                    return;
+                }
+
+                const contentData = await common.enc(content);
+                const noteData = await common.enc(note);
+
+                let params = {
+                    title: title
+                    , b_time: b_time
+                    , e_time: e_time
+                    , output: output
+                    , order_price: order_price
+                    , show_price: show_price
+                    , content: contentData
+                    , note: noteData
+                    , imp_yn: imp_yn
+                }
+
+                await senderAxios.callAxios("<%=_props.CORES.sender[sender]%>/setOrder", "post", params)
+                    .then(function (data) {
+                        alert("저장되었습니다.")
+                        location.href = "<%=_props.CORES.sender[sender]%>"
+                    })
+            }
+
+        });
+
+        $("#modifyBtn").on("click", async () => {
+            if (!isModify) {
+                isModify = true;
+                let title = $("#title").val();
+                let b_time = $("#b_time").val() || null;
+                let e_time = $("#e_time").val()|| null;
+                let output = $("#output").val();
+                let order_price = $("#orderPriceFormatted").val();
+                let show_price = $("#showPriceFormatted").val();
+                let content = quill.root.innerHTML;
+                let note = $("#note").val();
+                let imp_yn = "N";
+
+                if ($('#isImportant').is(':checked')) {
+                    imp_yn = "Y";
+                }
+
+                if (!title) {
+                    alert("작업명 입력해주세요.");
+                    isModify = false;
+                    return;
+                }
+
+                const contentData = await common.enc(content);
+                const noteData = await common.enc(note);
+
+                let params = {
+                    order_idx: "<%=modify.order_idx%>"
+                    , title: title
+                    , b_time: b_time
+                    , e_time: e_time
+                    , output: output
+                    , order_price: order_price
+                    , show_price: show_price
+                    , content: contentData
+                    , note: noteData
+                    , imp_yn: imp_yn
+                }
+
+                senderAxios.callAxios("<%=_props.CORES.sender[sender]%>/modifyOrder", "post", params)
+                    .then(function (data) {
+                        alert("저장되었습니다.")
+                        location.href = "<%=_props.CORES.sender[sender]%>"
+                    })
+            }
+        })
+
+        $("#title").on("input", function () {
+            if ($(this).val().length > 255) {
+                alert("제목을 255자 이내로 수정해주세요.");
+                let titleMax = $(this).val().substring(0, 255);
+                $(this).val(titleMax);
+            }
+        })
+    });
+
+    $(function () {
+        $('input[name="datatime"]').datetimepicker({
+            dateFormat: 'yy-mm-dd',
+            timeFormat: 'HH:mm',
+            controlType: 'select',
+            stepMinute: 30,
+            hourMin: 10,
+            hourMax: 22,
+
+            beforeShow: function (input, inst) {
+                setTimeout(() => filterOptions(), 10);
+            },
+
+            onSelect: function () {
+                setTimeout(() => filterOptions(), 10);
+            }
+        });
+
+        function filterOptions() {
+            const dp = $('.ui-timepicker-div');
+            if (!dp.length) return;
+
+            // 시간 필터
+            dp.find('.ui_tpicker_hour select option').each(function () {
+                const val = parseInt($(this).val(), 0);
+                if (![10, 13, 17, 22].includes(val)) $(this).remove();
+            });
+
+            // 분 필터
+            dp.find('.ui_tpicker_minute select option').each(function () {
+                const val = parseInt($(this).val(), 10);
+                if (![0, 30].includes(val)) $(this).remove();
+            });
+        }
+
+        let b_time = "<%=modify.b_time%>"
+        let e_time = "<%=modify.e_time%>"
+
+        const now = new Date();
+        now.setHours(13);
+        now.setMinutes(0);
+
+        if (b_time) {
+            let b_time_data = new Date("<%=modify.b_time%>");
+            $('#b_time').datetimepicker('setDate', b_time_data);
+        } else {
+            $('#b_time').datetimepicker('setDate', now);
+        }
+
+        if (e_time) {
+            let e_time_data = new Date("<%=modify.e_time%>");
+            $('#e_time').datetimepicker('setDate', e_time_data);
+        } else {
+            $('#e_time').datetimepicker('setDate', now);
+        }
+    });
+</script>
