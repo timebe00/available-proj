@@ -32,9 +32,9 @@ setApp = () => {
         app.use(express.static(path.join(__dirname, 'public')));
 
         app.use('/', indexRouter);
-        app.use('/', workRouter);
-        app.use('/', orderRouter);
-        app.use('/', brokerRouter);
+        app.use(_props.CORES.sender.work, workRouter);
+        app.use(_props.CORES.sender.order, orderRouter);
+        app.use(_props.CORES.sender.broker, brokerRouter);
 
         app.get('/.well-known/appspecific/com.chrome.devtools.json', (req, res) => {
           res.json({ status: 'not-supported' }); // 또는 빈 객체

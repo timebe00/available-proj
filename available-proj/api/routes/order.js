@@ -3,7 +3,7 @@ var router = express.Router();
 
 const indexService = require("../service/index_service");
 
-router.get('/5521ed612b874a198fc98c71fbcee437/order', async function (req, res, next) {
+router.get('', async function (req, res, next) {
     try {
         req.params.sneder = "order"
 
@@ -15,7 +15,7 @@ router.get('/5521ed612b874a198fc98c71fbcee437/order', async function (req, res, 
 
 });
 
-router.get('/5521ed612b874a198fc98c71fbcee437/order/listTable', async function (req, res, next) {
+router.get('/listTable', async function (req, res, next) {
     try {
         req.params.sneder = "order"
         let result = await indexService.getOrders(req);
@@ -29,7 +29,7 @@ router.get('/5521ed612b874a198fc98c71fbcee437/order/listTable', async function (
 });
 
 //  발주처 작성 페이지
-router.get('/5521ed612b874a198fc98c71fbcee437/order/write', async function (req, res, next) {
+router.get('/write', async function (req, res, next) {
     try {
         let result = await indexService.getOutputs(req);
 
@@ -41,7 +41,7 @@ router.get('/5521ed612b874a198fc98c71fbcee437/order/write', async function (req,
 
 });
 
-router.post('/5521ed612b874a198fc98c71fbcee437/order/setOrder', async function (req, res, next) {
+router.post('/setOrder', async function (req, res, next) {
     try {
         req.body.sneder = "order"
         let result = await indexService.setOrder(req);
@@ -54,7 +54,7 @@ router.post('/5521ed612b874a198fc98c71fbcee437/order/setOrder', async function (
 
 });
 
-router.post('/5521ed612b874a198fc98c71fbcee437/order/changeStatus', async function (req, res, next) {
+router.post('/changeStatus', async function (req, res, next) {
     try {
         let result = await indexService.changeStatus(req);
 
@@ -66,7 +66,7 @@ router.post('/5521ed612b874a198fc98c71fbcee437/order/changeStatus', async functi
 
 });
 
-router.get('/5521ed612b874a198fc98c71fbcee437/order/view', async function (req, res, next) {
+router.get('/view', async function (req, res, next) {
     try {
         let result = await indexService.getOrder(req);
 
@@ -78,7 +78,7 @@ router.get('/5521ed612b874a198fc98c71fbcee437/order/view', async function (req, 
 
 });
 
-router.post('/5521ed612b874a198fc98c71fbcee437/order/setOrderFix', async function (req, res, next) {
+router.post('/setOrderFix', async function (req, res, next) {
     try {
         let result = await indexService.setOrderFix(req);
 
@@ -90,7 +90,7 @@ router.post('/5521ed612b874a198fc98c71fbcee437/order/setOrderFix', async functio
 
 });
 
-router.get('/5521ed612b874a198fc98c71fbcee437/order/modify', async function (req, res, next) {
+router.get('/modify', async function (req, res, next) {
     try {
         let result = await indexService.getOutputs(req);
         result.modify = await indexService.getOrder(req);
@@ -103,7 +103,7 @@ router.get('/5521ed612b874a198fc98c71fbcee437/order/modify', async function (req
 
 });
 
-router.post('/5521ed612b874a198fc98c71fbcee437/order/modifyOrder', async function (req, res, next) {
+router.post('/modifyOrder', async function (req, res, next) {
     try {
         req.body.sneder = "order";
         let result = await indexService.modifyOrder(req);
@@ -116,7 +116,7 @@ router.post('/5521ed612b874a198fc98c71fbcee437/order/modifyOrder', async functio
 
 });
 
-router.post('/5521ed612b874a198fc98c71fbcee437/order/changePrice', async function (req, res, next) {
+router.post('/changePrice', async function (req, res, next) {
     try {
         let result = await indexService.changePrice(req);
 
@@ -128,7 +128,7 @@ router.post('/5521ed612b874a198fc98c71fbcee437/order/changePrice', async functio
 
 });
 
-router.post('/5521ed612b874a198fc98c71fbcee437/order/getOrderFixs', async function (req, res, next) {
+router.post('/getOrderFixs', async function (req, res, next) {
     try {
         let result = await indexService.getOrderFixs(req);
 

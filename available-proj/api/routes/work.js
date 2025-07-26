@@ -3,7 +3,7 @@ var router = express.Router();
 
 const indexService = require("../service/index_service");
 
-router.get('/e6e7b89523ac41e0ba406fbd05ed9de6/work', async function (req, res, next) {
+router.get('', async function (req, res, next) {
     try {
         req.params.sneder = "work"
 
@@ -15,7 +15,7 @@ router.get('/e6e7b89523ac41e0ba406fbd05ed9de6/work', async function (req, res, n
 
 });
 
-router.get('/e6e7b89523ac41e0ba406fbd05ed9de6/work/listTable', async function (req, res, next) {
+router.get('/listTable', async function (req, res, next) {
     try {
         req.params.sneder = "work"
         let result = await indexService.getOrders(req);
@@ -28,19 +28,7 @@ router.get('/e6e7b89523ac41e0ba406fbd05ed9de6/work/listTable', async function (r
 
 });
 
-router.get('/e6e7b89523ac41e0ba406fbd05ed9de6/work/view', async function (req, res, next) {
-    try {
-        let result = await indexService.getOrder(req);
-
-        res.render('work/view', { data: result, sender: "work" });
-    } catch (error) {
-        console.log("error", error)
-        next(error);
-    }
-
-});
-
-router.post('/e6e7b89523ac41e0ba406fbd05ed9de6/work/changeStatus', async function (req, res, next) {
+router.post('/changeStatus', async function (req, res, next) {
     try {
         let result = await indexService.changeStatus(req);
 
@@ -52,7 +40,7 @@ router.post('/e6e7b89523ac41e0ba406fbd05ed9de6/work/changeStatus', async functio
 
 });
 
-router.post('/e6e7b89523ac41e0ba406fbd05ed9de6/work/getOrderFixs', async function (req, res, next) {
+router.post('/getOrderFixs', async function (req, res, next) {
     try {
         let result = await indexService.getOrderFixs(req);
 
@@ -64,12 +52,12 @@ router.post('/e6e7b89523ac41e0ba406fbd05ed9de6/work/getOrderFixs', async functio
 
 });
 
-router.get('/e6e7b89523ac41e0ba406fbd05ed9de6/work/modify', async function (req, res, next) {
+router.get('/modify', async function (req, res, next) {
     try {
         let result = await indexService.getOutputs(req);
         result.modify = await indexService.getOrder(req);
 
-        res.render('work/write', { data: result, sender: "work" });
+        res.render('page/write/page.ejs', { data: result, sender: "work" });
     } catch (error) {
         console.log("error", error)
         next(error);
@@ -77,7 +65,7 @@ router.get('/e6e7b89523ac41e0ba406fbd05ed9de6/work/modify', async function (req,
 
 });
 
-router.post('/e6e7b89523ac41e0ba406fbd05ed9de6/work/modifyOrder', async function (req, res, next) {
+router.post('/modifyOrder', async function (req, res, next) {
     try {
         req.body.sneder = "work";
         let result = await indexService.modifyOrder(req);

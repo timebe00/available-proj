@@ -3,11 +3,11 @@ var router = express.Router();
 
 const indexService = require("../service/index_service");
 
-router.get('/dd684590eb0244c0871d6c7abf734b61/broker', async function (req, res, next) {
+router.get('/', async function (req, res, next) {
   try {
     req.params.sneder = "broker"
 
-    res.render('broker/listView', { sneder: "broker" });
+    res.render('page/list/page.ejs', { sneder: "broker" });
   } catch (error) {
     console.log("error", error)
     next(error);
@@ -15,12 +15,12 @@ router.get('/dd684590eb0244c0871d6c7abf734b61/broker', async function (req, res,
 
 });
 
-router.get('/dd684590eb0244c0871d6c7abf734b61/broker/listTable', async function (req, res, next) {
+router.get('/listTable', async function (req, res, next) {
   try {
     req.params.sneder = "broker"
     let result = await indexService.getOrders(req);
 
-    res.render('broker/listTable', { data: result, sneder: "broker" });
+    res.render('page/list/table.ejs', { data: result, sneder: "broker" });
   } catch (error) {
     console.log("error", error)
     next(error);
@@ -29,11 +29,11 @@ router.get('/dd684590eb0244c0871d6c7abf734b61/broker/listTable', async function 
 });
 
 //  발주처 작성 페이지
-router.get('/dd684590eb0244c0871d6c7abf734b61/broker/write', async function (req, res, next) {
+router.get('/write', async function (req, res, next) {
   try {
     let result = await indexService.getOutputs(req);
 
-    res.render('broker/write', { data: result, sneder: "broker" });
+    res.render('page/write/page.ejs', { data: result, sneder: "broker" });
   } catch (error) {
     console.log("error", error)
     next(error);
@@ -41,7 +41,7 @@ router.get('/dd684590eb0244c0871d6c7abf734b61/broker/write', async function (req
 
 });
 
-router.post('/dd684590eb0244c0871d6c7abf734b61/broker/setOrder', async function (req, res, next) {
+router.post('/setOrder', async function (req, res, next) {
   try {
     req.body.sneder = "broker";
 
@@ -55,7 +55,7 @@ router.post('/dd684590eb0244c0871d6c7abf734b61/broker/setOrder', async function 
 
 });
 
-router.post('/dd684590eb0244c0871d6c7abf734b61/broker/changeStatus', async function (req, res, next) {
+router.post('/changeStatus', async function (req, res, next) {
   try {
     let result = await indexService.changeStatus(req);
 
@@ -67,19 +67,7 @@ router.post('/dd684590eb0244c0871d6c7abf734b61/broker/changeStatus', async funct
 
 });
 
-router.get('/dd684590eb0244c0871d6c7abf734b61/broker/view', async function (req, res, next) {
-  try {
-    let result = await indexService.getOrder(req);
-
-    res.render('broker/view', { data: result, sneder: "broker" });
-  } catch (error) {
-    console.log("error", error)
-    next(error);
-  }
-
-});
-
-router.post('/dd684590eb0244c0871d6c7abf734b61/broker/setOrderFix', async function (req, res, next) {
+router.post('/setOrderFix', async function (req, res, next) {
   try {
     let result = await indexService.setOrderFix(req);
 
@@ -91,12 +79,12 @@ router.post('/dd684590eb0244c0871d6c7abf734b61/broker/setOrderFix', async functi
 
 });
 
-router.get('/dd684590eb0244c0871d6c7abf734b61/broker/modify', async function (req, res, next) {
+router.get('/modify', async function (req, res, next) {
   try {
     let result = await indexService.getOutputs(req);
     result.modify = await indexService.getOrder(req);
 
-    res.render('broker/write', { data: result, sneder: "broker" });
+    res.render('page/write/page.ejs', { data: result, sneder: "broker" });
   } catch (error) {
     console.log("error", error)
     next(error);
@@ -104,7 +92,7 @@ router.get('/dd684590eb0244c0871d6c7abf734b61/broker/modify', async function (re
 
 });
 
-router.post('/dd684590eb0244c0871d6c7abf734b61/broker/modifyOrder', async function (req, res, next) {
+router.post('/modifyOrder', async function (req, res, next) {
   try {
     req.body.sneder = "broker";
     let result = await indexService.modifyOrder(req);
@@ -117,7 +105,7 @@ router.post('/dd684590eb0244c0871d6c7abf734b61/broker/modifyOrder', async functi
 
 });
 
-router.post('/dd684590eb0244c0871d6c7abf734b61/broker/changePrice', async function (req, res, next) {
+router.post('/changePrice', async function (req, res, next) {
   try {
     let result = await indexService.changePrice(req);
 
@@ -129,7 +117,7 @@ router.post('/dd684590eb0244c0871d6c7abf734b61/broker/changePrice', async functi
 
 });
 
-router.post('/dd684590eb0244c0871d6c7abf734b61/broker/getOrderFixs', async function (req, res, next) {
+router.post('/getOrderFixs', async function (req, res, next) {
   try {
     let result = await indexService.getOrderFixs(req);
 
@@ -141,7 +129,7 @@ router.post('/dd684590eb0244c0871d6c7abf734b61/broker/getOrderFixs', async funct
 
 });
 
-router.post('/dd684590eb0244c0871d6c7abf734b61/broker/delOrder', async function (req, res, next) {
+router.post('/delOrder', async function (req, res, next) {
   try {
     let result = await indexService.delOrder(req);
 
@@ -153,7 +141,7 @@ router.post('/dd684590eb0244c0871d6c7abf734b61/broker/delOrder', async function 
 
 });
 
-router.post('/dd684590eb0244c0871d6c7abf734b61/broker/delOrderFix', async function (req, res, next) {
+router.post('/delOrderFix', async function (req, res, next) {
   try {
     let result = await indexService.delOrderFix(req);
 
