@@ -17,6 +17,9 @@ setApp = () => {
         global._mybatisMapper = require('mybatis-mapper');
 
         var indexRouter = require('./api/routes/index');
+        var workRouter = require('./api/routes/work');
+        var orderRouter = require('./api/routes/order');
+        var brokerRouter = require('./api/routes/broker');
 
         // view engine setup
         app.set('views', path.join(__dirname, 'views'));
@@ -29,6 +32,9 @@ setApp = () => {
         app.use(express.static(path.join(__dirname, 'public')));
 
         app.use('/', indexRouter);
+        app.use('/', workRouter);
+        app.use('/', orderRouter);
+        app.use('/', brokerRouter);
 
         app.get('/.well-known/appspecific/com.chrome.devtools.json', (req, res) => {
           res.json({ status: 'not-supported' }); // 또는 빈 객체
