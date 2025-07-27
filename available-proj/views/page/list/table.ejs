@@ -64,7 +64,6 @@
             order_price: "<%=order.order_price%>",
             work_price: "<%=order.work_price%>",
             show_yn: "<%=order.show_yn%>",
-            content: `<%-order.content%>`,
             note: `<%-order.note%>`,
         }
     </script>
@@ -72,6 +71,15 @@
 
 <script>
     $(document).ready(function () {
-        setTimeout(reloadTableBody, 30000);
+        senderAxios.callAxios("<%=_props.CORES.sender[sender]%>/getContents", "get", {})
+            .then((data) => {
+                for(let content of data.data.data.contents) {
+                    contentData[content.ORDER_IDX].content = content.CONTENT;
+                }
+
+                setTimeout(reloadTableBody, 30000);
+            });
+
+
     })
 </script>

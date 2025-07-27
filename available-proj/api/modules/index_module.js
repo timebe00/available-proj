@@ -285,3 +285,18 @@ exports.deleteOrderFixHis = (connection, sqlParamObj) => {
         }
     )
 }
+
+exports.selectOrderContent = (connection, sqlParamObj) => {
+    return new Promise(
+        async (resolve, reject) => {
+            try {
+                var sql = _mybatisMapper.getStatement('available', 'available.selectOrderContent', sqlParamObj);
+                console.log(sql);
+                let [result] = await connection.raw(sql);
+                resolve(result);
+            } catch (error) {
+                reject(error);
+            }
+        }
+    )
+}

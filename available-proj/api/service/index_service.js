@@ -361,3 +361,18 @@ exports.delOrderFix = (req) => {
     });
 }
 
+exports.getOrderContent = (req) => {
+    return new Promise(async (resolve, reject) => {
+        let result = {};
+        let connection;
+        try {
+            connection = await connectionManager.getConnection({ readOnly: true });
+
+            result.contents = await indexModule.selectOrderContent(connection, {});
+
+            resolve(result);
+        } catch (error) {
+            reject(error); // <- 여기 수정
+        }
+    });
+}

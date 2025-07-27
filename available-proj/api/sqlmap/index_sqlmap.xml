@@ -120,7 +120,6 @@
             C.order_price,
             C.work_price,
             C.show_yn,
-            E.content,
             A.note
         FROM TB_ORDER A
         INNER JOIN TB_PRICE C ON A.ORDER_IDX = C.ORDER_IDX 
@@ -260,4 +259,14 @@
         FROM TB_ORDER_FIX
         WHERE ORDER_FIX_IDX = #{order_fix_idx}
     </insert>
+
+    <select id="available.selectOrderContent">
+        SELECT TO2.ORDER_IDX , TC.CONTENT_IDX , TC.CONTENT 
+        FROM TB_ORDER TO2 
+        INNER JOIN TB_CONTENT TC ON TO2.CONTENT_IDX = TC.CONTENT_IDX 
+        WHERE TO2.DELETE_YN = 'N'
+        <if test="order_idx != null and order_idx != ''">
+            AND TO2.ORDER_IDX = #{order_idx}
+        </if>
+    </select>
 </mapper>
