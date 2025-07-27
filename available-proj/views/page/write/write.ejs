@@ -16,112 +16,108 @@
         } 
         
         content=modify.content;
-    } 
+    }
 %>
 
-    <body>
-        <div class="container">
-            <h1>신규 작업 작성</h1>
-            <div class="form-section">
-                <div>
-                    <label for="title">작업명</label>
-                    <input type="text" id="title" name="title" value="<%=modify.title%>" />
-                </div>
+<div class="container">
+    <h1>신규 작업 작성</h1>
+    <div class="form-section">
+        <div>
+            <label for="title">작업명</label>
+            <input type="text" id="title" name="title" value="<%=modify.title%>" />
+        </div>
 
-                <div class="date-group">
-                    <div>
-                        <label for="b_time">Best</label>
-                        <input type="text" id="b_time" name="datatime" placeholder="날짜와 시간 선택" value="<%=b_time%>" />
-                    </div>
-                    <div>
-                        <label for="e_time">At Least</label>
-                        <input type="text" id="e_time" name="datatime" placeholder="날짜와 시간 선택" value="<%=e_time%>" />
-                    </div>
-                </div>
+        <div class="date-group">
+            <div>
+                <label for="b_time">Best</label>
+                <input type="text" id="b_time" name="datatime" placeholder="날짜와 시간 선택" value="<%=b_time%>" readonly />
+            </div>
+            <div>
+                <label for="e_time">At Least</label>
+                <input type="text" id="e_time" name="datatime" placeholder="날짜와 시간 선택" value="<%=e_time%>" readonly />
+            </div>
+        </div>
 
-                <div class="deliverable-group">
-                    <label for="output">산출물</label>
-                    <div class="deliverable-controls">
-                        <input type="text" id="output" name="output" style="display: none;" placeholder="산출물 입력"
-                            value="<%=modify.output%>" />
-                        <select id="output_type" name="output_type">
-                            <option value="">입력하기</option>
-                            <% for(let outputIdx in data.outputs){ let output=data.outputs[outputIdx]; %>
-                                <option value="<%=output.price%>" <%=modify.output==output.name ? 'selected' : '' %>
-                                    >
-                                    <%=output.name%>
-                                </option>
-                                <% } %>
-                        </select>
-                        <div class="checkbox-group">
-                            <label for="isImportant">상단노출여부</label>
-                            <input type="checkbox" id="isImportant" name="isImportant" <%=modify.imp_yn=="Y" ? "checked"
-                                : "" %> />
-                        </div>
-
-                    </div>
-                </div>
-                <%if(sender == "broker") {%>
-                <div>
-                    <label for="orderPriceFormatted">주문자 단가</label>
-                    <input type="text" id="orderPriceFormatted" placeholder="금액 입력" autocomplete="off"
-                        value="<%=modify.order_price%>" />
-                    <input type="number" id="price" name="price" min="0" step="1000" />
-                </div>
-                <div>
-                    <label for="showPriceFormatted">작업자 단가</label>
-                    <input type="text" id="showPriceFormatted" placeholder="금액 입력" autocomplete="off"
-                        value="<%=modify.work_price%>" />
-                    <input type="number" id="show_price" name="show_price" min="0" step="1000" />
-                </div>
-                <%} else if(sender == "order") {%>
-                    <div>
-                        <label for="orderPriceFormatted">단가</label>
-                        <input type="text" id="orderPriceFormatted" placeholder="금액 입력" autocomplete="off"
-                            value="<%=modify.order_price%>" />
-                        <input type="number" id="price" name="price" min="0" step="1000" />
-                    </div>
-                <%}else if(sender == "work") {%>
-                    <div>
-                        <label for="showPriceFormatted">단가</label>
-                        <input type="text" id="showPriceFormatted" placeholder="금액 입력" autocomplete="off"
-                            value="<%=modify.work_price%>" />
-                        <input type="number" id="price" name="price" min="0" step="1000" />
-                    </div>
-                <%}%>
-
-                <div>
-                    <label for="editor">작업 내용</label>
-                    <div id="editor">
-                        <%-decodeURIComponent(escape(atob(content || "" )))%>
-                    </div>
-                    <input type="hidden" id="taskContent" name="taskContent" />
-                </div>
-
-                <div>
-                    <label for="note">비고</label>
-                    <textarea id="note" name="note"
-                        placeholder="특이사항이나 메모"><%=decodeURIComponent(escape(atob(modify.note || "")))%></textarea>
-                </div>
-
-                <div class="button-group">
-                    <%if(modify.order_idx) {%>
-                        <button type="button" id="modifyBtn">수정 완료</button>
-                        <%} else {%>
-                            <button type="button" id="submitBtn">작성 완료</button>
-                            <%}%>
-                                <button type="button" id="goMenuBtn"
-                                    onclick="location.href='<%=_props.CORES.sender[sender]%>'">
-                                    메뉴로 이동
-                                </button>
+        <div class="deliverable-group">
+            <label for="output">산출물</label>
+            <div class="deliverable-controls">
+                <input type="text" id="output" name="output" style="display: none;" placeholder="산출물 입력"
+                    value="<%=modify.output%>" />
+                <select id="output_type" name="output_type">
+                    <option value="">입력하기</option>
+                    <% for(let outputIdx in data.outputs){ let output=data.outputs[outputIdx]; %>
+                        <option value="<%=output.price%>" <%=modify.output==output.name ? 'selected' : '' %>
+                            >
+                            <%=output.name%>
+                        </option>
+                        <% } %>
+                </select>
+                <div class="checkbox-group">
+                    <label for="isImportant">상단노출여부</label>
+                    <input type="checkbox" id="isImportant" name="isImportant" <%=modify.imp_yn=="Y" ? "checked"
+                        : "" %> />
                 </div>
 
             </div>
         </div>
+        <%if(sender == "broker") {%>
+        <div>
+            <label for="orderPriceFormatted">주문자 단가</label>
+            <input type="text" id="orderPriceFormatted" placeholder="금액 입력" autocomplete="off"
+                value="<%=modify.order_price%>" />
+            <input type="number" id="price" name="price" min="0" step="1000" />
+        </div>
+        <div>
+            <label for="showPriceFormatted">작업자 단가</label>
+            <input type="text" id="showPriceFormatted" placeholder="금액 입력" autocomplete="off"
+                value="<%=modify.work_price%>" />
+            <input type="number" id="show_price" name="show_price" min="0" step="1000" />
+        </div>
+        <%} else if(sender == "order") {%>
+            <div style="<%=modify.show_yn == 'N' ? 'display:none;' : ''%>" >
+                <label for="orderPriceFormatted">단가</label>
+                <input type="text" id="orderPriceFormatted" placeholder="금액 입력" autocomplete="off"
+                    value="<%=modify.order_price%>" />
+                <input type="number" id="price" name="price" min="0" step="1000" />
+            </div>
+        <%}else if(sender == "work") {%>
+            <div style="<%=modify.show_yn == 'N' ? 'display:none;' : ''%>" >
+                <label for="showPriceFormatted">단가</label>
+                <input type="text" id="showPriceFormatted" placeholder="금액 입력" autocomplete="off"
+                    value="<%=modify.work_price%>" />
+                <input type="number" id="price" name="price" min="0" step="1000" />
+            </div>
+        <%}%>
 
-    </body>
+        <div>
+            <label for="editor">작업 내용</label>
+            <div id="editor">
+                <%-decodeURIComponent(escape(atob(content || "" )))%>
+            </div>
+            <input type="hidden" id="taskContent" name="taskContent" />
+        </div>
 
-</html>
+        <div>
+            <label for="note">비고</label>
+            <textarea id="note" name="note"
+                placeholder="특이사항이나 메모"><%=decodeURIComponent(escape(atob(modify.note || "")))%></textarea>
+        </div>
+
+        <div class="button-group">
+            <%if(modify.order_idx) {%>
+                <button type="button" id="modifyBtn">수정 완료</button>
+                <%} else {%>
+                    <button type="button" id="submitBtn">작성 완료</button>
+                    <%}%>
+                        <button type="button" id="goMenuBtn"
+                            onclick="location.href='<%=_props.CORES.sender[sender]%>'">
+                            메뉴로 이동
+                        </button>
+        </div>
+
+    </div>
+</div>
+
 <script>
     const quill = new Quill('#editor', {
         theme: 'snow',
@@ -188,18 +184,6 @@
             $("#orderPriceFormatted").val(Number(this.value).toLocaleString('ko-KR'));
             $("#showPriceFormatted").val(Number(this.value).toLocaleString('ko-KR'));
         })
-
-        $("input[name='datatime']").on("click", function() {
-            this.showPicker();
-        })
-
-        // document.getElementById("b_time").addEventListener("click", function () {
-        //     this.showPicker();
-        // })
-
-        //  document.getElementById("e_time").addEventListener("click", function () {
-        //     this.showPicker();
-        // })
 
         $("#submitBtn").on('click', async () => {
             if (!isWrite) {
@@ -306,13 +290,39 @@
     });
 
     $(function () {
+        $.datepicker.setDefaults({
+            closeText: "닫기",
+            currentText: "오늘",
+            prevText: '이전 달',
+            nextText: '다음 달',
+            monthNames: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+            monthNamesShort: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+            dayNames: ['일', '월', '화', '수', '목', '금', '토'],
+            dayNamesShort: ['일', '월', '화', '수', '목', '금', '토'],
+            dayNamesMin: ['일', '월', '화', '수', '목', '금', '토'],
+            weekHeader: "주",
+            yearSuffix: '년',
+
+        }); 
+출처: https://hongpage.kr/13 [홍페이지 HONGPAGE:티스토리]
+
         $('input[name="datatime"]').datetimepicker({
             dateFormat: 'yy-mm-dd',
-            timeFormat: 'HH:mm',
+            timeFormat: 'HH:00',
             controlType: 'select',
             stepMinute: 30,
             hourMin: 10,
             hourMax: 22,
+
+            currentText: '현재 시간',
+            closeText: '닫기',
+            timeOnlyTitle: '시간 선택',
+            timeText: '시간',
+            hourText: '시',
+            minuteText: '분',
+            secondText: '초',
+            amNames: ['오전', 'AM'],
+            pmNames: ['오후', 'PM'],
 
             beforeShow: function (input, inst) {
                 setTimeout(() => filterOptions(), 10);
@@ -331,12 +341,6 @@
             dp.find('.ui_tpicker_hour select option').each(function () {
                 const val = parseInt($(this).val(), 0);
                 if (![10, 13, 17, 22].includes(val)) $(this).remove();
-            });
-
-            // 분 필터
-            dp.find('.ui_tpicker_minute select option').each(function () {
-                const val = parseInt($(this).val(), 10);
-                if (![0, 30].includes(val)) $(this).remove();
             });
         }
 
