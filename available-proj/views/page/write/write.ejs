@@ -189,13 +189,17 @@
             $("#showPriceFormatted").val(Number(this.value).toLocaleString('ko-KR'));
         })
 
-        document.getElementById("b_time").addEventListener("click", function () {
+        $("input[name='datatime']").on("click", function() {
             this.showPicker();
         })
 
-        document.getElementById("e_time").addEventListener("click", function () {
-            this.showPicker();
-        })
+        // document.getElementById("b_time").addEventListener("click", function () {
+        //     this.showPicker();
+        // })
+
+        //  document.getElementById("e_time").addEventListener("click", function () {
+        //     this.showPicker();
+        // })
 
         $("#submitBtn").on('click', async () => {
             if (!isWrite) {

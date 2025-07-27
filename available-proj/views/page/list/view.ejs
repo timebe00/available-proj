@@ -101,11 +101,11 @@
     });
 
 
-    $('#toggleEditorBtn').on("click", function () {
+    $(document).on("click", '#toggleEditorBtn', function () {
         $("#editorWrapper").toggle();
     });
 
-    $('#submitRevisionPhase').on("click", async function () {
+    $(document).on("click", '#submitRevisionPhase', async function () {
         const html = quill.root.innerHTML.trim();
         if (!html || html === '<p><br></p>') return;
 
