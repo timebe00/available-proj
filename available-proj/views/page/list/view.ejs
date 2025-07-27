@@ -201,6 +201,13 @@
         let color = "#0f69f4";
         selectOrder = order_idx;
 
+        if(!order.content) {
+            await senderAxios.callAxios("<%=_props.CORES.sender[sender]%>/getContents", "get", {order_idx : order_idx})
+                .then(async (data) => {
+                    order.content = data.data.data.contents[0].CONTENT;
+                });
+        }
+
         <%if(sender == "work") {%>
             if (order.status == "01") { status = "작업요청"; background_color = "#ee293b"; color = "#ffffff"; }
             else if (order.status == "02") { status = "수정요청"; background_color = "#ee293b"; color = "#ffffff"; }
@@ -250,8 +257,6 @@
 
         $("#note").text(note || "-");
         $("#order_content").html(content);
-
-
         $("#viewModal").show();
 
         await senderAxios.callAxios("<%=_props.CORES.sender[sender]%>/getOrderFixs", "post", { order_idx: order_idx })

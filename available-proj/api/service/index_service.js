@@ -366,9 +366,11 @@ exports.getOrderContent = (req) => {
         let result = {};
         let connection;
         try {
+            let order_idx = req.query.order_idx || null;
+            
             connection = await connectionManager.getConnection({ readOnly: true });
 
-            result.contents = await indexModule.selectOrderContent(connection, {});
+            result.contents = await indexModule.selectOrderContent(connection, {order_idx : order_idx});
 
             resolve(result);
         } catch (error) {
