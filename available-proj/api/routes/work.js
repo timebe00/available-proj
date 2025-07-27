@@ -28,6 +28,18 @@ router.get('/listTable', async function (req, res, next) {
 
 });
 
+router.get('/getContents', async function (req, res, next) {
+  try {
+    let result = await indexService.getOrderContent(req);
+
+    res.json({ data: result, sender: "broker" });
+  } catch (error) {
+    console.log("error", error)
+    next(error);
+  }
+
+});
+
 router.post('/changeStatus', async function (req, res, next) {
     try {
         let result = await indexService.changeStatus(req);
