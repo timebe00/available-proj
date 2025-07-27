@@ -269,4 +269,17 @@
             AND TO2.ORDER_IDX = #{order_idx}
         </if>
     </select>
+
+    <update id="available.updaetSchedule">
+        UPDATE TB_ORDER
+        SET ORDER_IDX = #{order_idx}
+        <if test="b_time != null and b_time != ''">
+            , B_TIME = #{b_time}
+        </if>
+        <if test="e_time != null and e_time != ''">
+            , E_TIME = #{e_time}
+        </if>
+        WHERE
+            ORDER_IDX = #{order_idx}
+    </update>
 </mapper>

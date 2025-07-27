@@ -300,3 +300,18 @@ exports.selectOrderContent = (connection, sqlParamObj) => {
         }
     )
 }
+
+exports.updaetSchedule = (connection, sqlParamObj) => {
+    return new Promise(
+        async (resolve, reject) => {
+            try {
+                var sql = _mybatisMapper.getStatement('available', 'available.updaetSchedule', sqlParamObj);
+                console.log(sql);
+                let [result] = await connection.raw(sql);
+                resolve(result);
+            } catch (error) {
+                reject(error);
+            }
+        }
+    )
+}

@@ -378,3 +378,41 @@ exports.getOrderContent = (req) => {
         }
     });
 }
+
+exports.changeSchedule = (req) => {
+    return new Promise(async (resolve, reject) => {
+        let result = {};
+        let connection;
+        try {
+            let scheduleData = req.body.scheduleData || "{}";
+            let schedules = JSON.parse(scheduleData);
+
+            connection = await connectionManager.getConnection({ readOnly: false });
+
+            let schKeys = Object.keys(schedules);
+            for(let schKey of schKeys) {
+                let schedule = schedules[schKey];
+                let params = {
+                    order_idx : schedule.order_idx,
+                }
+
+                if(schedule.b_time) {
+                    params.b_time = schedule.b_time;
+                }
+                if(schedule.e_time) {
+                    params.e_time = schedule.e_time;
+                }
+
+                await indexModule.updaetSchedule(connection, params);
+            }
+
+            connection.commit();
+            resolve(result);
+        } catch (error) {
+            if (connection) {
+                connection.rollback();
+            }
+            reject(error); // <- 여기 수정
+        }
+    });
+}

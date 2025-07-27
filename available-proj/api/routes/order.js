@@ -140,4 +140,15 @@ router.post('/getOrderFixs', async function (req, res, next) {
 
 });
 
+router.post('/changeSchedule', async function (req, res, next) {
+    try {
+        let result = await indexService.changeSchedule(req);
+
+        res.json({ data: result, sender: "order" });
+    } catch (error) {
+        console.log("error", error)
+        next(error);
+    }
+
+});
 module.exports = router;

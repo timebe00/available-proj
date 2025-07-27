@@ -12,6 +12,15 @@
 <script src="/common/vander/axios.js"></script>
 <script src="/common/js/senderAxios.js"></script>
 
+
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css" />
+<link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.3/jquery-ui-timepicker-addon.min.css" />
+
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+<script
+    src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.3/jquery-ui-timepicker-addon.min.js"></script>
+    
 <style>
     body {
         font-family: Arial, sans-serif;
@@ -247,5 +256,28 @@
 
     #order_content img {
         max-width: 90%;
+    }
+
+    #ui-datepicker-div .ui-timepicker-div .ui_tpicker_time_label {
+        display: none;
+    }
+    #ui-datepicker-div .ui-timepicker-div .ui_tpicker_time {
+        display: none;
+    }
+    #ui-datepicker-div .ui-datepicker-buttonpane .ui-datepicker-current {
+        display: none;
+    }
+
+    .schedule_time_input{
+        opacity:0; 
+        width:0; 
+        height:0; 
+        border:0; 
+        padding:0;
+    }
+
+    #ui-datepicker-div {
+        margin-top: 20px;
+        margin-left: -10px;
     }
 </style>

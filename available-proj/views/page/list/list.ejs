@@ -1,6 +1,10 @@
 <h1>작업 항목 확인</h1>
 
 <div style="text-align: right; margin-bottom: 35px;">
+    <%if(sender == "order") {%>
+    <a href="javascript:changeSchedule()"
+            style="padding: 10px 16px; background-color: #449644; color: white; text-decoration: none; border-radius: 4px;">일자 적용하기</a>
+    <%}%>
     <%if(sender != "work"){%>
         <a href="<%=_props.CORES.sender[sender]%>/write"
             style="padding: 10px 16px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px;">작성하기</a>
@@ -38,6 +42,7 @@
     var contentData = {};
     var priceObj = {};
     var selectOrder = 0;
+    var scheduleData = {};
 
     $(document).ready(function () {
         reloadTableBody();
@@ -77,15 +82,10 @@
     })
 
     async function changePrice() {
-        if(priceObj.length < 1) {
-            alert("변경할 단가가 없습니다.");
-            return;
-        }
-
         await senderAxios.callAxios("<%=_props.CORES.sender[sender]%>/changePrice", "post", { priceObj: JSON.stringify(priceObj)})
             .then(() => {
                 alert("단가 내용이 적용되었습니다.");
-                priceObj = [];
+                priceObj = {};
             });
     }
 
@@ -127,4 +127,13 @@
                 });
         }
     })
+
+    async function changeSchedule() {
+        await senderAxios.callAxios("<%=_props.CORES.sender[sender]%>/changeSchedule", "post", {scheduleData : JSON.stringify(scheduleData)})
+            .then((data) => {
+                alert("변경되었습니다.");
+                scheduleData = {};
+                // $(tr).remove();
+            });
+    }
 </script>

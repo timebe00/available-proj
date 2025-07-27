@@ -1,11 +1,17 @@
 <% let orderData={} ;for(let orderIdx in data.orders) { let order=data.orders[orderIdx];%>
     <!-- <tr class=" important"> -->
     <tr class="hover_line" data-order_idx="<%=order.order_idx%>">
-        <td>
-            <%=order.b_time%>
+        <td class="schedule_time b_time">
+            <%if(sender == "order") {%>
+                <input class="schedule_time_input" type="text" value="<%=order.b_time.replace('시', ':00')%>" />
+            <%}%>
+            <span><%=order.b_time%></span>
         </td>
-        <td>
-            <%=order.e_time%>
+        <td class="schedule_time e_time">
+            <%if(sender == "order") {%>
+                <input class="schedule_time_input" type="text" value="<%=order.e_time.replace('시', ':00')%>" />
+            <%}%>
+            <span><%=order.e_time%></span>
         </td>
         <td class="task-name show_view_model" style="text-align: left;" data-order_idx="<%=order.order_idx%>">
             <%=order.title%>
@@ -79,6 +85,93 @@
                 setTimeout(reloadTableBody, 30000);
             });
 
+        $(function () {
+            $.datepicker.setDefaults({
+                closeText: "닫기",
+                currentText: "오늘",
+                prevText: '이전 달',
+                nextText: '다음 달',
+                monthNames: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+                monthNamesShort: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+                dayNames: ['일', '월', '화', '수', '목', '금', '토'],
+                dayNamesShort: ['일', '월', '화', '수', '목', '금', '토'],
+                dayNamesMin: ['일', '월', '화', '수', '목', '금', '토'],
+                weekHeader: "주",
+                yearSuffix: '년',
 
+            }); 
+
+            $('.schedule_time_input').datetimepicker({
+                dateFormat: 'yy-mm-dd',
+                timeFormat: 'HH:00',
+                controlType: 'select',
+                stepMinute: 30,
+                hourMin: 10,
+                hourMax: 22,
+
+                currentText: '현재 시간',
+                closeText: '완료',
+                timeOnlyTitle: '시간 선택',
+                timeText: '시간',
+                hourText: '시간',
+                minuteText: '분',
+                secondText: '초',
+                amNames: ['오전', 'AM'],
+                pmNames: ['오후', 'PM'],
+
+                beforeShow: function (input, inst) {
+                    setTimeout(() => filterOptions(), 10);
+                },
+
+                onSelect: function () {
+                    setTimeout(() => {
+                        filterOptions();
+                        changeDataTiem($(this));
+                    }, 10);
+                    setTimeout(() => filterOptions(), 10);
+                }
+            });
+
+            function filterOptions() {
+                const dp = $('.ui-timepicker-div');
+                if (!dp.length) return;
+
+                // 시간 필터
+                dp.find('.ui_tpicker_hour select option').each(function () {
+                    const val = parseInt($(this).val(), 0);
+                    if (![10, 13, 17, 22].includes(val)) $(this).remove();
+                });
+            }
+
+            function changeDataTiem(self) {
+                let timeTxt = $(self).val().substring(0, 13) + "시";
+                let timeHtml = $(self).parent();
+
+                $(timeHtml).find("span").text(timeTxt);
+
+                let order_idx = $(timeHtml).parent().data("order_idx");
+
+                if(!scheduleData[order_idx]) {
+                    scheduleData[order_idx] = {};
+                }
+
+                if($(timeHtml).hasClass("b_time")) {
+                    contentData[order_idx].b_time = timeTxt;
+                    
+                    scheduleData[order_idx].b_time = $(self).val();
+                    scheduleData[order_idx].order_idx = order_idx;
+                } else if($(timeHtml).hasClass("e_time")) {
+                    contentData[order_idx].e_time = timeTxt;
+
+                    scheduleData[order_idx].e_time = $(self).val();
+                    scheduleData[order_idx].order_idx = order_idx;
+                }
+
+            }
+        })
+
+        $(".schedule_time").on("click", function() {
+            $(this).find(".schedule_time_input").datetimepicker('show');
+        })
     })
 </script>
