@@ -265,12 +265,13 @@
 
                 for (let orderFixIdx in data.data.data.orderFixs) {
                     let orderFix = data.data.data.orderFixs[orderFixIdx];
+                    let fixContent = await common.dec(orderFix.content);
 
                     let txt = '<div class="revision-phase" data-order_fix_idx="' + orderFix.order_fix_idx + '">';
                     txt += '<div class="revision-title"><span>수정 사항 ' + (data.data.data.orderFixs.length - Number(orderFixIdx)) + '차</span>'
                     txt += '</div>';
                     txt += '<div class="revision-content">';
-                    txt += await common.dec(orderFix.content);
+                    txt += fixContent.replace( /\\"/g, '"' )
                     txt += '</div>';
                     txt += '</div>';
 
