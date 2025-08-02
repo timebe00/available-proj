@@ -1,22 +1,44 @@
-<% let orderData={} ;for(let orderIdx in data.orders) { let order=data.orders[orderIdx];%>
+<% let orderData={} ;
+for(let orderIdx in data.orders) { 
+    let order=data.orders[orderIdx];
+    let orderBDay = new Date(order.b_time);
+    let orderEDay = new Date(order.e_time);
+    let Day = ["일", "월", "화", "수", "목", "금", "토"];
+
+    let selectBakColor = "#ffffff";
+    let selectColor = "#000000";
+
+    let b_time_txt = orderBDay.getMonth() + "/" + orderBDay.getDate() + Day[orderBDay.getDay()] + " " + orderBDay.getHours() + "시"
+    let e_time_txt = orderEDay.getMonth() + "/" + orderEDay.getDate() + Day[orderEDay.getDay()] + " " + orderEDay.getHours() + "시"
+
+    if(_props.CORES.sender.check[sender].includes(order.status)) {
+        selectBakColor = "#ee293b";
+        selectColor = "#ffffff";
+    } else if(order.status == "04") {
+        selectBakColor = "#767676;";
+        selectColor = "#ffffff;";
+    }
+
+%>
     <!-- <tr class=" important"> -->
     <tr class="hover_line" data-order_idx="<%=order.order_idx%>">
         <td class="schedule_time b_time">
             <%if(sender == "order") {%>
                 <input class="schedule_time_input" type="text" value="<%=order.b_time.replace('시', ':00')%>" />
             <%}%>
-            <span><%=order.b_time%></span>
+            <span><%=b_time_txt%></span>
         </td>
         <td class="schedule_time e_time">
             <%if(sender == "order") {%>
                 <input class="schedule_time_input" type="text" value="<%=order.e_time.replace('시', ':00')%>" />
             <%}%>
-            <span><%=order.e_time%></span>
+            <span><%=e_time_txt%></span>
         </td>
         <td class="task-name show_view_model" style="text-align: left;" data-order_idx="<%=order.order_idx%>">
             <%=order.title%>
-                <% if(order.imp_yn=="Y" ){ %><span style="color: red; font-size: 20px;">*</span>
-                    <% } %>
+            <% if(order.imp_yn=="Y" ){ %>
+                <span style="color: red; font-size: 20px;">*</span>
+            <% } %>
         </td>
 
         <td class="deliverable">
@@ -24,7 +46,7 @@
         </td>
         <td>
             <select class="status"
-                style='<%=_props.CORES.sender.check[sender].includes(order.status) ? "background-color: #ee293b; color: #ffffff;" : ""%>'>
+                style="background-color: <%=selectBakColor%>; color: <%=selectColor%>;">
                 <option value="01" <%=order.status=="01" ? "selected" : "" %> >작업요청</option>
                 <option value="02" <%=order.status=="02" ? "selected" : "" %> >수정요청</option>
                 <option value="03" <%=order.status=="03" ? "selected" : "" %> >작업완료</option>
@@ -62,8 +84,8 @@
         contentData["<%= order.order_idx %>"] = {
             status: "<%=order.status%>",
             title: "<%=order.title%>",
-            b_time: "<%=order.b_time%>",
-            e_time: "<%=order.e_time%>",
+            b_time: "<%=b_time_txt%>",
+            e_time: "<%=e_time_txt%>",
             output: "<%=order.output%>",
             status: "<%=order.status%>",
             imp_yn: "<%=order.imp_yn%>",
@@ -144,9 +166,11 @@
             }
 
             function changeDataTiem(self) {
-                let timeTxt = $(self).val().substring(0, 13) + "시";
+                let dateTxt = new Date($(self).val());
                 let timeHtml = $(self).parent();
+                let Day = ["일", "월", "화", "수", "목", "금", "토"];
 
+                let timeTxt = dateTxt.getMonth() + "/" + dateTxt.getDate() + Day[dateTxt.getDay()] + " " + dateTxt.getHours() + "시";
                 $(timeHtml).find("span").text(timeTxt);
 
                 let order_idx = $(timeHtml).parent().data("order_idx");

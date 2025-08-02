@@ -92,14 +92,33 @@
     $(document).on("change", ".status", async function () {
         let status = $(this).val();
         let order_idx = $(this).parent().parent().data("order_idx")
-        if (status == "03" || status == "05") {
-            $(this).css("background-color", "#ee293b");
-            $(this).css("color", "#ffffff");
-        }
-        else {
-            $(this).css("background-color", "");
-            $(this).css("color", "");
-        }
+        <% if(sender == "order" || sender == "broker") { %>
+            if (status == "03" || status == "05") {
+                $(this).css("background-color", "#ee293b");
+                $(this).css("color", "#ffffff");
+            }
+            else if(status == "04") {
+                $(this).css("background-color", "#767676");
+                $(this).css("color", "#ffffff");
+            }
+            else {
+                $(this).css("background-color", "");
+                $(this).css("color", "");
+            }
+        <% } else { %>
+            if (status == "01" || status == "02" || status == "06") {
+                $(this).css("background-color", "#ee293b");
+                $(this).css("color", "#ffffff");
+            }
+            else if(status == "04") {
+                $(this).css("background-color", "#767676");
+                $(this).css("color", "#ffffff");
+            }
+            else {
+                $(this).css("background-color", "");
+                $(this).css("color", "");
+            }
+        <% } %>
 
         let params = {
             status: status,
