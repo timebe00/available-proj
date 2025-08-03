@@ -24,24 +24,24 @@
     <div class="form-section">
         <div>
             <label for="title">작업명</label>
-            <input type="text" id="title" name="title" value="<%=modify.title%>" />
+            <input type="text" id="title" class="underline-input" name="title" value="<%=modify.title%>" />
         </div>
 
         <div class="date-group">
             <div>
                 <label for="b_time">Best</label>
-                <input type="text" id="b_time" name="datatime" placeholder="날짜와 시간 선택" value="<%=b_time%>" readonly />
+                <input type="text" id="b_time" class="underline-input" name="datatime" placeholder="날짜와 시간 선택" value="<%=b_time%>" readonly />
             </div>
             <div>
                 <label for="e_time">At Least</label>
-                <input type="text" id="e_time" name="datatime" placeholder="날짜와 시간 선택" value="<%=e_time%>" readonly />
+                <input type="text" id="e_time" class="underline-input" name="datatime" placeholder="날짜와 시간 선택" value="<%=e_time%>" readonly />
             </div>
         </div>
 
         <div class="deliverable-group">
             <label for="output">산출물</label>
             <div class="deliverable-controls">
-                <input type="text" id="output" name="output" style="display: none;" placeholder="산출물 입력"
+                <input type="text" id="output" class="underline-input" name="output" style="display: none;" placeholder="산출물 입력"
                     value="<%=modify.output%>" />
                 <select id="output_type" name="output_type">
                     <option value="">입력하기</option>
@@ -54,7 +54,7 @@
                 </select>
                 <div class="checkbox-group">
                     <label for="isImportant">상단노출여부</label>
-                    <input type="checkbox" id="isImportant" name="isImportant" <%=modify.imp_yn=="Y" ? "checked"
+                    <input type="checkbox" class="underline-input" id="isImportant" name="isImportant" <%=modify.imp_yn=="Y" ? "checked"
                         : "" %> />
                 </div>
 
@@ -63,29 +63,29 @@
         <%if(sender == "broker") {%>
         <div>
             <label for="orderPriceFormatted">주문자 단가</label>
-            <input type="text" id="orderPriceFormatted" placeholder="금액 입력" autocomplete="off"
+            <input type="text" id="orderPriceFormatted" class="underline-input" placeholder="금액 입력" autocomplete="off"
                 value="<%=modify.order_price%>" />
-            <input type="number" id="price" name="price" min="0" step="1000" />
+            <input type="number" id="price" name="price" class="underline-input" min="0" step="1000" />
         </div>
         <div>
             <label for="showPriceFormatted">작업자 단가</label>
-            <input type="text" id="showPriceFormatted" placeholder="금액 입력" autocomplete="off"
+            <input type="text" id="showPriceFormatted" class="underline-input" placeholder="금액 입력" autocomplete="off"
                 value="<%=modify.work_price%>" />
-            <input type="number" id="show_price" name="show_price" min="0" step="1000" />
+            <input type="number" id="show_price" name="show_price" class="underline-input" min="0" step="1000" />
         </div>
         <%} else if(sender == "order") {%>
             <div style="<%=modify.show_yn == 'N' ? 'display:none;' : ''%>" >
                 <label for="orderPriceFormatted">단가</label>
-                <input type="text" id="orderPriceFormatted" placeholder="금액 입력" autocomplete="off"
+                <input type="text" id="orderPriceFormatted" class="underline-input" placeholder="금액 입력" autocomplete="off"
                     value="<%=modify.order_price%>" />
-                <input type="number" id="price" name="price" min="0" step="1000" />
+                <input type="number" id="price" name="price" class="underline-input" min="0" step="1000" />
             </div>
         <%}else if(sender == "work") {%>
             <div style="<%=modify.show_yn == 'N' ? 'display:none;' : ''%>" >
                 <label for="showPriceFormatted">단가</label>
-                <input type="text" id="showPriceFormatted" placeholder="금액 입력" autocomplete="off"
+                <input type="text" id="showPriceFormatted" class="underline-input" placeholder="금액 입력" autocomplete="off"
                     value="<%=modify.work_price%>" />
-                <input type="number" id="price" name="price" min="0" step="1000" />
+                <input type="number" id="price" name="price" class="underline-input" min="0" step="1000" />
             </div>
         <%}%>
 
@@ -94,7 +94,7 @@
             <div id="editor">
                 <%-decodeURIComponent(escape(atob(content || "" )))%>
             </div>
-            <input type="hidden" id="taskContent" name="taskContent" />
+            <input type="hidden" id="taskContent" class="underline-input" name="taskContent" />
         </div>
 
         <div>
