@@ -315,3 +315,48 @@ exports.updaetSchedule = (connection, sqlParamObj) => {
         }
     )
 }
+
+exports.selectGetPrice = (connection, sqlParamObj) => {
+    return new Promise(
+        async (resolve, reject) => {
+            try {
+                var sql = _mybatisMapper.getStatement('available', 'available.selectGetPrice', sqlParamObj);
+                console.log(sql);
+                let [result] = await connection.raw(sql);
+                resolve(result);
+            } catch (error) {
+                reject(error);
+            }
+        }
+    )
+}
+
+exports.updatePricesShowYN = (connection, sqlParamObj) => {
+    return new Promise(
+        async (resolve, reject) => {
+            try {
+                var sql = _mybatisMapper.getStatement('available', 'available.updatePricesShowYN', sqlParamObj);
+                console.log(sql);
+                let [result] = await connection.raw(sql);
+                resolve(result);
+            } catch (error) {
+                reject(error);
+            }
+        }
+    )
+}
+
+exports.insertPricesShowYNHis = (connection, sqlParamObj) => {
+    return new Promise(
+        async (resolve, reject) => {
+            try {
+                var sql = _mybatisMapper.getStatement('available', 'available.insertPricesShowYNHis', sqlParamObj);
+                console.log(sql);
+                let [result] = await connection.raw(sql);
+                resolve(result);
+            } catch (error) {
+                reject(error);
+            }
+        }
+    )
+}

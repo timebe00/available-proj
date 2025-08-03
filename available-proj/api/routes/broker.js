@@ -166,4 +166,26 @@ router.post('/delOrderFix', async function (req, res, next) {
 
 });
 
+router.get('/sumPricePopup', async function (req, res, next) {
+  try {
+    let result = await indexService.sumPricePopup(req);
+
+    res.render('page/popup/priceSum/page.ejs', { data: result, sender: "broker" });
+  } catch (error) {
+    console.log("error", error)
+    next(error);
+  }
+});
+
+router.post('/unShowPrice', async function (req, res, next) {
+  try {
+    let result = await indexService.unShowPrice(req);
+
+    res.json({ sender: "broker" });
+  } catch (error) {
+    console.log("error", error)
+    next(error);
+  }
+});
+
 module.exports = router;

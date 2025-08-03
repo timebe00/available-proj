@@ -416,3 +416,57 @@ exports.changeSchedule = (req) => {
         }
     });
 }
+
+exports.sumPricePopup = (req) => {
+    return new Promise(async (resolve, reject) => {
+        let result = {
+            prices : [],
+        };
+        let connection;
+        try {
+            let checks = JSON.parse(req.query.checked);
+            
+            if(checks.length < 1) {
+
+                resolve(result);
+                return;
+            }
+
+            connection = await connectionManager.getConnection({ readOnly: true });
+            let selectGetPrice = await indexModule.selectGetPrice(connection, {checks : checks});
+
+            result = {
+                prices : selectGetPrice
+            }
+            
+            resolve(result);
+        } catch (error) {
+            reject(error); // <- 여기 수정
+        }
+    });
+}
+
+exports.unShowPrice = (req) => {
+    return new Promise(async (resolve, reject) => {
+        let result = {};
+        let connection;
+        try {
+            let orderIdxs = JSON.parse(req.body.orderIdxs);
+            console.log("orderIdxs : ", orderIdxs)
+            console.log("orderIdxs : ", typeof orderIdxs)
+            let show_yn = "N"
+            connection = await connectionManager.getConnection({ readOnly: false });
+            
+            await indexModule.updatePricesShowYN(connection, {orderIdxs : orderIdxs, show_yn : show_yn});
+            await indexModule.insertPricesShowYNHis(connection, {orderIdxs : orderIdxs, show_yn : show_yn});
+
+            connection.commit();
+            resolve(result);
+        } catch (error) {
+            if (connection) {
+                connection.rollback();
+            }
+            reject(error); // <- 여기 수정
+        }
+    });
+}

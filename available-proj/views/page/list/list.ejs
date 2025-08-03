@@ -13,11 +13,17 @@
         <a href="javascript:changePrice()"
             style="padding: 10px 16px; background-color: #000000; color: white; text-decoration: none; border-radius: 4px;">단가
             적용하기</a>
+        <a href="javascript:sumPrice()"
+            style="padding: 10px 16px; background-color: #7c85ff; color: white; text-decoration: none; border-radius: 4px;">단가
+            계산하기</a>
     <%}%>
 </div>
 <table>
     <thead>
         <tr>
+            <%if(sender == "broker") {%>
+            <th><input type="checkbox" id="allCheked" /></th>
+            <%}%>
             <th>Best</th>
             <th>At Least</th>
             <th class="task-name">작업명</th>
@@ -43,9 +49,31 @@
     var priceObj = {};
     var selectOrder = 0;
     var scheduleData = {};
+    var checkData = [];
 
     $(document).ready(function () {
         reloadTableBody();
+
+        $("#allCheked").on("click", function() {
+            let trHtmls = $("#taskTableBody").find("tr");
+            if($(this).is(":checked")) {
+                for(let trHtml of trHtmls) {
+                    if($(trHtml).find("input[name='priceShow']").is(":checked")) {
+                        let order_idx = $(trHtml).data("order_idx")
+                        if(!checkData.includes(order_idx)) {
+                            checkData.push(order_idx)
+                        }
+                        $(trHtml).find("input[name='check']").prop("checked", true);
+                    }
+                }
+            } else {
+                checkData = [];
+
+                for(let trHtml of trHtmls) {
+                    $(trHtml).find("input[name='check']").prop("checked", false);
+                }
+            }
+        })
     });
 
     function reloadTableBody() {
@@ -154,5 +182,23 @@
                 scheduleData = {};
                 // $(tr).remove();
             });
+    }
+
+    $(document).on("click", "input[name='check']", function() {
+        let order_idx = $(this).parent().parent().data("order_idx");
+
+        if($(this).is(":checked")) {
+            checkData.push(order_idx);
+        } else {
+            let checkDataIdx = checkData.indexOf(order_idx);
+            if(checkDataIdx > -1) {
+                checkData.splice(checkDataIdx, 1);
+            }
+        }
+    })
+
+    function sumPrice() {
+        let checkDataJson = JSON.stringify(checkData);
+        window.open("<%=_props.CORES.sender[sender]%>/sumPricePopup?checked=" + checkDataJson, "단가 계산하기", "width=700px,height=500px")
     }
 </script>

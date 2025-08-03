@@ -22,6 +22,9 @@ for(let orderIdx in data.orders) {
 %>
     <!-- <tr class=" important"> -->
     <tr class="hover_line" data-order_idx="<%=order.order_idx%>">
+        <%if(sender == "broker") {%>
+        <td><input type="checkbox" name="check" /></td>
+        <%}%>
         <td class="schedule_time b_time">
             <%if(sender == "order") {%>
                 <input class="schedule_time_input" type="text" value="<%=order.b_time.replace('시', ':00')%>" />
@@ -99,6 +102,13 @@ for(let orderIdx in data.orders) {
 
 <script>
     $(document).ready(function () {
+        for(let trHtml of $("#taskTableBody").find("tr")) {
+            let order_idx = $(trHtml).data("order_idx");
+            if(checkData.includes(order_idx)) {
+                $(trHtml).find("input[name='check']").prop("checked", true);
+            }
+        }
+
         senderAxios.callAxios("<%=_props.CORES.sender[sender]%>/getContents", "get", {})
             .then((data) => {
                 for(let content of data.data.data.contents) {
@@ -198,4 +208,6 @@ for(let orderIdx in data.orders) {
             $(this).find(".schedule_time_input").datetimepicker('show');
         })
     })
+
+    
 </script>

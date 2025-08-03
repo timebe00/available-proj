@@ -1,0 +1,45 @@
+<div>
+    <p>주문자 단가 합계 : <span id="sumOrder"></span></p>
+    <p>작업자 단가 합계 : <span id="sumWorker"></span></p>
+    <p>차액 : <span id="sumMinus"></span></p>
+    <p>주문자 단가 * 1.2 : <span id="sumOrderMul"></span></p>
+
+    <a href="javascript:deletShowPrice()"
+            style="padding: 10px 16px; background-color: #7c85ff; color: white; text-decoration: none; border-radius: 4px;">체크표시 해제하기</a>
+</div>
+<script>
+    let prices = JSON.parse("<%=JSON.stringify(data.prices)%>".replaceAll("&#34;", '"'));
+    let orderIdxs = [];
+    $(document).ready(function() {
+
+        let sumOrder = 0;
+        let sumWorker = 0;
+        let sumMinus = 0;
+        let sumOrderMul = 0;
+
+        for(let price of prices) {
+            orderIdxs.push(price.ORDER_IDX)
+
+            sumOrder += Number(price.ORDER_PRICE.replace(/,/g, ""));
+            sumWorker += Number(price.WORK_PRICE.replace(/,/g, ""));
+        }
+
+        sumMinus = sumOrder - sumWorker;
+        sumOrderMul = sumOrder * 1.2
+
+        $("#sumOrder").text(sumOrder.toLocaleString('ko-KR'));
+        $("#sumWorker").text(sumWorker.toLocaleString('ko-KR'));
+        $("#sumMinus").text(sumMinus.toLocaleString('ko-KR'));
+        $("#sumOrderMul").text(sumOrderMul.toLocaleString('ko-KR'));
+    })
+
+    async function deletShowPrice() {
+        await senderAxios.callAxios("<%=_props.CORES.sender[sender]%>/unShowPrice", "post", { orderIdxs: JSON.stringify(orderIdxs)})
+            .then(() => {
+                window.opener.reloadTableBody();
+
+                alert("해제 되었습니다.");
+            })
+    }
+
+</script>
