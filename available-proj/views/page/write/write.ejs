@@ -137,6 +137,38 @@
         }
     });
 
+    // 이미지 버튼 클릭 시 input[type=file] 트리거
+    function selectLocalImage() {
+        const input = document.createElement('input');
+        input.setAttribute('type', 'file');
+        input.setAttribute('accept', 'image/*');
+        input.click();
+
+        input.onchange = async () => {
+            const file = input.files[0];
+
+            if (/^image\//.test(file.type)) {
+                const formData = new FormData();
+                formData.append('file', file);
+
+                // 서버에 업로드
+                const res = await fetch('/upload/image', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await res.json(); // { url: 'https://.../filename.png' }
+
+                const range = quill.getSelection();
+                quill.insertEmbed(range.index, 'image', data.url);
+            } else {
+                alert('이미지 파일만 업로드 가능합니다.');
+            }
+        };
+    }
+
+    // 툴바 이미지 버튼 클릭 시 커스텀 핸들러 연결
+    quill.getModule('toolbar').addHandler('image', selectLocalImage);
 
     const orderPriceInput = document.getElementById('order_price');
     const showPriceInput = document.getElementById('show_price');
