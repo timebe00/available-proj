@@ -130,8 +130,54 @@
         };
     }
 
+    async function uploadImageToServer(file) {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            const res = await fetch('/upload/image', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await res.json(); // { url: '/uploads/xxx.png' }
+
+            const range = quill.getSelection(true);
+            quill.insertEmbed(range.index, 'image', data.url);
+            quill.setSelection(range.index + 1);
+        } catch (err) {
+            alert('이미지 업로드에 실패했습니다.');
+            console.error(err);
+        }
+    }
+
+
     // 툴바 이미지 버튼 클릭 시 커스텀 핸들러 연결
     quill.getModule('toolbar').addHandler('image', selectLocalImage);
+
+    quill.root.addEventListener('paste', function (e) {
+        const clipboardData = e.clipboardData || window.clipboardData;
+        if (clipboardData && clipboardData.items) {
+            for (let i = 0; i < clipboardData.items.length; i++) {
+            const item = clipboardData.items[i];
+            if (item.type.indexOf('image') !== -1) {
+                const file = item.getAsFile();
+                uploadImageToServer(file);
+                e.preventDefault(); // blob 기본 삽입 막기
+            }
+            }
+        }
+    });
+
+    quill.root.addEventListener('drop', function (e) {
+        e.preventDefault();
+        if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length) {
+            const file = e.dataTransfer.files[0];
+            if (file.type.startsWith('image/')) {
+            uploadImageToServer(file);
+            }
+        }
+    });
 
 
     $(document).on("click", '#toggleEditorBtn', function () {

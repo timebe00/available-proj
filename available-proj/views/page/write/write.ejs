@@ -173,8 +173,8 @@
 
         try {
             const res = await fetch('/upload/image', {
-            method: 'POST',
-            body: formData
+                method: 'POST',
+                body: formData
             });
 
             const data = await res.json(); // { url: '/uploads/xxx.png' }
