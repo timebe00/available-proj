@@ -322,7 +322,7 @@
     </insert>
 
     <insert id="available.insertFile">
-        INSERT INTO available.tb_file (
+        INSERT INTO tb_file (
             FILE_SAVE_NAME
             , FILE_EXT
             , FILE_PATH
