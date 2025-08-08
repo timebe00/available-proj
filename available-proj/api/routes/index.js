@@ -26,7 +26,9 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-router.post('/upload/image', upload.single('file'), (req, res) => {
+router.post('/upload/image', upload.single('file'), async (req, res) => {
+  await indexService.insertFile(req);
+  
   const fileUrl = `/uploads/editor/${req.file.filename}`;
   res.json({ url: fileUrl });
 });

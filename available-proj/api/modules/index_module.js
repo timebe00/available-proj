@@ -360,3 +360,19 @@ exports.insertPricesShowYNHis = (connection, sqlParamObj) => {
         }
     )
 }
+
+exports.insertFile = (connection, sqlParamObj) => {
+    return new Promise(
+        async (resolve, reject) => {
+            try {
+                var sql = _mybatisMapper.getStatement('available', 'available.insertFile', sqlParamObj);
+                console.log(sql);
+                let [result] = await connection.raw(sql);
+                resolve(result);
+            } catch (error) {
+                reject(error);
+            }
+        }
+    )
+}
+

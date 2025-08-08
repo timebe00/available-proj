@@ -452,13 +452,45 @@ exports.unShowPrice = (req) => {
         let connection;
         try {
             let orderIdxs = JSON.parse(req.body.orderIdxs);
-            console.log("orderIdxs : ", orderIdxs)
-            console.log("orderIdxs : ", typeof orderIdxs)
+
             let show_yn = "N"
             connection = await connectionManager.getConnection({ readOnly: false });
             
             await indexModule.updatePricesShowYN(connection, {orderIdxs : orderIdxs, show_yn : show_yn});
             await indexModule.insertPricesShowYNHis(connection, {orderIdxs : orderIdxs, show_yn : show_yn});
+
+            connection.commit();
+            resolve(result);
+        } catch (error) {
+            if (connection) {
+                connection.rollback();
+            }
+            reject(error); // <- 여기 수정
+        }
+    });
+}
+
+exports.insertFile = (req) => {
+    return new Promise(async (resolve, reject) => {
+        let result = {};
+        let connection;
+        try {
+            let file_save_name = req.file.filename;
+            let file_ext = req.file.mimetype;
+            let file_path = req.file.path.replace(/^public\//, "");
+            let file_size = req.file.size;
+
+            let params = {
+                file_save_name : file_save_name,
+                file_ext : file_ext,
+                file_path : file_path,
+                file_size : file_size,
+            }
+
+            console.log("params : ", params)
+
+            connection = await connectionManager.getConnection({ readOnly: false });
+            await indexModule.insertFile(connection, params);
 
             connection.commit();
             resolve(result);

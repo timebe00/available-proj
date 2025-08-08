@@ -320,4 +320,18 @@
             </foreach>
         )
     </insert>
+
+    <insert id="available.insertFile">
+        INSERT INTO available.tb_file (
+            FILE_SAVE_NAME
+            , FILE_EXT
+            , FILE_PATH
+            , FILE_SIZE
+        ) VALUES(
+            #{file_save_name}
+            , #{file_ext}
+            , #{file_path}
+            , #{file_size}
+        );
+    </insert>
 </mapper>
