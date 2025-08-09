@@ -21,13 +21,17 @@ const storage = multer.diskStorage({
     cb(null, 'public/uploads/editor/');
   },
   filename: function (req, file, cb) {
-    cb(null, Date.now() + "_" + "img");
+    let ext = file.originalname.substring(file.originalname.lastIndexOf("."), 0);
+    console.log(ext);
+
+    cb(null, Date.now() + "_" + "file.originalname");
   }
 });
 const upload = multer({ storage });
 
 router.post('/upload/image', upload.single('file'), async (req, res) => {
   await indexService.insertFile(req);
+  
 
   const fileUrl = `/uploads/editor/${req.file.filename}`;
   res.json({ url: fileUrl });
