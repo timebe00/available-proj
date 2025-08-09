@@ -53,7 +53,7 @@ for(let orderIdx in data.orders) {
             <span><%=e_time_txt%></span>
         </td>
         <td class="task-name show_view_model" style="text-align: left;" data-order_idx="<%=order.order_idx%>">
-            <%=order.title%>
+            <%=order.title.replace(/&#39;/g, "'")%>
             <% if(order.imp_yn=="Y" ){ %>
                 <span style="color: red; font-size: 20px;">*</span>
             <% } %>
@@ -99,9 +99,10 @@ for(let orderIdx in data.orders) {
     </tr>
 
     <script>
+        console.log("!!!!", "<%=order.title.replace(/&#39;/g, `'`)%>")
         contentData["<%= order.order_idx %>"] = {
             status: "<%=order.status%>",
-            title: "<%=order.title%>",
+            title: common.scriptAtoB("<%=order.title%>"),
             b_time: "<%=b_time_txt%>",
             e_time: "<%=e_time_txt%>",
             output: "<%=order.output%>",

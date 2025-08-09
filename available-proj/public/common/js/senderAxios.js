@@ -18,23 +18,3 @@ var senderAxios
     }
     senderAxios.callAxios = callAxios
 })(senderAxios || (senderAxios = {}));
-
-var common
-(function (common) {
-    async function enc(txt) {
-        return await btoa(unescape(encodeURIComponent(txt || "")));
-    }
-    common.enc = enc;
-
-    async function dec(txt) {
-        return await decodeURIComponent(escape(atob(txt || "")));
-    }
-    common.dec = dec
-
-    function fullWord(str) {
-        let result = String(str);
-        
-        return result.padStart(2, "0")
-    }
-    common.fullWord = fullWord
-})(common || (common = {}));

@@ -24,7 +24,7 @@
     <div class="form-section">
         <div>
             <label for="title">작업명</label>
-            <input type="text" id="title" class="underline-input" name="title" value="<%=modify.title%>" />
+            <input type="text" id="title" class="underline-input" name="title" value="<%=modify.title.replace(/&#39;/g, `'`)%>" />
         </div>
 
         <div class="date-group">
@@ -340,7 +340,7 @@
 
                 let params = {
                     order_idx: "<%=modify.order_idx%>"
-                    , title: title
+                    , title: common.scriptBtoA(title)
                     , b_time: b_time
                     , e_time: e_time
                     , output: output
