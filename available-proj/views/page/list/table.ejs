@@ -15,11 +15,11 @@ for(let orderIdx in data.orders) {
     let selectBakColor = "#ffffff";
     let selectColor = "#000000";
 
-    let b_month = fullWord(orderBDay.getMonth());
+    let b_month = fullWord(orderBDay.getMonth() + 1);
     let b_day = fullWord(orderBDay.getDate());
     let b_hours = fullWord(orderBDay.getHours());
 
-    let e_month = fullWord(orderEDay.getMonth());
+    let e_month = fullWord(orderEDay.getMonth() + 1);
     let e_day = fullWord(orderEDay.getDate());
     let e_hours = fullWord(orderEDay.getHours());
 
