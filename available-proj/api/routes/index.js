@@ -21,10 +21,9 @@ const storage = multer.diskStorage({
     cb(null, 'public/uploads/editor/');
   },
   filename: function (req, file, cb) {
-    let ext = file.originalname.substring(file.originalname.lastIndexOf("."), 0);
-    console.log(ext);
+    
 
-    cb(null, Date.now() + "_" + "file.originalname");
+    cb(null, Date.now() + "_" + file.originalname);
   }
 });
 const upload = multer({ storage });
