@@ -38,7 +38,7 @@ for(let orderIdx in data.orders) {
     <!-- <tr class=" important"> -->
     <tr class="hover_line" data-order_idx="<%=order.order_idx%>">
         <%if(sender == "broker") {%>
-        <td><input type="checkbox" name="check" /></td>
+        <td ><input type="checkbox" name="check" class="checkBoxBig" /></td>
         <%}%>
         <td class="schedule_time b_time">
             <%if(sender == "order") {%>
@@ -82,7 +82,7 @@ for(let orderIdx in data.orders) {
                 <input type="text" class="price_data underline-input" style="width: 100px;" name="work_price" value="<%=order.work_price || '' %>" />
             </td>
             <td>
-                <input type="checkbox" name="priceShow" <%=order.show_yn=="Y" ? "checked" : "" %> />
+                <input type="checkbox" class="checkBoxBig" name="priceShow" <%=order.show_yn=="Y" ? "checked" : "" %> />
             </td>
             <td>
                 <button style="background-color: #ee293b; color: #ffffff; border: 0px;" name="orderDel">삭제</button>
@@ -99,7 +99,6 @@ for(let orderIdx in data.orders) {
     </tr>
 
     <script>
-        console.log("!!!!", "<%=order.title.replace(/&#39;/g, `'`)%>")
         contentData["<%= order.order_idx %>"] = {
             status: "<%=order.status%>",
             title: common.scriptAtoB("<%=order.title%>"),
