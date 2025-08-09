@@ -292,7 +292,7 @@
                 const noteData = await common.enc(note);
 
                 let params = {
-                    title: title
+                    title: common.scriptBtoA(title)
                     , b_time: b_time
                     , e_time: e_time
                     , output: output
