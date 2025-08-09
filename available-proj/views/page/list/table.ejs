@@ -1,4 +1,11 @@
+
 <% let orderData={} ;
+function fullWord(str) {
+    let result = String(str);
+    
+    return result.padStart(2, "0")
+}
+
 for(let orderIdx in data.orders) { 
     let order=data.orders[orderIdx];
     let orderBDay = new Date(order.b_time);
@@ -8,15 +15,23 @@ for(let orderIdx in data.orders) {
     let selectBakColor = "#ffffff";
     let selectColor = "#000000";
 
-    let b_time_txt = orderBDay.getMonth() + "/" + orderBDay.getDate() + Day[orderBDay.getDay()] + " " + orderBDay.getHours() + "시"
-    let e_time_txt = orderEDay.getMonth() + "/" + orderEDay.getDate() + Day[orderEDay.getDay()] + " " + orderEDay.getHours() + "시"
+    let b_month = fullWord(orderBDay.getMonth());
+    let b_day = fullWord(orderBDay.getDate());
+    let b_hours = fullWord(orderBDay.getHours());
+
+    let e_month = fullWord(orderEDay.getMonth());
+    let e_day = fullWord(orderEDay.getDate());
+    let e_hours = fullWord(orderEDay.getHours());
+
+    let b_time_txt = b_month + "/" + b_day + "(" + Day[orderBDay.getDay()] + ") " + b_hours + "시"
+    let e_time_txt = e_month + "/" + e_day + "(" + Day[orderEDay.getDay()] + ") " + e_hours + "시"
 
     if(_props.CORES.sender.check[sender].includes(order.status)) {
         selectBakColor = "#ee293b";
         selectColor = "#ffffff";
     } else if(order.status == "04") {
-        selectBakColor = "#767676;";
-        selectColor = "#ffffff;";
+        selectBakColor = "#ededed;";
+        selectColor = "#767676;";
     }
 
 %>
