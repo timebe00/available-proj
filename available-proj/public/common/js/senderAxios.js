@@ -30,4 +30,11 @@ var common
         return await decodeURIComponent(escape(atob(txt || "")));
     }
     common.dec = dec
+
+    function fullWord(str) {
+        let result = String(str);
+        
+        return result.padStart(2, "0")
+    }
+    common.fullWord = fullWord
 })(common || (common = {}));

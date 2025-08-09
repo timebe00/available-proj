@@ -23,8 +23,8 @@ for(let orderIdx in data.orders) {
     let e_day = fullWord(orderEDay.getDate());
     let e_hours = fullWord(orderEDay.getHours());
 
-    let b_time_txt = b_month + "/" + b_day + "(" + Day[orderBDay.getDay()] + ") " + b_hours + "시"
-    let e_time_txt = e_month + "/" + e_day + "(" + Day[orderEDay.getDay()] + ") " + e_hours + "시"
+    let b_time_txt = b_month + "/" + b_day + " (" + Day[orderBDay.getDay()] + ") " + b_hours + "시"
+    let e_time_txt = e_month + "/" + e_day + " (" + Day[orderEDay.getDay()] + ") " + e_hours + "시"
 
     if(_props.CORES.sender.check[sender].includes(order.status)) {
         selectBakColor = "#ee293b";
@@ -195,7 +195,11 @@ for(let orderIdx in data.orders) {
                 let timeHtml = $(self).parent();
                 let Day = ["일", "월", "화", "수", "목", "금", "토"];
 
-                let timeTxt = dateTxt.getMonth() + "/" + dateTxt.getDate() + Day[dateTxt.getDay()] + " " + dateTxt.getHours() + "시";
+                let getMonth = common.fullWord(dateTxt.getMonth() + 1);
+                let getDate = common.fullWord(dateTxt.getDate());
+                let getHours = common.fullWord(dateTxt.getHours());
+
+                let timeTxt = getMonth + "/" + getDate + " (" + Day[dateTxt.getDay()] + ") " + getHours + "시";
                 $(timeHtml).find("span").text(timeTxt);
 
                 let order_idx = $(timeHtml).parent().data("order_idx");
