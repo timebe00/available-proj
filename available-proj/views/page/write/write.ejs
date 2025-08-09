@@ -24,7 +24,7 @@
     <div class="form-section">
         <div>
             <label for="title">작업명</label>
-            <input type="text" id="title" class="underline-input" name="title" value="<%=modify.title.replace(/&#39;/g, `'`)%>" />
+            <input type="text" id="title" class="underline-input" name="title" value="<%=modify.title ? modify.title.replace(/&#39;/g, `'`) : ''%>" />
         </div>
 
         <div class="date-group">
