@@ -305,6 +305,15 @@
             else if (order.status == "07") { status = "작업자 코멘트"; }
         <%}%>
 
+        <%if(sender == "order") {%>
+            if($(this).find("span[name='orderShowYN']").length > 0) {
+                await senderAxios.callAxios("<%=_props.CORES.sender[sender]%>/showOrderComment", "post", {order_idx : order_idx})
+                .then(() => {
+                    $(this).find("span[name='orderShowYN']").remove();
+                })
+            }
+        <%}%>
+
         let content = await common.dec(order.content);
         let note = await common.dec(order.note);
 

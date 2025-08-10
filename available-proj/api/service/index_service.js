@@ -252,7 +252,7 @@ exports.modifyOrder = (req) => {
             await indexModule.insertOrderHis(connection, params);
 
             if (sender == "work") {
-                await indexModule.updateOrderStatus(connection, { order_idx: order_idx, status: "07" });
+                await indexModule.updateOrderStatus(connection, { order_idx: order_idx, status: "07", order_show_yn : "N" });
             }
 
             connection.commit();
@@ -519,10 +519,30 @@ exports.insertFile = (req) => {
                 file_size : file_size,
             }
 
-            console.log("params : ", params)
-
             connection = await connectionManager.getConnection({ readOnly: false });
             await indexModule.insertFile(connection, params);
+
+            connection.commit();
+            resolve(result);
+        } catch (error) {
+            if (connection) {
+                connection.rollback();
+            }
+            reject(error); // <- 여기 수정
+        }
+    });
+}
+
+exports.showOrderComment = (req) => {
+    return new Promise(async (resolve, reject) => {
+        let result = {};
+        let connection;
+        try {
+            let order_idx = req.body.order_idx;
+
+            connection = await connectionManager.getConnection({ readOnly: false });
+
+            await indexModule.updateOrderStatus(connection, {order_idx : order_idx, order_show_yn : "Y"});
 
             connection.commit();
             resolve(result);

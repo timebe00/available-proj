@@ -120,7 +120,8 @@
             C.order_price,
             C.work_price,
             C.show_yn,
-            A.note
+            A.note,
+            D.order_show_yn
         FROM TB_ORDER A
         INNER JOIN TB_PRICE C ON A.ORDER_IDX = C.ORDER_IDX 
         INNER JOIN TB_ORDER_STATUS D ON A.ORDER_IDX = D.ORDER_IDX
@@ -161,7 +162,13 @@
 
     <update id="available.updateOrderStatus">
         UPDATE TB_ORDER_STATUS
-        SET STATUS = #{status}
+        SET ORDER_IDX = #{order_idx}
+        <if test="status != null and status != ''">
+            , STATUS = #{status}
+        </if>
+        <if test="order_show_yn != null and order_show_yn != ''">
+            , ORDER_SHOW_YN = #{order_show_yn}
+        </if>
         WHERE ORDER_IDX = #{order_idx}
     </update>
 

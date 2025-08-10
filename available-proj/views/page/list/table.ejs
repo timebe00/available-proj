@@ -57,6 +57,9 @@ for(let orderIdx in data.orders) {
             <% if(order.imp_yn=="Y" ){ %>
                 <span style="color: red; font-size: 20px;">*</span>
             <% } %>
+            <% if(order.order_show_yn=="N" ){ %>
+                <span name="orderShowYN" style="color: rgb(71, 225, 57); font-size: 20px;">*</span>
+            <% } %>
         </td>
 
         <td class="deliverable">
