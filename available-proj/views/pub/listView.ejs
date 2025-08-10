@@ -248,11 +248,54 @@
             color: #000000;
             text-decoration: none;
         }
+
+        .custom-select {
+            padding: 8px 12px;
+            height: 38px;
+            line-height: 38px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        .custom-button {
+            display: inline-block; 
+            height: 38px; 
+            line-height: 38px; 
+            padding: 0 16px;
+            text-decoration: none; 
+            border-radius: 4px; 
+            margin-left: 5px;
+        }
     </style>
 </head>
 
 <body>
     <h1>작업 항목 확인</h1>
+    <div style="display: flex; justify-content: space-between; margin-bottom: 35px; align-items: center;">
+        <!-- 왼쪽 영역 -->
+        <div>
+            <select id="priceOption" 
+                style="padding: 8px 12px; height: 38px; line-height: 38px; border-radius: 4px; border: 1px solid #ccc;">
+                <option value="all">전체 적용</option>
+                <option value="order">주문자 단가만</option>
+                <option value="work">작업자 단가만</option>
+            </select>
+        </div>
+
+        <!-- 오른쪽 버튼 영역 -->
+        <div>
+            <a href="javascript:changePrice()" class="custom-button" style=" background-color: #000000; color: white;">
+                단가 적용하기
+            </a>
+            <a href="javascript:sumPrice()" class="custom-button" style="background-color: #7c85ff; color: white;">
+                단가 계산하기
+            </a>
+        </div>
+    </div>
+
+
+
     <table>
         <thead>
             <tr>
