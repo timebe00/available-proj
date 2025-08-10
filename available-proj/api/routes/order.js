@@ -151,4 +151,16 @@ router.post('/changeSchedule', async function (req, res, next) {
     }
 
 });
+
+router.post('/changeScheduleOne', async function (req, res, next) {
+    try {
+        let result = await indexService.changeScheduleOne(req);
+
+        res.json({ data: result, sender: "order" });
+    } catch (error) {
+        console.log("error", error)
+        next(error);
+    }
+
+});
 module.exports = router;

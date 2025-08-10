@@ -199,6 +199,33 @@ for(let orderIdx in data.orders) {
                 let getDate = common.fullWord(dateTxt.getDate());
                 let getHours = common.fullWord(dateTxt.getHours());
 
+                let order_idx = $(timeHtml).parent().data("order_idx");
+                let timeTxt = getMonth + "/" + getDate + " (" + Day[dateTxt.getDay()] + ") " + getHours + "시";
+
+                let params = {}
+                if($(timeHtml).hasClass("b_time")) {
+                    contentData[order_idx].b_time = timeTxt;
+
+                    params = {
+                        order_idx : order_idx,
+                        b_time : $(self).val(),
+                    }
+                } else if($(timeHtml).hasClass("e_time")) {
+                    contentData[order_idx].e_time = timeTxt;
+                    
+                    params = {
+                        order_idx : order_idx,
+                        e_time : $(self).val(),
+                    }
+                }
+
+                senderAxios.callAxios("<%=_props.CORES.sender[sender]%>/changeScheduleOne", "post", params)
+                    .then((data) => {
+                        $(timeHtml).find("span").text(timeTxt);
+                        alert("변경되었습니다.")
+                    });
+
+                /*
                 let timeTxt = getMonth + "/" + getDate + " (" + Day[dateTxt.getDay()] + ") " + getHours + "시";
                 $(timeHtml).find("span").text(timeTxt);
 
@@ -219,6 +246,7 @@ for(let orderIdx in data.orders) {
                     scheduleData[order_idx].e_time = $(self).val();
                     scheduleData[order_idx].order_idx = order_idx;
                 }
+                */
 
             }
         })

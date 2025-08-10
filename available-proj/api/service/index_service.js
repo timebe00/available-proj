@@ -417,6 +417,38 @@ exports.changeSchedule = (req) => {
     });
 }
 
+exports.changeScheduleOne = (req) => {
+    return new Promise(async (resolve, reject) => {
+        let result = {};
+        let connection;
+        try {
+            let order_idx = req.body.order_idx  || null;
+            let b_time = req.body.b_time || null;
+            let e_time = req.body.e_time || null;
+
+            connection = await connectionManager.getConnection({ readOnly: false });
+
+            let params = {
+                order_idx : order_idx,
+                b_time : b_time,
+                e_time : e_time,
+            }
+
+            console.log("params : ", params)
+
+            await indexModule.updaetSchedule(connection, params);
+
+            connection.commit();
+            resolve(result);
+        } catch (error) {
+            if (connection) {
+                connection.rollback();
+            }
+            reject(error); // <- 여기 수정
+        }
+    });
+}
+
 exports.sumPricePopup = (req) => {
     return new Promise(async (resolve, reject) => {
         let result = {
