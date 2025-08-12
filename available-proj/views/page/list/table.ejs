@@ -67,7 +67,7 @@ for(let orderIdx in data.orders) {
         </td>
         <td>
             <select class="status"
-                style="background-color: <%=selectBakColor%>; color: <%=selectColor%>;">
+                style="background-color: <%=selectBakColor%>; color: <%=selectColor%>; <%=order.status=="04" ? "font-weight : normal" : ""%>">
                 <option value="01" <%=order.status=="01" ? "selected" : "" %> >작업요청</option>
                 <option value="02" <%=order.status=="02" ? "selected" : "" %> >수정요청</option>
                 <option value="03" <%=order.status=="03" ? "selected" : "" %> >작업완료</option>
