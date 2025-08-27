@@ -35,7 +35,8 @@
                     <div class="value" id="work_price">250,000원</div>
                 </div>
                 <%} else {%>
-                    <div class="row"><label>단가</label>
+                    <div class="row" style="<%=sender == 'work' ? '' : 'display: none;'%>">
+                        <label>단가</label>
                         <div class="value" id="price">250,000원</div>
                     </div>
                 <%}%>

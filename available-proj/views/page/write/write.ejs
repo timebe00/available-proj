@@ -74,7 +74,8 @@
             <input type="number" id="show_price" name="show_price" class="underline-input" min="0" step="1000" />
         </div>
         <%} else if(sender == "order") {%>
-            <div style="<%=modify.show_yn == 'N' ? 'display:none;' : ''%>" >
+            <!-- <div style="<%=modify.show_yn == 'N' ? 'display:none;' : ''%>" > -->
+            <div style="display: none;" >
                 <label for="orderPriceFormatted">단가</label>
                 <input type="text" id="orderPriceFormatted" class="underline-input" placeholder="금액 입력" autocomplete="off"
                     value="<%=modify.order_price%>" />
@@ -260,8 +261,11 @@
             }
 
             $("#output").val(this.options[selectedIndex].text);
-            $("#orderPriceFormatted").val(Number(this.value).toLocaleString('ko-KR'));
-            $("#showPriceFormatted").val(Number(this.value).toLocaleString('ko-KR'));
+
+            <%if( !(sender == "order" && modify.order_idx)) {%>
+                $("#orderPriceFormatted").val(Number(this.value).toLocaleString('ko-KR'));
+                $("#showPriceFormatted").val(Number(this.value).toLocaleString('ko-KR'));
+            <%}%>
         })
 
         $("#submitBtn").on('click', async () => {

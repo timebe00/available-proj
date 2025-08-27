@@ -90,7 +90,7 @@ for(let orderIdx in data.orders) {
             <td>
                 <button style="background-color: #ee293b; color: #ffffff; border: 0px;" name="orderDel">삭제</button>
             </td>
-        <%} else {%>
+        <%} else if(sender == "work") {%>
             <td>
                 <%if(order.show_yn == "Y" && sender == "order"){%>
                     <%=order.order_price || ''%>
