@@ -37,7 +37,7 @@ for(let orderIdx in data.orders) {
 %>
     <!-- <tr class=" important"> -->
     <tr class="hover_line" data-order_idx="<%=order.order_idx%>">
-        <td ><span><%=order.order_idx%></span></td>
+        <td ><span><%=order.order_idx + 53%></span></td>
         <%if(sender == "broker") {%>
         <td ><input type="checkbox" name="check" class="checkBoxBig" /></td>
         <%}%>
