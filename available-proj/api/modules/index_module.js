@@ -376,3 +376,17 @@ exports.insertFile = (connection, sqlParamObj) => {
     )
 }
 
+exports.updateOrderSeq = (connection, sqlParamObj) => {
+    return new Promise(
+        async (resolve, reject) => {
+            try {
+                var sql = _mybatisMapper.getStatement('available', 'available.updateOrderSeq', sqlParamObj);
+                console.log(sql);
+                let [result] = await connection.raw(sql);
+                resolve(result);
+            } catch (error) {
+                reject(error);
+            }
+        }
+    )
+}

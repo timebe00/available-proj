@@ -91,6 +91,8 @@ exports.setOrder = (req) => {
             const insertOrder = await indexModule.insertOrder(connection, params);
             params.order_idx = insertOrder.insertId;
 
+            await indexModule.updateOrderSeq(connection, params);
+
             await indexModule.insertOrderHis(connection, params);
 
             await indexModule.insertPrice(connection, params);

@@ -111,6 +111,7 @@
     <select id="available.selectOrderList">
         SELECT 
             A.order_idx,
+            A.order_seq,
             A.title,
             DATE_FORMAT(A.b_time, '%Y-%m-%d %H:%i') AS 'b_time',
             DATE_FORMAT(A.e_time, '%Y-%m-%d %H:%i') AS 'e_time',
@@ -341,4 +342,10 @@
             , #{file_size}
         );
     </insert>
+
+    <update id="available.updateOrderSeq">
+        UPDATE tb_order 
+        SET order_seq = order_idx + 53
+        where order_idx = #{order_idx}
+    </update>
 </mapper>
