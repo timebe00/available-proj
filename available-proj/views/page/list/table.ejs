@@ -1,5 +1,8 @@
 
 <% let orderData={} ;
+let maxSeq = 0;
+let maxIdx = 0;
+
 function fullWord(str) {
     let result = String(str);
     
@@ -34,10 +37,14 @@ for(let orderIdx in data.orders) {
         selectColor = "#767676;";
     }
 
+    if(order.order_seq && order.order_seq > maxSeq) {
+        maxSeq = order.order_seq;
+        maxIdx = order.order_idx;
+    }
 %>
     <!-- <tr class=" important"> -->
     <tr class="hover_line" data-order_idx="<%=order.order_idx%>">
-        <td ><span><%=order.order_seq%></span></td>
+        <td class="" name="order_seq" ><span><%=order.order_seq%></span></td>
         <%if(sender == "broker") {%>
         <td ><input type="checkbox" name="check" class="checkBoxBig" /></td>
         <%}%>
@@ -121,6 +128,8 @@ for(let orderIdx in data.orders) {
 
 <script>
     $(document).ready(function () {
+        $("#taskTableBody").find("tr[data-order_idx='<%=maxIdx%>']").find("td[name='order_seq']").addClass("max_seq_num");
+
         for(let trHtml of $("#taskTableBody").find("tr")) {
             let order_idx = $(trHtml).data("order_idx");
             if(checkData.includes(order_idx)) {
