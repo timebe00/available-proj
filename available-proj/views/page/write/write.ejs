@@ -1,135 +1,142 @@
-<% 
-    let modify={}; 
-    let b_time=""; 
-    let e_time=""; 
-    let content=""; 
-    
-    if(data.modify) { 
-        modify=data.modify.order;
-        
-        if(modify.b_time){ 
-            b_time=new Date(modify.b_time).toISOString().slice(0, 16);
-        } 
-        
-        if(modify.e_time) {
-            e_time=new Date(modify.e_time).toISOString().slice(0, 16);
-        } 
-        
-        content=modify.content;
+﻿<%
+    let modify = {};
+    let b_time = "";
+    let e_time = "";
+    let content = "";
+
+    if (data.modify) {
+        modify = data.modify.order;
+
+        if (modify.b_time) {
+            b_time = new Date(modify.b_time).toISOString().slice(0, 16);
+        }
+
+        if (modify.e_time) {
+            e_time = new Date(modify.e_time).toISOString().slice(0, 16);
+        }
+
+        content = modify.content;
     }
 %>
 
-<div class="container">
-    <h1>신규 작업 작성</h1>
-    <div class="form-section">
-        <div>
-            <label for="title">작업명</label>
-            <input type="text" id="title" class="underline-input" name="title" value="<%=modify.title ? modify.title.replace(/&#39;/g, `'`) : ''%>" />
+<div class="page-shell">
+    <div class="container">
+        <div class="page-head">
+            <span class="page-badge">available project</span>
+            <h1><%=modify.order_idx ? '작업 수정' : '신규 작업 등록'%></h1>
+            <p>일정, 산출물, 금액, 메모를 한 화면에서 빠르게 입력하세요.</p>
         </div>
 
-        <div class="date-group">
-            <div>
-                <label for="b_time">Best</label>
-                <input type="text" id="b_time" class="underline-input" name="datatime" placeholder="날짜와 시간 선택" value="<%=b_time%>" readonly />
-            </div>
-            <div>
-                <label for="e_time">At Least</label>
-                <input type="text" id="e_time" class="underline-input" name="datatime" placeholder="날짜와 시간 선택" value="<%=e_time%>" readonly />
-            </div>
-        </div>
+        <div class="form-section">
+            <section class="field-card">
+                <label for="title">작업명</label>
+                <input type="text" id="title" class="underline-input" name="title" value="<%=modify.title ? modify.title.replace(/&#39;/g, `'`) : ''%>" />
+            </section>
 
-        <div class="deliverable-group">
-            <label for="output">산출물</label>
-            <div class="deliverable-controls">
-                <input type="text" id="output" class="underline-input" name="output" style="display: none;" placeholder="산출물 입력"
-                    value="<%=modify.output%>" />
-                <select id="output_type" name="output_type">
-                    <option value="">입력하기</option>
-                    <% for(let outputIdx in data.outputs){ let output=data.outputs[outputIdx]; %>
-                        <option value="<%=output.price%>" <%=modify.output==output.name ? 'selected' : '' %>
-                            >
-                            <%=output.name%>
-                        </option>
-                        <% } %>
-                </select>
-                <div class="checkbox-group">
-                    <label for="isImportant">상단노출여부</label>
-                    <input type="checkbox" class="underline-input" id="isImportant" name="isImportant" <%=modify.imp_yn=="Y" ? "checked"
-                        : "" %> />
+            <section class="field-card">
+                <div class="date-group">
+                    <div>
+                        <label for="b_time">Best</label>
+                        <input type="text" id="b_time" class="underline-input" name="datatime" placeholder="날짜와 시간을 선택" value="<%=b_time%>" readonly />
+                    </div>
+                    <div>
+                        <label for="e_time">At Least</label>
+                        <input type="text" id="e_time" class="underline-input" name="datatime" placeholder="날짜와 시간을 선택" value="<%=e_time%>" readonly />
+                    </div>
                 </div>
+            </section>
 
-            </div>
-        </div>
-        <%if(sender == "broker") {%>
-        <div>
-            <label for="orderPriceFormatted">주문자 단가</label>
-            <input type="text" id="orderPriceFormatted" class="underline-input" placeholder="금액 입력" autocomplete="off"
-                value="<%=modify.order_price%>" />
-            <input type="number" id="price" name="price" class="underline-input" min="0" step="1000" />
-        </div>
-        <div>
-            <label for="showPriceFormatted">작업자 단가</label>
-            <input type="text" id="showPriceFormatted" class="underline-input" placeholder="금액 입력" autocomplete="off"
-                value="<%=modify.work_price%>" />
-            <input type="number" id="show_price" name="show_price" class="underline-input" min="0" step="1000" />
-        </div>
-        <%} else if(sender == "order") {%>
-            <!-- <div style="<%=modify.show_yn == 'N' ? 'display:none;' : ''%>" > -->
-            <div style="display: none;" >
-                <label for="orderPriceFormatted">단가</label>
-                <input type="text" id="orderPriceFormatted" class="underline-input" placeholder="금액 입력" autocomplete="off"
-                    value="<%=modify.order_price%>" />
-                <input type="number" id="price" name="price" class="underline-input" min="0" step="1000" />
-            </div>
-        <%}else if(sender == "work") {%>
-            <div style="<%=modify.show_yn == 'N' ? 'display:none;' : ''%>" >
-                <label for="showPriceFormatted">단가</label>
-                <input type="text" id="showPriceFormatted" class="underline-input" placeholder="금액 입력" autocomplete="off"
-                    value="<%=modify.work_price%>" />
-                <input type="number" id="price" name="price" class="underline-input" min="0" step="1000" />
-            </div>
-        <%}%>
+            <section class="field-card deliverable-group">
+                <label for="output">산출물</label>
+                <div class="deliverable-controls">
+                    <input type="text" id="output" class="underline-input" name="output" style="display: none;" placeholder="산출물 입력"
+                        value="<%=modify.output%>" />
+                    <select id="output_type" name="output_type">
+                        <option value="">선택하세요</option>
+                        <% for(let outputIdx in data.outputs){ let output=data.outputs[outputIdx]; %>
+                            <option value="<%=output.price%>" <%=modify.output==output.name ? 'selected' : '' %>>
+                                <%=output.name%>
+                            </option>
+                        <% } %>
+                    </select>
+                    <div class="checkbox-group">
+                        <label for="isImportant">상단 노출</label>
+                        <input type="checkbox" class="underline-input" id="isImportant" name="isImportant" <%=modify.imp_yn=="Y" ? "checked" : "" %> />
+                    </div>
+                </div>
+            </section>
 
-        <div>
-            <label for="editor">작업 내용</label>
-            <div id="editor">
-                <%-decodeURIComponent(escape(atob(content || "" )))%>
+            <%if(sender == "broker") {%>
+            <div class="price-grid">
+                <section class="field-card">
+                    <label for="orderPriceFormatted">주문단가</label>
+                    <input type="text" id="orderPriceFormatted" class="underline-input" placeholder="금액 입력" autocomplete="off"
+                        value="<%=modify.order_price%>" />
+                    <input type="number" id="price" name="price" class="underline-input" min="0" step="1000" />
+                </section>
+                <section class="field-card">
+                    <label for="showPriceFormatted">작업단가</label>
+                    <input type="text" id="showPriceFormatted" class="underline-input" placeholder="금액 입력" autocomplete="off"
+                        value="<%=modify.work_price%>" />
+                    <input type="number" id="show_price" name="show_price" class="underline-input" min="0" step="1000" />
+                </section>
             </div>
-            <input type="hidden" id="taskContent" class="underline-input" name="taskContent" />
-        </div>
+            <%} else if(sender == "order") {%>
+                <section class="field-card" style="display: none;">
+                    <label for="orderPriceFormatted">가격</label>
+                    <input type="text" id="orderPriceFormatted" class="underline-input" placeholder="금액 입력" autocomplete="off"
+                        value="<%=modify.order_price%>" />
+                    <input type="number" id="price" name="price" class="underline-input" min="0" step="1000" />
+                </section>
+            <%} else if(sender == "work") {%>
+                <section class="field-card" style="<%=modify.show_yn == 'N' ? 'display:none;' : ''%>">
+                    <label for="showPriceFormatted">가격</label>
+                    <input type="text" id="showPriceFormatted" class="underline-input" placeholder="금액 입력" autocomplete="off"
+                        value="<%=modify.work_price%>" />
+                    <input type="number" id="price" name="price" class="underline-input" min="0" step="1000" />
+                </section>
+            <%}%>
 
-        <div>
-            <label for="note">비고</label>
-            <textarea id="note" name="note"
-                placeholder="특이사항이나 메모"><%=decodeURIComponent(escape(atob(modify.note || "")))%></textarea>
-        </div>
+            <section class="field-card">
+                <label for="editor">작업 내용</label>
+                <div class="editor-shell">
+                    <div id="editor">
+                        <%-decodeURIComponent(escape(atob(content || "" )))%>
+                    </div>
+                </div>
+                <input type="hidden" id="taskContent" class="underline-input" name="taskContent" />
+            </section>
 
-        <div class="button-group">
-            <%if(modify.order_idx) {%>
-                <button type="button" id="modifyBtn">수정 완료</button>
+            <section class="field-card">
+                <label for="note">비고</label>
+                <textarea id="note" name="note" placeholder="특이사항이나 메모"><%=decodeURIComponent(escape(atob(modify.note || "")))%></textarea>
+            </section>
+
+            <div class="button-group">
+                <%if(modify.order_idx) {%>
+                    <button type="button" id="modifyBtn">수정 완료</button>
                 <%} else {%>
                     <button type="button" id="submitBtn">작성 완료</button>
-                    <%}%>
-                        <button type="button" id="goMenuBtn"
-                            onclick="location.href='<%=_props.CORES.sender[sender]%>'">
-                            메뉴로 이동
-                        </button>
+                <%}%>
+                <button type="button" id="goMenuBtn" onclick="location.href='<%=_props.CORES.sender[sender]%>'">
+                    메뉴로 이동
+                </button>
+            </div>
         </div>
-
     </div>
 </div>
 
 <script>
     const quill = new Quill('#editor', {
         theme: 'snow',
-        placeholder: '수정 내용을 입력하세요...',
+        placeholder: '작업 내용을 입력하세요..',
         modules: {
             toolbar: [
                 [{ header: [1, 2, false] }],
                 ['bold', 'italic', 'underline'],
                 ['link', 'image'],
                 [{ list: 'ordered' }, { list: 'bullet' }],
-                [{ color: [] }, { background: [] }],  // ✅ 글자색 & 배경색 추가
+                [{ color: [] }, { background: [] }],
                 ['clean']
             ],
             imageResize: {
@@ -138,7 +145,6 @@
         }
     });
 
-    // 이미지 버튼 클릭 시 input[type=file] 트리거
     function selectLocalImage() {
         const input = document.createElement('input');
         input.setAttribute('type', 'file');
@@ -147,20 +153,17 @@
 
         input.onchange = async () => {
             const file = input.files[0];
-
             if (/^image\//.test(file.type)) {
                 const formData = new FormData();
                 formData.append('file', file);
 
-                // 서버에 업로드
                 const res = await fetch('/upload/image', {
                     method: 'POST',
                     body: formData
                 });
 
-                const data = await res.json(); // { url: 'https://.../filename.png' }
-
-                const range = quill.getSelection();
+                const data = await res.json();
+                const range = quill.getSelection() || { index: quill.getLength() };
                 quill.insertEmbed(range.index, 'image', data.url);
             } else {
                 alert('이미지 파일만 업로드 가능합니다.');
@@ -178,9 +181,8 @@
                 body: formData
             });
 
-            const data = await res.json(); // { url: '/uploads/xxx.png' }
-
-            const range = quill.getSelection(true);
+            const data = await res.json();
+            const range = quill.getSelection(true) || { index: quill.getLength() };
             quill.insertEmbed(range.index, 'image', data.url);
             quill.setSelection(range.index + 1);
         } catch (err) {
@@ -189,8 +191,7 @@
         }
     }
 
-
-    // 툴바 이미지 버튼 클릭 시 커스텀 핸들러 연결
+    // 에디터 이미지 버튼 클릭 시 커스텀 핸들러 연결
     quill.getModule('toolbar').addHandler('image', selectLocalImage);
 
     quill.root.addEventListener('paste', function (e) {
@@ -217,85 +218,88 @@
         }
     });
 
+    const orderPriceFormatted = $('#orderPriceFormatted');
+    const showPriceFormatted = $('#showPriceFormatted');
 
-    const orderPriceInput = document.getElementById('order_price');
-    const showPriceInput = document.getElementById('show_price');
+    let isModify = false;
+    let isWrite = false;
 
-    const orderPriceFormatted = document.getElementById('orderPriceFormatted');
-    const showPriceFormatted = document.getElementById('showPriceFormatted');
-
-    var isModify = false;
-    var isWrite = false;
-
-    $("#orderPriceFormatted").on('input', (e) => {
-        let valueData = $("#orderPriceFormatted").val();
-        let value = valueData.replace(/[^0-9]/g, '');
-        if (value === '') {
-            $("#orderPriceFormatted").val("0");
+    function formatPriceInput(price_input) {
+        if (!price_input.length) {
             return;
         }
-
-        $("#orderPriceFormatted").val(Number(value).toLocaleString('ko-KR'));
-    });
-
-    $("#showPriceFormatted").on('input', (e) => {
-        let value = $("#showPriceFormatted").val().replace(/[^0-9]/g, '');
-        if (value === '') {
-            $("#showPriceFormatted").val("0");
+        const raw = String(price_input.val() || '').replace(/[^0-9]/g, '');
+        if (!raw) {
+            price_input.val('0');
             return;
         }
+        price_input.val(Number(raw).toLocaleString('ko-KR'));
+    }
 
-        $("#showPriceFormatted").val(Number(value).toLocaleString('ko-KR'));
+    $(orderPriceFormatted).on('input', function () {
+        formatPriceInput(orderPriceFormatted);
     });
 
+    $(showPriceFormatted).on('input', function () {
+        formatPriceInput(showPriceFormatted);
+    });
+
+    function getOrderPriceValue() {
+        return orderPriceFormatted.length ? String(orderPriceFormatted.val() || '') : '';
+    }
+
+    function getShowPriceValue() {
+        return showPriceFormatted.length ? String(showPriceFormatted.val() || '') : '';
+    }
 
     $(document).ready(function () {
-        $("#output_type").on("change", function () {
+        $('#output_type').on('change', function () {
             if (!$(this).val()) {
                 return
             }
 
-            var selectedIndex = this.selectedIndex;
+            const selectedIndex = this.selectedIndex;
             if (selectedIndex === -1) {
-                return null; // 또는 빈 문자열 "" 반환
+                return null;
             }
 
-            $("#output").val(this.options[selectedIndex].text);
+            $('#output').val(this.options[selectedIndex].text);
 
             <%if( !(sender == "order" && modify.order_idx)) {%>
-                $("#orderPriceFormatted").val(Number(this.value).toLocaleString('ko-KR'));
-                $("#showPriceFormatted").val(Number(this.value).toLocaleString('ko-KR'));
+                if (orderPriceFormatted.length) {
+                    orderPriceFormatted.val(Number(this.value).toLocaleString('ko-KR'));
+                }
+                if (showPriceFormatted.length) {
+                    showPriceFormatted.val(Number(this.value).toLocaleString('ko-KR'));
+                }
             <%}%>
-        })
+        });
 
-        $("#submitBtn").on('click', async () => {
-            if (!isWrite) {
-                isWrite = true;
+        $('#submitBtn').on('click', async () => {
+            if (isWrite) return;
+            isWrite = true;
 
-                let title = $("#title").val();
-                let b_time = $("#b_time").val() || null;
-                let e_time = $("#e_time").val() || null;
-                let output = $("#output").val();
-                let order_price = $("#orderPriceFormatted").val();
-                let show_price =$("#showPriceFormatted").val();
-                let content = quill.root.innerHTML;
-                let note = $("#note").val();
-                let imp_yn = "N";
+            const title = $('#title').val();
+            const b_time = $('#b_time').val() || null;
+            const e_time = $('#e_time').val() || null;
+            const output = $('#output').val();
+            const order_price = getOrderPriceValue();
+            const show_price = getShowPriceValue();
+            const contentHtml = quill.root.innerHTML;
+            const note = $('#note').val();
+            const imp_yn = $('#isImportant').is(':checked') ? 'Y' : 'N';
 
-                if ($('#isImportant').is(':checked')) {
-                    imp_yn = "Y";
-                }
+            if (!title) {
+                alert('작업명을 입력해주세요.');
+                isWrite = false;
+                return;
+            }
 
-                if (!title) {
-                    alert("작업명 입력해주세요.");
-                    isWrite = false;
-                    return;
-                }
-
-                const contentData = await common.enc(content);
+            try {
+                const contentData = await common.enc(contentHtml);
                 const noteData = await common.enc(note);
 
-                let params = {
+                const params = {
                     title: common.scriptBtoA(title)
                     , b_time: b_time
                     , e_time: e_time
@@ -305,45 +309,44 @@
                     , content: contentData
                     , note: noteData
                     , imp_yn: imp_yn
-                }
+                };
 
-                await senderAxios.callAxios("<%=_props.CORES.sender[sender]%>/setOrder", "post", params)
-                    .then(function (data) {
+                await senderAxios.callAxios('<%=_props.CORES.sender[sender]%>/setOrder', 'post', params)
+                    .then(() => {
                         alert("저장되었습니다.")
                         location.href = "<%=_props.CORES.sender[sender]%>"
                     })
+            } finally {
+                isWrite = false;
             }
-
         });
 
-        $("#modifyBtn").on("click", async () => {
-            if (!isModify) {
-                isModify = true;
-                let title = $("#title").val();
-                let b_time = $("#b_time").val() || null;
-                let e_time = $("#e_time").val()|| null;
-                let output = $("#output").val();
-                let order_price = $("#orderPriceFormatted").val();
-                let show_price = $("#showPriceFormatted").val();
-                let content = quill.root.innerHTML;
-                let note = $("#note").val();
-                let imp_yn = "N";
+        $('#modifyBtn').on('click', async () => {
+            if (isModify) return;
+            isModify = true;
 
-                if ($('#isImportant').is(':checked')) {
-                    imp_yn = "Y";
-                }
+            const title = $('#title').val();
+            const b_time = $('#b_time').val() || null;
+            const e_time = $('#e_time').val() || null;
+            const output = $('#output').val();
+            const order_price = getOrderPriceValue();
+            const show_price = getShowPriceValue();
+            const contentHtml = quill.root.innerHTML;
+            const note = $('#note').val();
+            const imp_yn = $('#isImportant').is(':checked') ? 'Y' : 'N';
 
-                if (!title) {
-                    alert("작업명 입력해주세요.");
-                    isModify = false;
-                    return;
-                }
+            if (!title) {
+                alert('작업명을 입력해주세요.');
+                isModify = false;
+                return;
+            }
 
-                const contentData = await common.enc(content);
+            try {
+                const contentData = await common.enc(contentHtml);
                 const noteData = await common.enc(note);
 
-                let params = {
-                    order_idx: "<%=modify.order_idx%>"
+                const params = {
+                    order_idx: '<%=modify.order_idx%>'
                     , title: common.scriptBtoA(title)
                     , b_time: b_time
                     , e_time: e_time
@@ -353,29 +356,28 @@
                     , content: contentData
                     , note: noteData
                     , imp_yn: imp_yn
-                }
+                };
 
-                senderAxios.callAxios("<%=_props.CORES.sender[sender]%>/modifyOrder", "post", params)
+                await senderAxios.callAxios('<%=_props.CORES.sender[sender]%>/modifyOrder', 'post', params)
                     .then(function (data) {
                         alert("저장되었습니다.")
                         location.href = "<%=_props.CORES.sender[sender]%>"
                     })
+            } finally {
+                isModify = false;
             }
-        })
+        });
 
-        $("#title").on("input", function () {
+        $('#title').on('input', function () {
             if ($(this).val().length > 255) {
-                alert("제목을 255자 이내로 수정해주세요.");
-                let titleMax = $(this).val().substring(0, 255);
-                $(this).val(titleMax);
+                alert('제목은 255자 이내로 설정해주세요.');
+                $(this).val($(this).val().substring(0, 255));
             }
-        })
-    });
+        });
 
-    $(function () {
         $.datepicker.setDefaults({
-            closeText: "닫기",
-            currentText: "오늘",
+            closeText: '닫기',
+            currentText: '오늘',
             prevText: '이전 달',
             nextText: '다음 달',
             monthNames: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
@@ -383,10 +385,9 @@
             dayNames: ['일', '월', '화', '수', '목', '금', '토'],
             dayNamesShort: ['일', '월', '화', '수', '목', '금', '토'],
             dayNamesMin: ['일', '월', '화', '수', '목', '금', '토'],
-            weekHeader: "주",
+            weekHeader: '주',
             yearSuffix: '년',
-
-        }); 
+        });
 
         $('input[name="datatime"]').datetimepicker({
             dateFormat: 'yy-mm-dd',
@@ -395,7 +396,6 @@
             stepMinute: 30,
             hourMin: 10,
             hourMax: 22,
-
             currentText: '현재 시간',
             closeText: '완료',
             timeOnlyTitle: '시간 선택',
@@ -405,13 +405,11 @@
             secondText: '초',
             amNames: ['오전', 'AM'],
             pmNames: ['오후', 'PM'],
-
-            beforeShow: function (input, inst) {
-                setTimeout(() => filterOptions(), 10);
+            beforeShow: function () {
+                setTimeout(filterOptions, 10);
             },
-
             onSelect: function () {
-                setTimeout(() => filterOptions(), 10);
+                setTimeout(filterOptions, 10);
             }
         });
 
@@ -419,30 +417,28 @@
             const dp = $('.ui-timepicker-div');
             if (!dp.length) return;
 
-            // 시간 필터
             dp.find('.ui_tpicker_hour select option').each(function () {
-                const val = parseInt($(this).val(), 0);
-                if (![10, 13, 17, 22].includes(val)) $(this).remove();
+                const val = parseInt($(this).val(), 10);
+                if (![10, 13, 17, 22].includes(val)) {
+                    $(this).remove();
+                }
             });
         }
 
-        let b_time = "<%=modify.b_time%>"
-        let e_time = "<%=modify.e_time%>"
-
         const now = new Date();
-        now.setHours(13);
-        now.setMinutes(0);
+        now.setHours(13, 0, 0, 0);
 
-        if (b_time) {
-            let b_time_data = new Date("<%=modify.b_time%>");
-            $('#b_time').datetimepicker('setDate', b_time_data);
+        const rawBTime = '<%=modify.b_time || ""%>';
+        const rawETime = '<%=modify.e_time || ""%>';
+
+        if (rawBTime) {
+            $('#b_time').datetimepicker('setDate', new Date(rawBTime));
         } else {
             $('#b_time').datetimepicker('setDate', now);
         }
 
-        if (e_time) {
-            let e_time_data = new Date("<%=modify.e_time%>");
-            $('#e_time').datetimepicker('setDate', e_time_data);
+        if (rawETime) {
+            $('#e_time').datetimepicker('setDate', new Date(rawETime));
         } else {
             $('#e_time').datetimepicker('setDate', now);
         }

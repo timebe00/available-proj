@@ -1,98 +1,100 @@
-<!-- 작업 보기 모달 -->
-<div id="viewModal" class="modal">
+﻿<div id="viewModal" class="modal">
     <div class="modal-content">
-        <span class="modal-close" onclick="document.getElementById('viewModal').style.display='none'">&times;</span>
+        <button class="modal-close" onclick="document.getElementById('viewModal').style.display='none'">&times;</button>
         <div id="viewModalBody">
-            <!-- view.ejs 내용 통합 -->
-            <div class="container">
-                <h1 class="text_center">작업 내용 확인</h1>
-                <div class="top-actions">
-                    <a href="javascript:sendModify()" class="btn btn-blue">수정하기</a>
-                </div>
-                <div class="row">
-                    <label>현재 상태</label>
-                    <div class="value">
-                        <span id="order_status" style=" padding:10px 20px;">작업완료</span>
+            <div class="detail-panel">
+                <div class="detail-head">
+                    <h2>작업 상세</h2>
+                    <div class="top-actions" style="margin: 0;">
+                        <a href="javascript:sendModify()" class="btn btn-blue">수정하기</a>
                     </div>
                 </div>
-                <div class="row"><label>작업명</label>
-                    <div class="value" id="order_title" style="word-break: break-all;">메인페이지 UI 구성</div>
-                </div>
-                <div class="row"><label>Best</label>
-                    <div class="value" id="b_time">2025-07-10 18:00</div>
-                </div>
-                <div class="row"><label>At Least</label>
-                    <div class="value" id="e_time">2025-07-08 12:00</div>
-                </div>
-                <div class="row"><label>산출물</label>
-                    <div class="value" id="output">main_ui_v2.png (PNG)</div>
-                </div>
-                <%if(sender == "broker") {%>
-                <div class="row"><label>주문자 단가</label>
-                    <div class="value" id="price">250,000원</div>
-                </div>
-                <div class="row"><label>작업자 단가</label>
-                    <div class="value" id="work_price">250,000원</div>
-                </div>
-                <%} else {%>
-                    <div class="row" style="<%=sender == 'work' ? '' : 'display: none;'%>">
-                        <label>단가</label>
-                        <div class="value" id="price">250,000원</div>
+
+                <div class="detail-grid">
+                    <div class="row">
+                        <label>현재 상태</label>
+                        <div class="value">
+                            <span id="order_status">작업완료</span>
+                        </div>
                     </div>
-                <%}%>
-                <div class="row"><label>비고</label>
-                    <div class="value" id="note" style="word-break: break-all;">-</div>
+                    <div class="row">
+                        <label>작업명</label>
+                        <div class="value" id="order_title" style="word-break: break-all;">메인 페이지 UI 구성</div>
+                    </div>
+                    <div class="row">
+                        <label>Best</label>
+                        <div class="value" id="b_time">2025-07-10 18:00</div>
+                    </div>
+                    <div class="row">
+                        <label>At Least</label>
+                        <div class="value" id="e_time">2025-07-08 12:00</div>
+                    </div>
+                    <div class="row">
+                        <label>결과물</label>
+                        <div class="value" id="output">main_ui_v2.png</div>
+                    </div>
+
+                    <%if(sender == "broker") {%>
+                        <div class="row">
+                            <label>주문 금액</label>
+                            <div class="value" id="price">250,000원</div>
+                        </div>
+                        <div class="row">
+                            <label>작업 금액</label>
+                            <div class="value" id="work_price">250,000원</div>
+                        </div>
+                    <%} else {%>
+                        <div class="row" style="<%=sender == 'work' ? '' : 'display: none;'%>">
+                            <label>가격</label>
+                            <div class="value" id="price">250,000원</div>
+                        </div>
+                    <%}%>
+
+                    <div class="row">
+                        <label>비고</label>
+                        <div class="value" id="note" style="word-break: break-all;">-</div>
+                    </div>
                 </div>
-                <div class="section-title">
-                    <span>작업 내용</span>
-                </div>
-                <div class="multiline" id="order_content">
-                    - 메인 UI 레이아웃 구성 완료<br />- 반응형 스타일 적용<br />- 버튼 인터랙션 구현
-                </div>
+
                 <div class="section-title">
                     <span>수정 사항</span>
                     <%if(sender != "work"){%>
-                        <button id="toggleEditorBtn" class="btn">+ 수정 사항 쓰기</button>
+                        <button id="toggleEditorBtn" class="btn">+ 수정 사항 작성</button>
                     <%}%>
                 </div>
+
                 <div class="editor-container" id="editorWrapper">
                     <div id="editor" class="quill-container"></div>
                     <button id="submitRevisionPhase" class="btn btn-blue">차수 추가</button>
                     <hr />
                 </div>
-                <div id="revisionsContainer">
-                    <div class="revision-phase">
-                        <div class="revision-title">수정 사항 1차</div>
-                        <div class="revision-content">
-                            <ul>
-                                <li>버튼 색상 변경 요청</li>
-                                <li>폰트 사이즈 확대</li>
-                            </ul>
-                        </div>
-                    </div>
+
+                <div id="revisionsContainer"></div>
+
+                <div class="section-title">
+                    <span>작업 내용</span>
                 </div>
+                <div class="multiline" id="order_content"></div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- 이미지 보기 모달 -->
 <div id="imageModal">
     <span id="modalClose">&times;</span>
     <img id="modalImage" />
 </div>
-
 <script>
     const quill = new Quill('#editor', {
         theme: 'snow',
-        placeholder: '수정 내용을 입력하세요...',
+        placeholder: '수정 내용을 입력하세요.',
         modules: {
             toolbar: [
                 [{ header: [1, 2, false] }],
                 ['bold', 'italic', 'underline'],
                 ['link', 'image'],
                 [{ list: 'ordered' }, { list: 'bullet' }],
-                [{ color: [] }, { background: [] }], 
+                [{ color: [] }, { background: [] }],
                 ['clean']
             ],
             imageResize: {
@@ -101,7 +103,6 @@
         }
     });
 
-    // 이미지 버튼 클릭 시 input[type=file] 트리거
     function selectLocalImage() {
         const input = document.createElement('input');
         input.setAttribute('type', 'file');
@@ -115,15 +116,13 @@
                 const formData = new FormData();
                 formData.append('file', file);
 
-                // 서버에 업로드
                 const res = await fetch('/upload/image', {
                     method: 'POST',
                     body: formData
                 });
 
-                const data = await res.json(); // { url: 'https://.../filename.png' }
-
-                const range = quill.getSelection();
+                const data = await res.json();
+                const range = quill.getSelection() || { index: quill.getLength() };
                 quill.insertEmbed(range.index, 'image', data.url);
             } else {
                 alert('이미지 파일만 업로드 가능합니다.');
@@ -141,9 +140,8 @@
                 body: formData
             });
 
-            const data = await res.json(); // { url: '/uploads/xxx.png' }
-
-            const range = quill.getSelection(true);
+            const data = await res.json();
+            const range = quill.getSelection(true) || { index: quill.getLength() };
             quill.insertEmbed(range.index, 'image', data.url);
             quill.setSelection(range.index + 1);
         } catch (err) {
@@ -152,20 +150,18 @@
         }
     }
 
-
-    // 툴바 이미지 버튼 클릭 시 커스텀 핸들러 연결
     quill.getModule('toolbar').addHandler('image', selectLocalImage);
 
     quill.root.addEventListener('paste', function (e) {
         const clipboardData = e.clipboardData || window.clipboardData;
         if (clipboardData && clipboardData.items) {
             for (let i = 0; i < clipboardData.items.length; i++) {
-            const item = clipboardData.items[i];
-            if (item.type.indexOf('image') !== -1) {
-                const file = item.getAsFile();
-                uploadImageToServer(file);
-                e.preventDefault(); // blob 기본 삽입 막기
-            }
+                const item = clipboardData.items[i];
+                if (item.type.indexOf('image') !== -1) {
+                    const file = item.getAsFile();
+                    uploadImageToServer(file);
+                    e.preventDefault();
+                }
             }
         }
     });
@@ -175,11 +171,10 @@
         if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length) {
             const file = e.dataTransfer.files[0];
             if (file.type.startsWith('image/')) {
-            uploadImageToServer(file);
+                uploadImageToServer(file);
             }
         }
     });
-
 
     $(document).on("click", '#toggleEditorBtn', function () {
         $("#editorWrapper").toggle();
@@ -189,11 +184,11 @@
         const html = quill.root.innerHTML.trim();
         if (!html || html === '<p><br></p>') return;
 
-        let content = await common.enc(html)
+        let content = await common.enc(html);
         let params = {
             order_idx: selectOrder,
             content: content,
-        }
+        };
 
         await senderAxios.callAxios("<%=_props.CORES.sender[sender]%>/setOrderFix", "post", params)
             .then((data) => {
@@ -201,8 +196,7 @@
 
                 const txt = `
                 <div class="revision-phase" data-order_fix_idx="${data.data.data.order_fix_idx}">
-                    <div class="revision-title"><span>수정 사항 ${phase}차 </span>
-                    </div>
+                    <div class="revision-title"><span>수정 사항 ${phase}차</span></div>
                     <div class="revision-content">${html}</div>
                 </div>
                 `;
@@ -215,10 +209,11 @@
                 $("#order_status").css("background-color", "#f3f7fe");
                 $("#order_status").css("color", "#0f69f4");
 
-                $("#taskTableBody").find(".hover_line[data-order_idx=" + selectOrder + "]").find(".status").val("02").prop("selected", true);
-                $("#taskTableBody").find(".hover_line[data-order_idx=" + selectOrder + "]").find(".status").css("background-color", "");
-                $("#taskTableBody").find(".hover_line[data-order_idx=" + selectOrder + "]").find(".status").css("color", "");
-            })
+                const $status = $("#taskTableBody").find(".hover_line[data-order_idx=" + selectOrder + "]").find(".status");
+                $status.val("02").prop("selected", true);
+                $status.css("background-color", "");
+                $status.css("color", "");
+            });
 
     });
 
@@ -236,34 +231,28 @@
 
     $('#modalClose').on("click", function() {
         document.getElementById('imageModal').style.display = 'none';
-    })
-
-    function modifyOrderFix(order_fix_idx) {
-        console.log("modify", order_fix_idx);
-    }
+    });
 
     async function delOrderFix(order_fix_idx) {
         if (confirm("수정 사항을 정말 삭제하시겠습니까?")) {
             let params = {
                 order_fix_idx: order_fix_idx,
-            }
+            };
 
             await senderAxios.callAxios("<%=_props.CORES.sender[sender]%>/delOrderFix", "post", params)
-                .then((data) => {
+                .then(() => {
                     $("#revisionsContainer").find("div.revision-phase[data-order_fix_idx='" + order_fix_idx + "']").remove();
                     let containerLen = $("#revisionsContainer div.revision-phase").length;
 
                     $("#revisionsContainer div.revision-phase").each((index, element) => {
-                        if ($(element).data("order_fix_idx") > order_fix_idx) {
-                            $(element).find(".revision-title span").text("수정 사항 " + (containerLen - index) + "차");
-                        }
-                    })
+                        $(element).find(".revision-title span").text("수정 사항 " + (containerLen - index) + "차");
+                    });
                 });
         }
     }
 
     function sendModify() {
-        location.href = "<%=_props.CORES.sender[sender]%>/modify?order_idx=" + selectOrder
+        location.href = "<%=_props.CORES.sender[sender]%>/modify?order_idx=" + selectOrder;
     }
 
     $(document).on("click", "#viewModal", function (e) {
@@ -271,7 +260,7 @@
         if ($viewModalBody.is(':visible') && e.target.id === 'viewModal') {
             $('#viewModal').hide();
         }
-    })
+    });
 
     $(document).on("click", ".show_view_model", async function () {
         let order_idx = $(this).data("order_idx");
@@ -281,8 +270,8 @@
         let color = "#0f69f4";
         selectOrder = order_idx;
 
-        if(!order.content) {
-            await senderAxios.callAxios("<%=_props.CORES.sender[sender]%>/getContents", "get", {order_idx : order_idx})
+        if (!order.content) {
+            await senderAxios.callAxios("<%=_props.CORES.sender[sender]%>/getContents", "get", { order_idx: order_idx })
                 .then(async (data) => {
                     order.content = data.data.data.contents[0].CONTENT;
                 });
@@ -294,24 +283,26 @@
             else if (order.status == "03") { status = "작업완료"; }
             else if (order.status == "04") { status = "납품완료"; background_color = "#ededed"; color = "#767676"; }
             else if (order.status == "05") { status = "수정완료"; }
-            else if (order.status == "06") { status = "완료후 수정 요청"; background_color = "#ee293b"; color = "#ffffff"; }
+            else if (order.status == "06") { status = "완료 후 수정요청"; background_color = "#ee293b"; color = "#ffffff"; }
             else if (order.status == "07") { status = "작업자 코멘트"; }
+            else if (order.status == "08") { status = "진행보류"; background_color = "#ee293b"; color = "#ffffff"; }
         <%} else if(sender == "order" || sender == "broker") {%>
             if (order.status == "01") { status = "작업요청"; }
             else if (order.status == "02") { status = "수정요청"; }
             else if (order.status == "03") { status = "작업완료"; background_color = "#ee293b"; color = "#ffffff"; }
-            else if (order.status == "04") { status = "납품완료"; background_color = "#ededed"; color = "#767676";}
+            else if (order.status == "04") { status = "납품완료"; background_color = "#ededed"; color = "#767676"; }
             else if (order.status == "05") { status = "수정완료"; background_color = "#ee293b"; color = "#ffffff"; }
-            else if (order.status == "06") { status = "완료후 수정 요청"; }
+            else if (order.status == "06") { status = "완료 후 수정요청"; }
             else if (order.status == "07") { status = "작업자 코멘트"; }
+            else if (order.status == "08") { status = "진행보류"; background_color = "#ee293b"; color = "#ffffff"; }
         <%}%>
 
         <%if(sender == "order") {%>
-            if($(this).find("span[name='orderShowYN']").length > 0) {
-                await senderAxios.callAxios("<%=_props.CORES.sender[sender]%>/showOrderComment", "post", {order_idx : order_idx})
-                .then(() => {
-                    $(this).find("span[name='orderShowYN']").remove();
-                })
+            if ($(this).find("span[name='orderShowYN']").length > 0) {
+                await senderAxios.callAxios("<%=_props.CORES.sender[sender]%>/showOrderComment", "post", { order_idx: order_idx })
+                    .then(() => {
+                        $(this).find("span[name='orderShowYN']").remove();
+                    });
             }
         <%}%>
 
@@ -328,20 +319,20 @@
         $("#output").text(order.output);
 
         <%if(sender == "work") {%>
-            if(order && order.show_yn == "Y") {
+            if (order && order.show_yn == "Y") {
                 $("#price").text(order.work_price);
             } else {
                 $("#price").text("");
             }
         <%} else if(sender == "order") {%>
-            if(order && order.show_yn == "Y") {
+            if (order && order.show_yn == "Y") {
                 $("#price").text(order.order_price);
             } else {
                 $("#price").text("");
             }
         <%} else if(sender == "broker") {%>
-                $("#price").text(order.order_price);
-                $("#work_price").text(order.work_price);
+            $("#price").text(order.order_price);
+            $("#work_price").text(order.work_price);
         <%}%>
 
         $("#note").text(note || "-");
@@ -357,15 +348,14 @@
                     let fixContent = await common.dec(orderFix.content);
 
                     let txt = '<div class="revision-phase" data-order_fix_idx="' + orderFix.order_fix_idx + '">';
-                    txt += '<div class="revision-title"><span>수정 사항 ' + (data.data.data.orderFixs.length - Number(orderFixIdx)) + '차</span>'
-                    txt += '</div>';
+                    txt += '<div class="revision-title"><span>수정 사항 ' + (data.data.data.orderFixs.length - Number(orderFixIdx)) + '차</span></div>';
                     txt += '<div class="revision-content">';
-                    txt += fixContent.replace( /\\"/g, '"' )
+                    txt += fixContent.replace(/\\"/g, '"');
                     txt += '</div>';
                     txt += '</div>';
 
                     $("#revisionsContainer").append(txt);
                 }
-            })
-    })
+            });
+    });
 </script>

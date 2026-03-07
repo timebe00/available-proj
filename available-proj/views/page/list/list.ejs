@@ -1,50 +1,83 @@
-<h1>작업 항목 확인</h1>
+﻿<div class="page-shell">
+    <section class="dashboard-card">
+        <div class="page-head">
+            <div>
+                <span class="page-badge"><%= sender %> board</span>
+                <h1>작업 목록</h1>
+                <p>상태, 일정, 금액, 수정 요청을 한 번에 관리합니다.</p>
+            </div>
+        </div>
 
-<div style="text-align: right; margin-bottom: 35px;">
-    <%if(sender == "order") {%>
-    <!-- <a href="javascript:changeSchedule()"
-            style="padding: 10px 16px; background-color: #449644; color: white; text-decoration: none; border-radius: 4px;">일자 적용하기</a> -->
-    <%}%> 
-    <%if(sender != "work"){%>
-        <a href="<%=_props.CORES.sender[sender]%>/write"
-            style="padding: 10px 16px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px;">작성하기</a>
-    <%}%>
-    <%if(sender == "broker") {%>
-        <a href="javascript:changePrice()"
-            style="padding: 10px 16px; background-color: #000000; color: white; text-decoration: none; border-radius: 4px;">단가
-            적용하기</a>
-        <a href="javascript:sumPrice()"
-            style="padding: 10px 16px; background-color: #7c85ff; color: white; text-decoration: none; border-radius: 4px;">단가
-            계산하기</a>
-    <%}%>
+        <div class="top-actions">
+            <%if(sender != "work"){%>
+                <a href="<%=_props.CORES.sender[sender]%>/write" class="action-btn">+ 작업 등록</a>
+            <%}%>
+            <%if(sender == "broker") {%>
+                <a href="javascript:changePrice()" class="action-btn dark">가격 적용</a>
+                <a href="javascript:sumPrice()" class="action-btn ghost">가격 정산</a>
+            <%}%>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <colgroup>
+                    <%if(sender == "broker") {%>
+                        <col style="width: 4.5%;" />
+                        <col style="width: 3.5%;" />
+                        <col style="width: 10%;" />
+                        <col style="width: 10%;" />
+                        <col style="width: 21%;" />
+                        <col style="width: 11%;" />
+                        <col style="width: 10%;" />
+                        <col style="width: 9.5%;" />
+                        <col style="width: 9.5%;" />
+                        <col style="width: 6%;" />
+                        <col style="width: 5%;" />
+                    <%} else if(sender == "work") {%>
+                        <col style="width: 6%;" />
+                        <col style="width: 14%;" />
+                        <col style="width: 14%;" />
+                        <col style="width: 30%;" />
+                        <col style="width: 14%;" />
+                        <col style="width: 14%;" />
+                        <col style="width: 8%;" />
+                    <%} else {%>
+                        <col style="width: 7%;" />
+                        <col style="width: 16%;" />
+                        <col style="width: 16%;" />
+                        <col style="width: 35%;" />
+                        <col style="width: 14%;" />
+                        <col style="width: 12%;" />
+                    <%}%>
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th class="order_count">번호</th>
+                        <%if(sender == "broker") {%>
+                            <th class="order_count"><input type="checkbox" id="allCheked" class="checkBoxBig" /></th>
+                        <%}%>
+                        <th class="schedule-col">Best</th>
+                        <th class="schedule-col">At Least</th>
+                        <th class="task-name">작업명</th>
+                        <th class="deliverable">결과물</th>
+                        <th>작업 상태</th>
+                        <%if(sender == "broker") {%>
+                            <th>주문 금액</th>
+                            <th>작업 금액</th>
+                            <th>가격 노출</th>
+                            <th>삭제</th>
+                        <%} else if(sender == "work") {%>
+                            <th>가격</th>
+                        <%}%>
+                    </tr>
+                </thead>
+                <tbody id="taskTableBody"></tbody>
+            </table>
+        </div>
+    </section>
 </div>
-<table>
-    <thead>
-        <tr>
-            <th class="order_count" >번호</th>
-            <%if(sender == "broker") {%>
-            <th class="order_count" ><input type="checkbox" id="allCheked" class="checkBoxBig" /></th>
-            <%}%>
-            <th>Best</th>
-            <th>At Least</th>
-            <th class="task-name">작업명</th>
-            <th class="deliverable">산출물</th>
-            <th>작업 상태</th>
-            <%if(sender == "broker") {%>
-                <th>주문자 단가</th>
-                <th>작업자 단가</th>
-                <th>단가 노출 여부</th>
-                <th>삭제</th>
-            <%} else if(sender == "work") {%>
-                <th>단가</th>
-            <%}%>
-        </tr>
-    </thead>
-    <tbody id="taskTableBody"></tbody>
-</table>
 
 <%- include("./view.ejs") %>
-
 <script>
     var contentData = {};
     var priceObj = {};
@@ -132,6 +165,11 @@
                 $(this).css("color", "#767676");
                 $(this).css("font-weight", "normal");
             }
+            else if(status == "08") {
+                $(this).css("background-color", "#ededed");
+                $(this).css("color", "#767676");
+                $(this).css("font-weight", "normal");
+            }
             else {
                 $(this).css("background-color", "");
                 $(this).css("color", "");
@@ -144,6 +182,11 @@
                 $(this).css("font-weight", "");
             }
             else if(status == "04") {
+                $(this).css("background-color", "#ededed");
+                $(this).css("color", "#767676");
+                $(this).css("font-weight", "normal");
+            }
+            else if(status == "08") {
                 $(this).css("background-color", "#ededed");
                 $(this).css("color", "#767676");
                 $(this).css("font-weight", "normal");
@@ -182,15 +225,6 @@
         }
     })
 
-    // async function changeSchedule() {
-    //     await senderAxios.callAxios("<%=_props.CORES.sender[sender]%>/changeSchedule", "post", {scheduleData : JSON.stringify(scheduleData)})
-    //         .then((data) => {
-    //             alert("변경되었습니다.");
-    //             scheduleData = {};
-    //             // $(tr).remove();
-    //         });
-    // }
-
     $(document).on("click", "input[name='check']", function() {
         let order_idx = $(this).parent().parent().data("order_idx");
 
@@ -206,6 +240,6 @@
 
     function sumPrice() {
         let checkDataJson = JSON.stringify(checkData);
-        window.open("<%=_props.CORES.sender[sender]%>/sumPricePopup?checked=" + checkDataJson, "단가 계산하기", "width=700px,height=500px")
+        window.open("<%=_props.CORES.sender[sender]%>/sumPricePopup?checked=" + checkDataJson, "가격 계산하기", "width=700px,height=500px")
     }
 </script>

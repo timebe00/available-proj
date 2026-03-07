@@ -1,273 +1,235 @@
-
-<% let orderData={} ;
+﻿<%
 let maxSeq = 0;
 let maxIdx = 0;
+const dayNames = ["일", "월", "화", "수", "목", "금", "토"];
 
-function fullWord(str) {
-    let result = String(str);
-    
-    return result.padStart(2, "0")
+function pad2(value) {
+    return String(value).padStart(2, "0");
 }
 
-for(let orderIdx in data.orders) { 
-    let order=data.orders[orderIdx];
-    let orderBDay = new Date(order.b_time);
-    let orderEDay = new Date(order.e_time);
-    let Day = ["일", "월", "화", "수", "목", "금", "토"];
+function formatTimeLabel(value) {
+    if (!value) return "-";
+    const d = new Date(value);
+    if (Number.isNaN(d.getTime())) return value;
+
+    const mm = pad2(d.getMonth() + 1);
+    const dd = pad2(d.getDate());
+    const hh = pad2(d.getHours());
+    const day = dayNames[d.getDay()] || "";
+    return `${mm}/${dd} (${day}) ${hh}시`;
+}
+
+for (let orderIdx in data.orders) {
+    let order = data.orders[orderIdx];
 
     let selectBakColor = "#ffffff";
     let selectColor = "#000000";
 
-    let b_month = fullWord(orderBDay.getMonth() + 1);
-    let b_day = fullWord(orderBDay.getDate());
-    let b_hours = fullWord(orderBDay.getHours());
+    let b_time_txt = formatTimeLabel(order.b_time);
+    let e_time_txt = formatTimeLabel(order.e_time);
 
-    let e_month = fullWord(orderEDay.getMonth() + 1);
-    let e_day = fullWord(orderEDay.getDate());
-    let e_hours = fullWord(orderEDay.getHours());
-
-    let b_time_txt = b_month + "/" + b_day + " (" + Day[orderBDay.getDay()] + ") " + b_hours + "시"
-    let e_time_txt = e_month + "/" + e_day + " (" + Day[orderEDay.getDay()] + ") " + e_hours + "시"
-
-    if(_props.CORES.sender.check[sender].includes(order.status)) {
+    if (_props.CORES.sender.check[sender].includes(order.status)) {
         selectBakColor = "#ee293b";
         selectColor = "#ffffff";
-    } else if(order.status == "04") {
-        selectBakColor = "#ededed;";
-        selectColor = "#767676;";
+    } else if (order.status == "04" || order.status == "08") {
+        selectBakColor = "#ededed";
+        selectColor = "#767676";
     }
 
-    if(order.order_seq && order.order_seq > maxSeq) {
+    if (order.order_seq && order.order_seq > maxSeq) {
         maxSeq = order.order_seq;
         maxIdx = order.order_idx;
     }
 %>
-    <!-- <tr class=" important"> -->
-    <tr class="hover_line" data-order_idx="<%=order.order_idx%>">
-        <td class="" name="order_seq" ><span><%=order.order_seq%></span></td>
-        <%if(sender == "broker") {%>
-        <td ><input type="checkbox" name="check" class="checkBoxBig" /></td>
-        <%}%>
-        <td class="schedule_time b_time">
-            <%if(sender == "order") {%>
-                <input class="schedule_time_input" type="text" value="<%=order.b_time.replace('시', ':00')%>" />
-            <%}%>
-            <span><%=b_time_txt%></span>
-        </td>
-        <td class="schedule_time e_time">
-            <%if(sender == "order") {%>
-                <input class="schedule_time_input" type="text" value="<%=order.e_time.replace('시', ':00')%>" />
-            <%}%>
-            <span><%=e_time_txt%></span>
-        </td>
-        <td class="task-name show_view_model" style="text-align: left;" data-order_idx="<%=order.order_idx%>">
-            <%=order.title.replace(/&#39;/g, "'")%>
-            <% if(order.imp_yn=="Y" ){ %>
-                <span style="color: red; font-size: 20px;">*</span>
-            <% } %>
-            <% if(order.order_show_yn=="N" ){ %>
-                <span name="orderShowYN" style="color: rgb(71, 225, 57); font-size: 20px;">*</span>
-            <% } %>
-        </td>
+<tr class="hover_line" data-order_idx="<%=order.order_idx%>">
+    <td name="order_seq"><span><%=order.order_seq%></span></td>
 
-        <td class="deliverable">
-            <%=order.output || "미정" %>
+    <% if(sender == "broker") { %>
+        <td><input type="checkbox" name="check" class="checkBoxBig" /></td>
+    <% } %>
+
+    <td class="schedule_time b_time">
+        <% if(sender == "order") { %>
+            <input class="schedule_time_input" type="text" value="<%=order.b_time || ''%>" />
+        <% } %>
+        <span><%=b_time_txt%></span>
+    </td>
+
+    <td class="schedule_time e_time">
+        <% if(sender == "order") { %>
+            <input class="schedule_time_input" type="text" value="<%=order.e_time || ''%>" />
+        <% } %>
+        <span><%=e_time_txt%></span>
+    </td>
+
+    <td class="task-name show_view_model" data-order_idx="<%=order.order_idx%>">
+        <%=order.title ? order.title.replace(/&#39;/g, "'") : ''%>
+        <% if(order.imp_yn == "Y") { %>
+            <span style="color: red; font-size: 20px;">*</span>
+        <% } %>
+        <% if(order.order_show_yn == "N") { %>
+            <span name="orderShowYN" style="color: rgb(71, 225, 57); font-size: 20px;">*</span>
+        <% } %>
+    </td>
+
+    <td class="deliverable"><%=order.output || "미정"%></td>
+
+    <td>
+        <select class="status" style="background-color: <%=selectBakColor%>; color: <%=selectColor%>; <%=(order.status=="04" || order.status=="08") ? "font-weight: normal;" : ""%>">
+            <option value="01" <%=order.status=="01" ? "selected" : "" %>>작업요청</option>
+            <option value="02" <%=order.status=="02" ? "selected" : "" %>>수정요청</option>
+            <option value="03" <%=order.status=="03" ? "selected" : "" %>>작업완료</option>
+            <option value="04" <%=order.status=="04" ? "selected" : "" %>>납품완료</option>
+            <option value="05" <%=order.status=="05" ? "selected" : "" %>>수정완료</option>
+            <option value="06" <%=order.status=="06" ? "selected" : "" %>>완료 후 수정요청</option>
+            <option value="07" <%=order.status=="07" ? "selected" : "" %>>작업자 코멘트</option>
+            <option value="08" <%=order.status=="08" ? "selected" : "" %>>진행보류</option>
+        </select>
+    </td>
+
+    <% if(sender == "broker") { %>
+        <td>
+            <input type="text" class="price_data underline-input" name="order_price" value="<%=order.order_price || '' %>" />
         </td>
         <td>
-            <select class="status"
-                style="background-color: <%=selectBakColor%>; color: <%=selectColor%>; <%=order.status=="04" ? "font-weight : normal" : ""%>">
-                <option value="01" <%=order.status=="01" ? "selected" : "" %> >작업요청</option>
-                <option value="02" <%=order.status=="02" ? "selected" : "" %> >수정요청</option>
-                <option value="03" <%=order.status=="03" ? "selected" : "" %> >작업완료</option>
-                <option value="04" <%=order.status=="04" ? "selected" : "" %> >납품완료</option>
-                <option value="05" <%=order.status=="05" ? "selected" : "" %> >수정완료</option>
-                <option value="06" <%=order.status=="06" ? "selected" : "" %> >완료후 수정 요청</option>
-                <option value="06" <%=order.status=="07" ? "selected" : "" %> >작업자 코멘트</option>
-            </select>
+            <input type="text" class="price_data underline-input" name="work_price" value="<%=order.work_price || '' %>" />
         </td>
-        <%if(sender == "broker") {%>
-            <td>
-                <input type="text" class="price_data underline-input" style="width: 100px;" name="order_price" value="<%=order.order_price || '' %>" />
-            </td>
-            <td>
-                <input type="text" class="price_data underline-input" style="width: 100px;" name="work_price" value="<%=order.work_price || '' %>" />
-            </td>
-            <td>
-                <input type="checkbox" class="checkBoxBig" name="priceShow" <%=order.show_yn=="Y" ? "checked" : "" %> />
-            </td>
-            <td>
-                <button style="background-color: #ee293b; color: #ffffff; border: 0px;" name="orderDel">삭제</button>
-            </td>
-        <%} else if(sender == "work") {%>
-            <td>
-                <%if(order.show_yn == "Y" && sender == "order"){%>
-                    <%=order.order_price || ''%>
-                <%} else if (order.show_yn == "Y" && sender == "work") {%>
-                    <%=order.work_price || ''%>
-                <%}%>
-            </td>
-        <%}%>
-    </tr>
+        <td>
+            <input type="checkbox" class="checkBoxBig" name="priceShow" <%=order.show_yn=="Y" ? "checked" : "" %> />
+        </td>
+        <td>
+            <button name="orderDel">삭제</button>
+        </td>
+    <% } else if(sender == "work") { %>
+        <td>
+            <% if(order.show_yn == "Y") { %>
+                <%=order.work_price || ''%>
+            <% } %>
+        </td>
+    <% } %>
+</tr>
 
-    <script>
-        contentData["<%= order.order_idx %>"] = {
-            status: "<%=order.status%>",
-            title: common.scriptAtoB("<%=order.title%>"),
-            b_time: "<%=b_time_txt%>",
-            e_time: "<%=e_time_txt%>",
-            output: "<%=order.output%>",
-            status: "<%=order.status%>",
-            imp_yn: "<%=order.imp_yn%>",
-            order_price: "<%=order.order_price%>",
-            work_price: "<%=order.work_price%>",
-            show_yn: "<%=order.show_yn%>",
-            note: `<%-order.note%>`,
-        }
-    </script>
-<%}%>
+<script>
+    contentData["<%= order.order_idx %>"] = {
+        status: "<%=order.status%>",
+        title: common.scriptAtoB(<%- JSON.stringify(order.title || "") %>),
+        b_time: <%- JSON.stringify(b_time_txt || "") %>,
+        e_time: <%- JSON.stringify(e_time_txt || "") %>,
+        output: <%- JSON.stringify(order.output || "") %>,
+        imp_yn: <%- JSON.stringify(order.imp_yn || "") %>,
+        order_price: <%- JSON.stringify(order.order_price || "") %>,
+        work_price: <%- JSON.stringify(order.work_price || "") %>,
+        show_yn: <%- JSON.stringify(order.show_yn || "") %>,
+        note: <%- JSON.stringify(order.note || "") %>,
+    };
+</script>
+<% } %>
 
 <script>
     $(document).ready(function () {
+        const dayNamesClient = ['일', '월', '화', '수', '목', '금', '토'];
         $("#taskTableBody").find("tr[data-order_idx='<%=maxIdx%>']").find("td[name='order_seq']").addClass("max_seq_num");
 
-        for(let trHtml of $("#taskTableBody").find("tr")) {
+        for (let trHtml of $("#taskTableBody").find("tr")) {
             let order_idx = $(trHtml).data("order_idx");
-            if(checkData.includes(order_idx)) {
+            if (checkData.includes(order_idx)) {
                 $(trHtml).find("input[name='check']").prop("checked", true);
             }
         }
 
         senderAxios.callAxios("<%=_props.CORES.sender[sender]%>/getContents", "get", {})
             .then((data) => {
-                for(let content of data.data.data.contents) {
-                    contentData[content.ORDER_IDX].content = content.CONTENT;
+                for (let content of data.data.data.contents) {
+                    if (contentData[content.ORDER_IDX]) {
+                        contentData[content.ORDER_IDX].content = content.CONTENT;
+                    }
                 }
                 setTimeout(reloadTableBody, 30000);
             });
 
-        $(function () {
-            $.datepicker.setDefaults({
-                closeText: "닫기",
-                currentText: "오늘",
-                prevText: '이전 달',
-                nextText: '다음 달',
-                monthNames: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
-                monthNamesShort: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
-                dayNames: ['일', '월', '화', '수', '목', '금', '토'],
-                dayNamesShort: ['일', '월', '화', '수', '목', '금', '토'],
-                dayNamesMin: ['일', '월', '화', '수', '목', '금', '토'],
-                weekHeader: "주",
-                yearSuffix: '년',
+        $.datepicker.setDefaults({
+            closeText: "닫기",
+            currentText: "오늘",
+            prevText: "이전 달",
+            nextText: "다음 달",
+            monthNames: ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"],
+            monthNamesShort: ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"],
+            dayNames: ["일", "월", "화", "수", "목", "금", "토"],
+            dayNamesShort: ["일", "월", "화", "수", "목", "금", "토"],
+            dayNamesMin: ["일", "월", "화", "수", "목", "금", "토"],
+            weekHeader: "주",
+            yearSuffix: "년",
+        });
 
-            }); 
+        $('.schedule_time_input').datetimepicker({
+            dateFormat: 'yy-mm-dd',
+            timeFormat: 'HH:00',
+            controlType: 'select',
+            stepMinute: 30,
+            hourMin: 10,
+            hourMax: 22,
+            currentText: '현재 시간',
+            closeText: '완료',
+            timeOnlyTitle: '시간 선택',
+            timeText: '시간',
+            hourText: '시간',
+            minuteText: '분',
+            secondText: '초',
+            amNames: ['오전', 'AM'],
+            pmNames: ['오후', 'PM'],
+            beforeShow: function () {
+                setTimeout(() => filterOptions(), 10);
+            },
+            onSelect: function () {
+                setTimeout(() => {
+                    filterOptions();
+                    changeDataTime($(this));
+                }, 10);
+            }
+        });
 
-            $('.schedule_time_input').datetimepicker({
-                dateFormat: 'yy-mm-dd',
-                timeFormat: 'HH:00',
-                controlType: 'select',
-                stepMinute: 30,
-                hourMin: 10,
-                hourMax: 22,
+        function filterOptions() {
+            const dp = $('.ui-timepicker-div');
+            if (!dp.length) return;
 
-                currentText: '현재 시간',
-                closeText: '완료',
-                timeOnlyTitle: '시간 선택',
-                timeText: '시간',
-                hourText: '시간',
-                minuteText: '분',
-                secondText: '초',
-                amNames: ['오전', 'AM'],
-                pmNames: ['오후', 'PM'],
-
-                beforeShow: function (input, inst) {
-                    setTimeout(() => filterOptions(), 10);
-                },
-
-                onSelect: function () {
-                    setTimeout(() => {
-                        filterOptions();
-                        changeDataTiem($(this));
-                    }, 10);
-                    setTimeout(() => filterOptions(), 10);
-                }
+            dp.find('.ui_tpicker_hour select option').each(function () {
+                const val = parseInt($(this).val(), 10);
+                if (![10, 13, 17, 22].includes(val)) $(this).remove();
             });
+        }
 
-            function filterOptions() {
-                const dp = $('.ui-timepicker-div');
-                if (!dp.length) return;
+        function changeDataTime(self) {
+            let dateTxt = new Date($(self).val());
+            let timeHtml = $(self).parent();
+            let day = dayNamesClient[dateTxt.getDay()] || "";
 
-                // 시간 필터
-                dp.find('.ui_tpicker_hour select option').each(function () {
-                    const val = parseInt($(this).val(), 0);
-                    if (![10, 13, 17, 22].includes(val)) $(this).remove();
+            let month = common.fullWord(dateTxt.getMonth() + 1);
+            let date = common.fullWord(dateTxt.getDate());
+            let hours = common.fullWord(dateTxt.getHours());
+
+            let order_idx = $(timeHtml).parent().data("order_idx");
+            let timeTxt = month + "/" + date + " (" + day + ") " + hours + "시";
+
+            let params = { order_idx: order_idx };
+            if ($(timeHtml).hasClass("b_time")) {
+                contentData[order_idx].b_time = timeTxt;
+                params.b_time = $(self).val();
+            } else if ($(timeHtml).hasClass("e_time")) {
+                contentData[order_idx].e_time = timeTxt;
+                params.e_time = $(self).val();
+            }
+
+            senderAxios.callAxios("<%=_props.CORES.sender[sender]%>/changeScheduleOne", "post", params)
+                .then(() => {
+                    $(timeHtml).find("span").text(timeTxt);
+                    alert("변경되었습니다.");
                 });
-            }
+        }
 
-            function changeDataTiem(self) {
-                let dateTxt = new Date($(self).val());
-                let timeHtml = $(self).parent();
-                let Day = ["일", "월", "화", "수", "목", "금", "토"];
-
-                let getMonth = common.fullWord(dateTxt.getMonth() + 1);
-                let getDate = common.fullWord(dateTxt.getDate());
-                let getHours = common.fullWord(dateTxt.getHours());
-
-                let order_idx = $(timeHtml).parent().data("order_idx");
-                let timeTxt = getMonth + "/" + getDate + " (" + Day[dateTxt.getDay()] + ") " + getHours + "시";
-
-                let params = {}
-                if($(timeHtml).hasClass("b_time")) {
-                    contentData[order_idx].b_time = timeTxt;
-
-                    params = {
-                        order_idx : order_idx,
-                        b_time : $(self).val(),
-                    }
-                } else if($(timeHtml).hasClass("e_time")) {
-                    contentData[order_idx].e_time = timeTxt;
-                    
-                    params = {
-                        order_idx : order_idx,
-                        e_time : $(self).val(),
-                    }
-                }
-
-                senderAxios.callAxios("<%=_props.CORES.sender[sender]%>/changeScheduleOne", "post", params)
-                    .then((data) => {
-                        $(timeHtml).find("span").text(timeTxt);
-                        alert("변경되었습니다.")
-                    });
-
-                /*
-                let timeTxt = getMonth + "/" + getDate + " (" + Day[dateTxt.getDay()] + ") " + getHours + "시";
-                $(timeHtml).find("span").text(timeTxt);
-
-                let order_idx = $(timeHtml).parent().data("order_idx");
-
-                if(!scheduleData[order_idx]) {
-                    scheduleData[order_idx] = {};
-                }
-
-                if($(timeHtml).hasClass("b_time")) {
-                    contentData[order_idx].b_time = timeTxt;
-                    
-                    scheduleData[order_idx].b_time = $(self).val();
-                    scheduleData[order_idx].order_idx = order_idx;
-                } else if($(timeHtml).hasClass("e_time")) {
-                    contentData[order_idx].e_time = timeTxt;
-
-                    scheduleData[order_idx].e_time = $(self).val();
-                    scheduleData[order_idx].order_idx = order_idx;
-                }
-                */
-
-            }
-        })
-
-        $(".schedule_time").on("click", function() {
+        $(".schedule_time").on("click", function () {
             $(this).find(".schedule_time_input").datetimepicker('show');
-        })
-    })
-
-    
+        });
+    });
 </script>
+
+
